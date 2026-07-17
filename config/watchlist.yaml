@@ -1,0 +1,25 @@
+# 皮褸黃 Capital — coverage universe. The Owner and CIO curate; departments
+# monitor these names. Starter list aligned with the target sleeves — edit freely.
+
+ai:
+  - NVDA
+  - MSFT
+  - GOOGL
+  - AMD
+  - PLTR
+
+technology:
+  - AAPL
+  - AMZN
+  - META
+  - TSM
+  - AVGO
+
+etf:
+  - SPY     # S&P 500
+  - QQQ     # Nasdaq 100
+  - SMH     # semiconductors
+  - XLF     # financials
+
+# Names under research but not yet in any sleeve
+research: []
