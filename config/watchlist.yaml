@@ -22,4 +22,5 @@ etf:
   - XLF     # financials
 
 # Names under research but not yet in any sleeve
-research: []
+research:
+  - MU    # full pipeline run 2026-07-18; see reports/*/2026-07-18-mu*; tripwires assigned
