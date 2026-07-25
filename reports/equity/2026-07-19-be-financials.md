@@ -1,5 +1,34 @@
 # Financial Statement Analysis — Bloom Energy Corp (NYSE: BE)
 
+> ## ⚠️ CORRECTION NOTICE — this report FAILED audit on 2026-07-19
+> **Issued by the CEO (皮褸黃) on the AI Auditor's finding. See `reports/committee/2026-07-19-be-audit.md`.**
+>
+> **The FY2025 GAAP net income figure of +$6.0m in this report is WRONG.** The filed
+> FY2025 figure is a **net LOSS of $87.1m**. The +$6.0m is a *trailing-twelve-month*
+> number, not a fiscal-year one (FY25 −$87.1m, less the ~$22m Q1'25 loss, plus the
+> $70.7m Q1'26 profit ≈ +$6m TTM). Two independent confirmations: the FY2025 10-K, and
+> 菲比斯's accumulated-deficit delta in `2026-07-19-be-moat.md`
+> ($3,986.98m − $3,897.62m = **−$89.36m**) — which sits in the same package, filed the
+> same day, and was crossed by four analysts without reconciliation.
+>
+> **Corrections that follow:**
+> 1. **"GAAP profitability arrived in FY2025" is FALSE.** Bloom's first GAAP-profitable
+>    quarter is **Q1 2026** — one quarter old, not one year.
+> 2. **FY2025 ROE is NEGATIVE**, not the +0.8% stated below.
+> 3. The earnings-to-cash gap is **~$505m (~25% of revenue)**, not $412m (~20%).
+> 4. The **67/100 score contradicts this report's own published trigger** (related-party
+>    revenue above 50% of a quarter → score ≤45), a condition now confirmed three
+>    quarters running. Treat the 67 as unreliable pending re-score; the auditor's view
+>    is that the fundamentals score should be **≤45**.
+> 5. Red flag #1 below misattributes the Q3'25 related-party revenue to SK ecoplant. It
+>    is **Brookfield**. SK ecoplant is ~$29.9m, ~1.5% of FY25 revenue. See the
+>    reconciliation in `2026-07-19-be-valuation.md`, upheld by the audit.
+>
+> Everything else in this report — the price verification, the balance-sheet analysis,
+> the dilution history, and the accounting-quality concern — survived the audit. The
+> **direction** of the conclusion is unchanged and arguably strengthened: the correction
+> removes a year of claimed profitability that never happened.
+
 **Analyst:** 巴爺爺 (Dept. 2, Equity Research — Financial Statements)
 **Reference date:** 2026-07-19 · **Last close used:** Friday 2026-07-17
 **Fiscal year:** ends Dec 31 · **Latest reported period:** Q1 2026 (reported 2026-04-28)
