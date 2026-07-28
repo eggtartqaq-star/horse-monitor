@@ -132,7 +132,7 @@ The honest run-rate read: **~$2.2B/quarter of non-GAAP net income, ~$8.8B annual
 
 **But the headline "adjusted free cash flow of $(8,419)M" in Q2'26 needs unpacking:** it was driven by **net partner outflows of $12,216M** — payments relating to the semiconductor co-investment programme (SCIP) partner structures, not operating deterioration. This is a balance-sheet/ownership transaction, not a P&L burn. Investors reading the headline as "Intel burned $8.4B this quarter" are misreading it. Conversely, investors reading FY2025's "$(1.6)B adjusted FCF" as near-breakeven are also misreading it: **on a plain OCF-minus-gross-capex basis FY2025 burned $8.0B.** Intel's "adjusted FCF" adds back government incentives and partner contributions and is a materially flattering non-GAAP construct.
 
-**Capex is going the wrong way for FCF:** 2026 gross capex guidance was **raised from $18B to over $20B**, and management guided 2027 capital spending **higher still**. At $20B+ against ~$40B of annualized OCF-if-margins-hold, Intel can self-fund — but only just, and only if the Q2 margin level persists. There is no error budget.
+**Capex is going the wrong way for FCF:** 2026 gross capex guidance was **raised from $18B to over $20B**, and management guided 2027 capital spending **higher still**. At $20B+ against ~$28B annualised OCF **[CORRECTED 2026-07-28 per audit flag F-1: the original ~$40B was ~43% overstated; Q2 OCF was $7.0B → ~$28B annualised, and FY2025 was $9.7B]**-if-margins-hold, Intel can self-fund — but only just, and only if the Q2 margin level persists. There is no error budget.
 
 ### Balance sheet at 27 June 2026
 
