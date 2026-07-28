@@ -37,7 +37,7 @@ plt.rcParams.update({
     "text.parse_math": False,
 })
 
-DRAWDOWNS = {"MU": 33.5, "MRVL": 42.8, "KLAC": 30.0, "BE": 37.5}
+DRAWDOWNS = {"MU": 33.5, "MRVL": 42.8, "KLAC": 30.0, "BE": 37.5, "INTC": 35.6}
 
 STOCKS = {
 "MU": dict(
@@ -115,7 +115,7 @@ STOCKS = {
           ("Valuation Analyst",33),("Risk (John, CRO)",31)],
   headline="The best business the firm has analysed — a genuine wide-moat monopoly. The only thing wrong with it is the price.",
   good=[
-    "The ONLY name of the four with a WIDE and WIDENING moat: ~56–63% of process control, over 85% of optical inspection, and still gaining share.",
+    "The ONLY name in the batch with a WIDE and WIDENING moat: ~56–63% of process control, over 85% of optical inspection, and still gaining share.",
     "Returns are extraordinary and durable: ~43% average ROIC, and still ~25% at the WORST point of the cycle — about 2x its cost of capital in its worst year.",
     "Highest financial score in the firm's coverage: 91/100, grade A. Interest covered 15–18x; 'effectively bulletproof'.",
     "17 consecutive annual dividend increases; $7B buyback on top of an existing $5B programme.",
@@ -171,6 +171,39 @@ STOCKS = {
   ],
   audit="The audit FAILED the financials: FY2025 was reported to the CEO as a $6.0M PROFIT when the filed figure is an $87.1M LOSS — and the correct number was sitting in another report in the same package. It also found the four reports were substantially ONE analyst's opinion wearing four signatures, and that the bull case was never independently tested.",
 ),
+"INTC": dict(
+  name="Intel Corporation", verdict="VETOED ON PRICE — BUT THE BUSINESS IS IMPROVING",
+  vcolor=AMBER, price=91.68, pdate="27 Jul 2026",
+  high=142.35, hdate="Jun 2026",
+  fv_lo=22, fv_hi=55, fv_mid=33,
+  risk="VETOED — no initiation at or above the $45 price gate",
+  scores=[("Financials (\u5df4\u723a\u723a)",55),("News & Sentiment (\u4fee\u5927\u54e5)",62),
+          ("Risk (John, CRO)",28),("Valuation Analyst",12)],
+  headline="The first name of the five where the business is genuinely getting better \u2014 and the stock is up 343% in a year, above even our own bull case.",
+  good=[
+    "Q2 2026 was the best quarter in ~15 years: revenue $16.1B (+25%), non-GAAP earnings double what analysts expected, and the data-centre margin more than doubled to 39.5%.",
+    "18A \u2014 the make-or-break manufacturing process \u2014 is real and shipping, running ~25% ABOVE its output target. After a decade of missed roadmaps this is the first hard evidence of recovery.",
+    "External foundry revenue hit $293M in ONE quarter versus $307M for ALL of last year \u2014 the first sign the factories can sell to outsiders.",
+    "Survival is no longer the question: ~$16B of capital from the US government (~10% stake), NVIDIA ($5B) and SoftBank ($2B). Cash from operations exceeded capital spending in the first half.",
+    "Second-best financial score of the five names analysed, and the only one where the trend is clearly improving rather than peaking.",
+  ],
+  bad=[
+    "The stock is up 343% in 52 weeks ($18.97 to $91.68) and trades at ~55x earnings and ~7.2x sales \u2014 on revenue that is still 33% BELOW its 2021 peak.",
+    "Our own valuation is $22-55 a share. The price is 9% ABOVE even our deliberately generous bull case of $84.",
+    "Management's OWN plan for 2030, if delivered in full and on time, is worth only $39-46 a share today.",
+    "Still ZERO committed external customers for the next-generation 14A process. Decisions are due within two quarters \u2014 a genuine coin-flip.",
+    "Market share keeps falling: x86 down from 72.9% to 67.4% in a year, and Arm chips now take ~50% of big-cloud computing, up from 18% two years ago.",
+    "Shareholders were diluted ~30% to fund the rescue \u2014 a permanent ~24% haircut to peak per-share earning power.",
+    "The government warrants (241M shares at $20) can only be exercised if Intel sells most of the foundry \u2014 which blocks the obvious way to unlock value.",
+  ],
+  watch=[
+    "PRICE GATE: no consideration at or above $45 a share (the CRO's binding condition).",
+    "Two committed 14A customers by mid-2027 \u2014 this is the single biggest swing factor.",
+    "Data-centre margins holding above 35% AFTER the CPU shortage ends (the test comes in 2027-28).",
+    "Any new share issue \u2014 capital spending is above $20B in 2026 and higher in 2027.",
+  ],
+  audit="No report failed. The auditor resolved the price confusion ($91.68 is correct) and confirmed the CEO's framing correction \u2014 Intel is NOT a cheap turnaround. It caught two real errors (an overstated cash-flow figure and an uncited '105x earnings' that should be ~55x) but found the bear conclusion survives them: a fully de-biased rebuild still lands at $37-38. Its most important finding was about the FIRM, not Intel: the old scorecard put ~60% of its weight on price, so the best-improving business of the five scored lowest. That scorecard has now been rebuilt with separate Business Quality and Price axes.",
+),
 }
 
 def wrap(ax, x, y, text, width=96, size=8.2, color=INK2, weight="normal", lh=0.0165):
@@ -211,7 +244,7 @@ def page1(pdf, t, d):
         bg.text(x+0.1025, 0.807, lbl, fontsize=7.8, color=INK3, ha="center", va="center")
         bg.text(x+0.1025, 0.780, val, fontsize=16, weight="bold", color=col, ha="center", va="center")
 
-    bg.text(0.055, 0.735, "WHAT THE 12 AI DEPARTMENTS CONCLUDED, IN ONE SENTENCE",
+    bg.text(0.055, 0.735, "WHAT THE AI DEPARTMENTS CONCLUDED, IN ONE SENTENCE",
             fontsize=8, weight="bold", color=INK3, va="top")
     yy = 0.722
     for line in textwrap.wrap(d["headline"], 88):
@@ -272,7 +305,7 @@ def page1(pdf, t, d):
     for s in ("top","right"): ax3.spines[s].set_visible(False)
     ax3.tick_params(axis="x", length=0, labelsize=9)
     fig.text(0.055, 0.263, "HOW FAR IT HAS FALLEN", fontsize=10, weight="bold", color=INK)
-    fig.text(0.055, 0.249, f"{t} highlighted in blue; the other three names shown for context.",
+    fig.text(0.055, 0.249, f"{t} highlighted in blue; the other names in the batch shown for context.",
              fontsize=8.2, color=INK2, va="top")
 
     fig.text(0.5, 0.055, "Research and decision support only — NOT financial advice. Nothing is executed unless the Owner places the trade.",
