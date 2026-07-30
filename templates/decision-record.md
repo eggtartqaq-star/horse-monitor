@@ -8,9 +8,16 @@
 
 <Why we are doing this, in plain language.>
 
-## Committee scores
+## Committee scores — TWO AXES (per the 2026-07-28 scorecard rebuild)
 
-Macro /100 · Financial /100 · Technical /100 · News & Sentiment /100 · Risk /100
+**Axis A — Business Quality:** /100  (financials · moat · management · industry)
+**Axis B — Price Attractiveness:** /100  (valuation · margin of safety · entry location)
+**Quadrant:** <A-high/B-high = buy · A-high/B-low = WAIT with a price trigger ·
+A-low/B-high = value-trap risk · A-low/B-low = decline>
+
+Context: Macro /100 · News & Sentiment /100 · Risk /100
+Binary gates (recorded, never scored as a zero): MoS met? YES/NO (required __%, delivered __%) ·
+CRO veto? YES/NO
 **Verdict:** APPROVED (conditions: <...>)
 
 ## Key assumptions (numbered — attribution will grade each)

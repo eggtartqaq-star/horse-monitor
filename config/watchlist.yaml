@@ -27,3 +27,8 @@ research:
   - MRVL  # full pipeline 2026-07-19; reports/*/2026-07-19-mrvl*; CRO veto, ~2.7x fair value
   - KLAC  # full pipeline 2026-07-19; reports/*/2026-07-19-klac*; CRO veto on valuation only;
           # STRONGEST candidate — wide moat, A/91 financials; re-entry alerts ~$130 / ~$95-105
+  - BE    # reduced-core pipeline 2026-07-19; reports/*/2026-07-19-be*; CRO VETO 18/100;
+          # trigger: related-party revenue falling as a share of total in the FY2026 10-K
+  - INTC  # reduced-core pipeline 2026-07-28; reports/*/2026-07-28-intc*; CRO VETO 28/100;
+          # BINDING price gate: no initiation at or above $45. Triggers: two committed 14A
+          # customers by mid-2027, and DCAI margins >=35% sustained after the CPU shortage

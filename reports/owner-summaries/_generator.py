@@ -37,7 +37,8 @@ plt.rcParams.update({
     "text.parse_math": False,
 })
 
-DRAWDOWNS = {"MU": 33.5, "MRVL": 42.8, "KLAC": 30.0, "BE": 37.5, "INTC": 35.6}
+# Drawdowns are DERIVED from price/high at import (never hand-maintained; they drifted once).
+DRAWDOWNS = {}
 
 STOCKS = {
 "MU": dict(
@@ -140,7 +141,7 @@ STOCKS = {
 "BE": dict(
   name="Bloom Energy", verdict="VETOED — WEAKEST FILE OF THE FOUR",
   vcolor=RED, price=214.96, pdate="17 Jul 2026",
-  high=345.0, hdate="late Jun 2026 (sources conflict)",
+  high=351.28, hdate="late Jun 2026", dd_note="peak disputed",
   fv_lo=35, fv_hi=59, fv_mid=42,
   risk="VETOED — fails on price, on measurement, AND on process",
   scores=[("News & Sentiment (修大哥)",68),("Financials (巴爺爺, corrected)",45),
@@ -185,7 +186,7 @@ STOCKS = {
     "18A \u2014 the make-or-break manufacturing process \u2014 is real and shipping, running ~25% ABOVE its output target. After a decade of missed roadmaps this is the first hard evidence of recovery.",
     "External foundry revenue hit $293M in ONE quarter versus $307M for ALL of last year \u2014 the first sign the factories can sell to outsiders.",
     "Survival is no longer the question: ~$16B of capital from the US government (~10% stake), NVIDIA ($5B) and SoftBank ($2B). Cash from operations exceeded capital spending in the first half.",
-    "Second-best financial score of the five names analysed, and the only one where the trend is clearly improving rather than peaking.",
+    "The only one of the five where the trend is clearly improving rather than peaking \u2014 though its financial score of 55 still ranks fourth of the five.",
   ],
   bad=[
     "The stock is up 343% in 52 weeks ($18.97 to $91.68) and trades at ~55x earnings and ~7.2x sales \u2014 on revenue that is still 33% BELOW its 2021 peak.",
@@ -234,10 +235,11 @@ def page1(pdf, t, d):
 
     # hero numbers
     gap = (d["price"] - d["fv_mid"]) / d["fv_mid"] * 100
+    gaplbl = (f"+{gap:,.0f}% over" if gap >= 0 else f"{gap:,.0f}% under")
     heroes = [("Price (%s)" % d["pdate"].split(" (")[0], f"${d['price']:,.2f}", INK),
               ("Fall from high", f"−{DRAWDOWNS[t]:.0f}%", INK),
               ("Firm's fair value", f"${d['fv_lo']}–{d['fv_hi']}", BLUE),
-              ("Price vs fair value", f"+{gap:,.0f}% over", RED)]
+              ("Price vs fair value", gaplbl, RED if gap >= 0 else BLUE)]
     for i, (lbl, val, col) in enumerate(heroes):
         x = 0.055 + i*0.2225
         bg.add_patch(Rectangle((x, 0.755), 0.205, 0.075, facecolor="#f4f3f0", edgecolor="none"))
@@ -323,21 +325,46 @@ def page2(pdf, t, d):
     ax.text(0.945, 0.9775, "Page 2 of 2", fontsize=8.5, color=INK3, va="center", ha="right")
 
     y = 0.925
-    def section(title, items, bullet_col, y):
+    def section(title, items, bullet_col, y, maxn=None):
         ax.add_patch(Rectangle((0.055, y-0.004), 0.006, 0.018, color=bullet_col))
         ax.text(0.075, y+0.005, title, fontsize=10.5, weight="bold", color=INK, va="center")
         y -= 0.026
-        for it in items:
+        shown = items if maxn is None else items[:maxn]
+        for it in shown:
             lines = textwrap.wrap(it, 100)
             ax.text(0.072, y, "•", fontsize=9, color=bullet_col, va="top", weight="bold")
             for j, line in enumerate(lines):
                 ax.text(0.088, y - j*0.0158, line, fontsize=8.6, color=INK2, va="top")
             y -= len(lines)*0.0158 + 0.008
+        if len(shown) < len(items):
+            ax.text(0.088, y, f"+ {len(items)-len(shown)} further point(s) — see the full report in reports/",
+                    fontsize=7.5, color=INK3, va="top", style="italic")
+            y -= 0.016
         return y - 0.016
 
-    y = section("THE CASE FOR — what the agents found genuinely good", d["good"], BLUE, y)
-    y = section("THE CASE AGAINST — why the firm is not buying", d["bad"], RED, y)
-    y = section("WHAT WOULD CHANGE THE ANSWER — the tripwires to watch", d["watch"], INK3, y)
+    # Reserve space for the two fixed boxes + the compliance footer, then fit the
+    # bullet sections into what remains. Nothing may ever print over the disclaimers.
+    _al = textwrap.wrap(d["audit"], 100)
+    _ah = 0.030 + len(_al)*0.0148
+    FOOT_FLOOR = 0.082
+    reserved  = _ah + 0.062 + 0.030
+    budget    = y - (FOOT_FLOOR + reserved)
+
+    def _cost(items, n):
+        c = 0.026
+        for it in items[:n]:
+            c += len(textwrap.wrap(it, 100))*0.0158 + 0.008
+        return c + 0.016
+    lim = {"good": len(d["good"]), "bad": len(d["bad"]), "watch": len(d["watch"])}
+    while _cost(d["good"],lim["good"]) + _cost(d["bad"],lim["bad"]) + _cost(d["watch"],lim["watch"]) > budget:
+        k = max(lim, key=lambda k: lim[k])
+        if lim[k] <= 3: break
+        lim[k] -= 1
+
+    y = section("THE CASE FOR — what the agents found genuinely good", d["good"], BLUE, y, lim["good"])
+    y = section("THE CASE AGAINST — why the firm is not buying", d["bad"], RED, y, lim["bad"])
+    y = section("WHAT WOULD CHANGE THE ANSWER — the tripwires to watch", d["watch"], INK3, y, lim["watch"])
+    y = max(y, FOOT_FLOOR + reserved)
 
     # risk box
     ax.add_patch(FancyBboxPatch((0.055, y-0.062), 0.89, 0.058,
@@ -351,12 +378,12 @@ def page2(pdf, t, d):
     y -= 0.082
 
     # audit box
-    ax.add_patch(FancyBboxPatch((0.055, y-0.088), 0.89, 0.084,
+    ax.add_patch(FancyBboxPatch((0.055, y-_ah-0.004), 0.89, _ah,
                  boxstyle="round,pad=0.006", facecolor="#f4f3f0", edgecolor=GRID))
     ax.text(0.072, y-0.014, "QUALITY CONTROL — what the AI Auditor caught (Ai 管理層)",
             fontsize=9, weight="bold", color=INK, va="top")
     yy = y - 0.031
-    for line in textwrap.wrap(d["audit"], 100):
+    for line in _al:
         ax.text(0.072, yy, line, fontsize=8.4, color=INK2, va="top"); yy -= 0.0148
 
     ax.text(0.5, 0.055,
@@ -367,10 +394,18 @@ def page2(pdf, t, d):
             fontsize=7.8, color=INK3, ha="center", weight="bold")
     pdf.savefig(fig); plt.close(fig)
 
+for _t,_d in STOCKS.items():
+    DRAWDOWNS[_t] = (1 - _d["price"]/_d["high"]) * 100
+
 out = "/home/user/horse-monitor/reports/owner-summaries"
 os.makedirs(out, exist_ok=True)
-for t, d in STOCKS.items():
-    path = f"{out}/{t}-summary-2026-07.pdf"
-    with PdfPages(path) as pdf:
-        page1(pdf, t, d); page2(pdf, t, d)
-    print("wrote", path)
+def build_all():
+    os.makedirs(out, exist_ok=True)
+    for t, d in STOCKS.items():
+        path = f"{out}/{t}-summary-2026-07.pdf"
+        with PdfPages(path) as pdf:
+            page1(pdf, t, d); page2(pdf, t, d)
+        print("wrote", path)
+
+if __name__ == "__main__":
+    build_all()

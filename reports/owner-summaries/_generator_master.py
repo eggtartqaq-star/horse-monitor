@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.patches import Rectangle, FancyBboxPatch
 from matplotlib import font_manager
-import textwrap
+import textwrap, sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _generator import STOCKS as DET
 
 for _f in ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",):
     try: font_manager.fontManager.addfont(_f)
@@ -24,7 +26,7 @@ plt.rcParams.update({
 # ticker: name, price, fv_lo, fv_hi, fv_mid, drawdown, verdict, vcolor,
 #         quality, price_attr, risk, one_liner, keep_watching
 S = [
- ("KLAC","KLA Corporation",212.75,95,160,95,30.0,"VETO ON PRICE — STRONGEST CANDIDATE",AMBER,88,38,31,
+ ("KLAC","KLA Corporation",212.75,95,160,95,30.8,"VETO ON PRICE — STRONGEST CANDIDATE",AMBER,88,38,31,
   "The best business we found: a genuine wide-moat monopoly in chip inspection, ~43% returns on capital even at the bottom of its cycle. Only the price is wrong.",
   "Watch $130, then $95-105."),
  ("MU","Micron Technology",806.46,250,400,320,33.5,"WATCH — DO NOT BUY HERE",AMBER,70,20,38,
@@ -36,7 +38,7 @@ S = [
  ("INTC","Intel Corporation",91.68,22,55,33,35.6,"VETO ON PRICE — BUSINESS IMPROVING",AMBER,45,14,28,
   "The only one of the five where the business is genuinely getting better — best quarter in 15 years, 18A shipping — but the stock is up 343% and sits above even our own bull case.",
   "Hard price gate: nothing at or above $45."),
- ("BE","Bloom Energy",214.96,35,59,42,37.5,"VETOED — WEAKEST FILE",RED,35,10,18,
+ ("BE","Bloom Energy",214.96,35,59,42,38.8,"VETOED — WEAKEST FILE",RED,35,10,18,
   "A real power bottleneck and explosive growth, wrapped around a company that has never earned its cost of capital in 25 years, with ~43% of revenue flowing through a vehicle it co-owns.",
   "Watch related-party revenue falling as a share of total."),
 ]
@@ -105,7 +107,7 @@ def page_overview(pdf):
     ax.set_axisbelow(True); ax.grid(color=GRID,lw=0.7)
     for s in ("top","right"): ax.spines[s].set_visible(False)
     fig.text(0.055,0.607,"QUALITY vs PRICE",fontsize=10,weight="bold",color=INK)
-    fig.text(0.055,0.593,"The firm's rebuilt\nscorecard, after the\nAI Auditor found the\nold one blended these\ntwo things together.\n\nEvery name sits in\nthe SAME quadrant:\ndecent-to-excellent\nbusinesses, all too\nexpensive. None is in\nthe buy corner.",
+    fig.text(0.055,0.593,"The firm's rebuilt\nscorecard, after the\nAI Auditor found the\nold one blended these\ntwo things together.\n\nAll five sit on the\nLEFT: every one is\nexpensive on our\nnumbers. None is in\nthe buy corner.\nQuality varies widely\n\u2014 KLAC top, BE bottom.\n\nScores are the CEO's\ncomposites of the\ndepartment scores;\nsee the .md note.",
              fontsize=8,color=INK2,va="top",linespacing=1.55)
 
     # ── chart 2: how many times fair value ──
@@ -138,7 +140,7 @@ def page_overview(pdf):
     fig.text(0.055,0.167,"ALREADY FALLEN",fontsize=10,weight="bold",color=INK)
     fig.text(0.055,0.153,"All five dropped hard in the\nJuly chip selloff — and all\nfive are still expensive on\nour numbers.",
              fontsize=8,color=INK2,va="top",linespacing=1.55)
-    foot(fig,1,7); pdf.savefig(fig); plt.close(fig)
+    foot(fig,1,len(S)+2); pdf.savefig(fig); plt.close(fig)
 
 # ───────────────────────── PER-STOCK PAGES ────────────────────────────────
 def page_stock(pdf,rec,idx,total):
@@ -199,23 +201,29 @@ def page_stock(pdf,rec,idx,total):
              fontsize=7.9,color=INK2,va="top",linespacing=1.5)
 
     # detail from the per-stock PDFs
-    from make_pdfs import STOCKS as DET
+    from _generator import STOCKS as DET
     d=DET[t]
     y=0.480
-    def sect(title,items,col,y,maxn=5):
+    def sect(title,items,col,y,maxn=4):
         bg.add_patch(Rectangle((0.055,y-0.004),0.006,0.017,color=col))
         bg.text(0.075,y+0.004,title,fontsize=10,weight="bold",color=INK,va="center")
         y-=0.024
-        for it in items[:maxn]:
+        shown=items[:maxn]
+        for it in shown:
             lines=textwrap.wrap(it,101)
             bg.text(0.072,y,"•",fontsize=9,color=col,va="top",weight="bold")
             for j,l in enumerate(lines):
                 bg.text(0.088,y-j*0.0152,l,fontsize=8.3,color=INK2,va="top")
             y-=len(lines)*0.0152+0.0072
+        if len(items)>len(shown):
+            bg.text(0.088,y,f"+ {len(items)-len(shown)} further point(s) in the {t} single-stock PDF",
+                    fontsize=7.6,color=INK3,va="top",style="italic")
+            y-=0.016
         return y-0.014
     y=sect("WHAT'S GOOD",d["good"],BLUE,y)
     y=sect("WHAT'S WRONG",d["bad"],RED,y)
 
+    y = max(y, 0.128)          # hard floor: never encroach on the compliance footer
     bg.add_patch(FancyBboxPatch((0.055,y-0.048),0.89,0.044,boxstyle="round,pad=0.006",
                  facecolor=PANEL,edgecolor=GRID))
     bg.text(0.072,y-0.014,"WHAT WOULD MAKE US LOOK AGAIN",fontsize=8.8,weight="bold",color=INK,va="top")
@@ -280,6 +288,13 @@ def page_lessons(pdf,total):
             bg.text(0.082,yy,line,fontsize=8.2,color=INK2,va="top"); yy-=0.0138
         yy-=0.006
     foot(fig,total,total); pdf.savefig(fig); plt.close(fig)
+
+# consistency gate: master data must match the single-stock source of truth
+for _r in S:
+    _t,_px = _r[0], _r[2]
+    assert abs(DET[_t]["price"]-_px) < 0.01, f"price mismatch for {_t}: {DET[_t]['price']} vs {_px}"
+    _dd = (1-DET[_t]["price"]/DET[_t]["high"])*100
+    assert abs(_dd-_r[6]) < 0.15, f"drawdown mismatch for {_t}: {_dd:.2f} vs {_r[6]}"
 
 out="/home/user/horse-monitor/reports/owner-summaries/ALL-STOCKS-master-review-2026-07.pdf"
 total=len(S)+2

@@ -164,7 +164,7 @@ At the **Q2'26 run-rate** (OCF $7.0B/qtr) there is no gap — H1'26 OCF exceeded
 
 **The methods agree, which is unusual and worth flagging.** SOTP, EV/sales and a normalised P/E all cluster in the **$16–33** range. The only method that gets near half the current price is capitalising the shortage quarter at a growth multiple.
 
-**Current multiples for the record:** EV ≈ $481B (or $511B fully diluted). **7.5x** Q2-annualised sales, **8.7x** normalised sales, **~55x** the $1.68 non-GAAP run-rate — and ~105x forward GAAP-adjusted earnings on 菲比斯's read. For a business at 3.8% normalised ROIC.
+**Current multiples for the record:** EV ≈ $481B (or $511B fully diluted). **7.5x** Q2-annualised sales, **8.7x** normalised sales, **~55x** the $1.68 non-GAAP run-rate — and ~53–55x **[corrected 2026-07-28, audit flag C-1: the ~~53–55x [corr. C-1] figure was uncited and implies ~$4.4B of forward earnings against this package's own ~$8.8B]** forward GAAP-adjusted earnings on 菲比斯's read. For a business at 3.8% normalised ROIC.
 
 ### Reverse-engineering the price — the most useful number in this report
 
@@ -279,7 +279,7 @@ Assembled, the bull argument is: *this is not a cigar butt being re-rated, it is
 |---|---|---|---|
 | Absolute value vs price | 40% | 5 | Price is ~2.8x central FV. MoS −178%. Every method cross-checks to $16–33. |
 | Margin of safety vs required | 20% | 0 | 50% required; −178% delivered. Binary fail. |
-| Multiple reasonableness | 15% | 10 | 55x run-rate non-GAAP EPS, 7.5x sales, ~105x forward, on 3.8% normalised ROIC. |
+| Multiple reasonableness | 15% | 10 | 55x run-rate non-GAAP EPS, 7.5x sales, ~~53–55x [corr. C-1] forward, on 3.8% normalised ROIC. |
 | Asset backing / downside protection | 15% | 35 | Genuine: $29.7B liquidity, IG debt to 2066, sovereign holder, ~$110B PP&E. The equity is not going to zero — but asset backing is ~$0.4–4/share against a $91.68 price. |
 | Optionality not in the price | 10% | 30 | 14A is a real, near-dated, binary option — but at $39B EV it is ~8% of market cap, and the *price already embeds far more than the option is worth*. |
 | **Weighted** | | **~12** | |
