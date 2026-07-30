@@ -29,6 +29,12 @@ research:
           # STRONGEST candidate — wide moat, A/91 financials; re-entry alerts ~$130 / ~$95-105
   - BE    # reduced-core pipeline 2026-07-19; reports/*/2026-07-19-be*; CRO VETO 18/100;
           # trigger: related-party revenue falling as a share of total in the FY2026 10-K
+  - 0100.HK  # MiniMax Group Inc (HKEX 100). PIPELINE INCOMPLETE 2026-07-30 - moat, financials
+             # and news filed; VALUATION, RISK and AUDIT NOT RUN (session limit). No verdict.
+             # Moat NONE 18/100; financials D+ 48/100; HK$212.80, -84% from the Mar-26 high.
+             # Do NOT treat as analysed. Open items: HKEXnews unreachable (403) so no primary
+             # filing read; market cap disputed ~20%; VIE structure unverified.
+             # Dated catalysts: Stock Connect decision ~6 Aug 2026; 1H2026 interims by 31 Aug
   - INTC  # reduced-core pipeline 2026-07-28; reports/*/2026-07-28-intc*; CRO VETO 28/100;
           # BINDING price gate: no initiation at or above $45. Triggers: two committed 14A
           # customers by mid-2027, and DCAI margins >=35% sustained after the CPU shortage
