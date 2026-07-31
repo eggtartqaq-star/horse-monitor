@@ -461,9 +461,70 @@ def diagnostics(data, spy):
     print(f"   ★ 如果訊號集中喺幾隻,個池就唔係38隻,係幾隻。")
 
 
+def compare(data, spy, limits=LIMITS):
+    """
+    同一批數據、同一批訊號,唯一分別係券商成本。
+    ★ 呢個係整套 V6.5 最重要嘅一張表。
+      「free」嗰行就係 V6.4 一直隱含假設緊嘅世界。
+      其他行係你真係要住喺入面嘅世界。
+    """
+    rows = []
+    for key in ("free", "ibkr_tiered", "ibkr_fixed", "hk_retail"):
+        trades, eq, rej, conc, cost = simulate(data, spy, key, limits)
+        if trades.empty or eq.empty:
+            rows.append({"broker": key, "n": 0}); continue
+        e = eq.set_index("date")["equity"]
+        peak = e.cummax()
+        rows.append({
+            "broker": key,
+            "name": cost.name,
+            "n": len(trades),
+            "win": (trades["net_pct"] > 0).mean() * 100,
+            "gross_ev": trades["gross_pct"].mean(),
+            "net_ev": trades["net_pct"].mean(),
+            "cost_usd": trades["cost_usd"].sum(),
+            "end_equity": e.iloc[-1],
+            "total_ret": (e.iloc[-1] / limits.account_usd - 1) * 100,
+            "max_dd": ((e - peak) / peak * 100).min(),
+        })
+
+    print("=" * 78)
+    print("券商成本對比 —— 同一批訊號,唯一分別係手續費")
+    print("=" * 78)
+    print(f"\n{'券商':<14}{'筆數':>6}{'勝率':>8}{'毛EV':>9}{'淨EV':>9}"
+          f"{'總成本':>10}{'期末':>11}{'總回報':>9}{'最大回撤':>10}")
+    print("-" * 78)
+    base = None
+    for r in rows:
+        if not r.get("n"):
+            print(f"{r['broker']:<14}{'冇交易':>6}"); continue
+        if base is None:
+            base = r["net_ev"]
+        print(f"{r['broker']:<14}{r['n']:>6}{r['win']:>7.1f}%"
+              f"{r['gross_ev']:>+8.3f}%{r['net_ev']:>+8.3f}%"
+              f"{r['cost_usd']:>9.0f}${r['end_equity']:>10.0f}"
+              f"{r['total_ret']:>+8.1f}%{r['max_dd']:>9.1f}%")
+    print("-" * 78)
+
+    valid = [r for r in rows if r.get("n")]
+    if len(valid) >= 2:
+        free = next((r for r in valid if r["broker"] == "free"), valid[0])
+        print("\n每個券商食咗你幾多優勢(相對「免費」):")
+        for r in valid:
+            if r["broker"] == "free":
+                continue
+            lost = free["net_ev"] - r["net_ev"]
+            pct = lost / abs(free["net_ev"]) * 100 if abs(free["net_ev"]) > 1e-9 else float("inf")
+            verdict = "★ 優勢全部被食晒" if r["net_ev"] <= 0 < free["net_ev"] else ""
+            print(f"  {r['broker']:<14} −{lost:.3f}pp  (= 免費EV嘅 {pct:.0f}%)  {verdict}")
+        print("\n★ 「free」嗰行 = V6.4 一直報畀你聽嘅數字。")
+        print("  其餘每一行 = 你真係會攞到嘅數字。兩者之差就係之前冇人計過嘅錢。")
+    return pd.DataFrame(rows)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=["diagnostics", "sim"], default="diagnostics")
+    ap.add_argument("--mode", choices=["diagnostics", "sim", "compare"], default="diagnostics")
     ap.add_argument("--broker", choices=list(BROKERS), default="ibkr_fixed")
     ap.add_argument("--start", default="2019-01-01")
     ap.add_argument("--end", default="2026-07-01")
@@ -475,11 +536,13 @@ def main():
         print("冇數據。"); sys.exit(1)
     if a.mode == "diagnostics":
         diagnostics(data, spy)
-        print("\n★ 睇完先決定使唔使跑 --mode sim。")
+        print("\n★ 睇完先決定使唔使跑 --mode sim / --mode compare。")
+    elif a.mode == "compare":
+        compare(data, spy).to_csv("v65_broker_compare.csv", index=False, encoding="utf-8-sig")
+        print("\n已儲存: v65_broker_compare.csv")
     else:
         report(*simulate(data, spy, a.broker))
-        print("\n★ 對比:--broker free 就係 V6.4 隱含嘅假設。")
-        print("  兩個數之間嘅差距,就係你之前唔知自己喺度畀緊嘅錢。")
+        print("\n★ 想一次過睇曬所有券商:  python portfolio_sim.py --mode compare")
 
 
 if __name__ == "__main__":
