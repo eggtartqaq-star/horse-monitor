@@ -197,18 +197,79 @@
   <div class="meta">
     <span><b>Reviewed</b> 2026-07-30</span>
     <span><b>Scope</b> 5 files · 62.3 KB source</span>
-    <span><b>Reviewer</b> CEO, preliminary</span>
-    <span><b>Departments</b> Quant + Risk in progress</span>
+    <span><b>Reviewers</b> CEO · Tom (Quant) · John (CRO)</span>
+    <span><b>Status</b> all three complete</span>
   </div>
 </header>
 
 <div class="tiles">
-  <div class="tile is-crit"><div class="n">2</div><div class="l">Critical</div></div>
-  <div class="tile is-high"><div class="n">4</div><div class="l">High</div></div>
-  <div class="tile"><div class="n">4</div><div class="l">Medium / Low</div></div>
+  <div class="tile is-high"><div class="n verdict">UNPROVEN</div><div class="l">Quant verdict · Tom</div></div>
+  <div class="tile is-crit"><div class="n verdict">VETOED</div><div class="l">Risk verdict · John</div></div>
+  <div class="tile is-crit"><div class="n">22<span style="font-size:15px;color:var(--ink-3)">/100</span></div><div class="l">Risk score</div></div>
+  <div class="tile is-crit"><div class="n">0<span style="font-size:15px;color:var(--ink-3)"> of 6</span></div><div class="l">Integrity checks passed</div></div>
   <div class="tile is-ok"><div class="n">6</div><div class="l">Done right</div></div>
-  <div class="tile"><div class="n verdict">Edge <em>unproven</em>,<br>not refuted</div><div class="l">Standing verdict</div></div>
 </div>
+
+<section style="margin-top:44px">
+  <div class="sec-head"><h2>The calculation that ends the argument</h2><span class="tag">Tom · finding C-2</span></div>
+  <p class="lede">Everything else in this document is refinement. This is the part that decides whether the system can trade at all — and it needs no market data to compute.</p>
+  <div class="mapwrap" style="padding:26px 24px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:26px">
+      <div>
+        <h4 style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:400">Expected gross profit per trade</h4>
+        <div class="mono" style="font-size:32px;color:var(--ok);font-variant-numeric:tabular-nums">US$1.70</div>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--ink-2)">Engine 2 at the claimed +1.325% EV, on the US$128 position that HK$10,000 at 1% risk actually funds. Engine 1: US$2.01.</p>
+      </div>
+      <div>
+        <h4 style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:400">Round-trip commission</h4>
+        <div class="mono" style="font-size:32px;color:var(--crit);font-variant-numeric:tabular-nums">US$0.70–4.00</div>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--ink-2)">Three realistic broker scenarios. In two of the three, the ticket costs more than the trade is expected to earn.</p>
+      </div>
+      <div>
+        <h4 style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:400">Net EV after friction</h4>
+        <div class="mono" style="font-size:32px;color:var(--crit);font-variant-numeric:tabular-nums">−0.49%</div>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--ink-2)">Mid-case broker. Best case +0.53% (60% of the edge gone). Typical HK retail: −2.06%.</p>
+      </div>
+    </div>
+    <p style="margin:22px 0 0;padding-top:18px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink)"><strong>At this account size the strategy is a commission-generation machine unless executed at the cheapest broker tier — and even then it loses 60% of its edge.</strong> Broker schedules are illustrative and must be replaced with your actual rates; the conclusion is unlikely to move.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Escalated to the Owner</h2><span class="tag">John · immediate</span></div>
+  <p class="lede">Two items the CRO raised to me directly, outside the ranked findings.</p>
+  <div class="find" style="border-top:2px solid var(--crit)">
+    <div class="find-top"><span class="fid">ESC-1</span><span class="chip crit">Realised breach</span></div>
+    <h3>A leverage event has already happened — 18 July, BAC, estimated ~9× the account balance</h3>
+    <div class="find-body">
+      <div>
+        <h4>What happened</h4>
+        <p>The comment in your own backtest records two sizing breaches (13 and 18 July). John traced the 18 July event and puts the position at <strong>at least 2.3×, plausibly ~9×</strong> the account balance — a realised breach of <code>leverage: none</code>.</p>
+        <p>He also notes the 13 July self-reproach may be partly a <strong>currency bug in the bot</strong>, not indiscipline. Fix the code before drawing conclusions about yourself.</p>
+      </div>
+      <div>
+        <h4>The mechanism, not the promise</h4>
+        <p>His governing principle: <em>any control that routes through your own hands at the moment of the trade is willpower wearing a different hat.</em> Both breaches happened <strong>after the bot had already told you no.</strong></p>
+        <p>The fix is external and prior: <strong>a cash-only account with margin disabled.</strong> Then 300 shares of BAC is not a decision you decline — it is an order the broker rejects. One phone call, no code, zero cost.</p>
+      </div>
+    </div>
+  </div>
+  <div class="find">
+    <div class="find-top"><span class="fid">ESC-2</span><span class="chip high">Governance</span></div>
+    <h3>No written risk limits exist for your personal account</h3>
+    <div class="find-body">
+      <div>
+        <h4>The gap</h4>
+        <p><code>config/risk-limits.yaml</code> governs the firm, not your own trading. Nothing currently constrains the personal account in writing.</p>
+      </div>
+      <div>
+        <h4>His proposed starting values — for you to set deliberately</h4>
+        <p>Max 5 concurrent positions · 5% total heat · 10% single-position notional · 40% correlated-cluster cap · 10% cash floor · 20% drawdown budget · leverage none.</p>
+        <p><em>"I will not have limits arrive by accident of whichever file happened to run."</em></p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section>
   <div class="sec-head"><h2>What the system does</h2><span class="tag">reconstructed from source</span></div>
@@ -252,8 +313,8 @@ flowchart TD
 </section>
 
 <section>
-  <div class="sec-head"><h2>Findings</h2><span class="tag">ranked by severity · CEO preliminary</span></div>
-  <p class="lede">Ten defects, ordered by what they cost. The two criticals share a theme: <strong>the strategy that was measured is not the strategy that is being traded.</strong></p>
+  <div class="sec-head"><h2>Findings</h2><span class="tag">CEO first pass · all ten confirmed by Quant and Risk</span></div>
+  <p class="lede">Ten defects, ordered by what they cost. The two criticals share a theme: <strong>the strategy that was measured is not the strategy that is being traded.</strong> Both departments confirmed every one of these from the code and then found six more — those follow further down.</p>
 
   <div class="find">
     <div class="find-top"><span class="fid">F-01</span><span class="chip crit">Critical</span></div>
@@ -265,6 +326,7 @@ flowchart TD
         <p>The file scrapes the <em>current</em> S&amp;P 500 constituent list from Wikipedia, then backtests 2019–2026. Point-in-time monthly re-ranking removes look-ahead from the <strong>ranking</strong>. It does nothing about the <strong>universe</strong>.</p>
         <p>Every company deleted from the index between 2019 and 2026 — the bankruptcies, the collapses, the take-unders — is simply absent from the test. A momentum strategy is precisely the strategy most damaged by this: it buys strength, and the names that were strong and then died are the ones missing.</p>
         <p>The <code>FALLBACK</code> list is worse. It is hand-written and contains NVDA, PLTR, COIN, MSTR — selected in 2026, with 2019–2026 hindsight.</p>
+        <p><strong>Tom found the file contradicts itself.</strong> The docstring honestly discloses 「呢層仍有輕微生存者偏差」 — <em>slight</em> survivorship bias. But the line printed to your console reads 「★ 鐵律:呢個係point-in-time,冇生存者偏差」 — <em>iron rule: this is point-in-time, there is no survivorship bias.</em> The claim you read on screen is false, the fine print says so, and the bias is not slight.</p>
       </div>
       <div>
         <h4>The fix</h4>
@@ -464,66 +526,177 @@ flowchart TD
 
 <section>
   <div class="sec-head"><h2>Upgrade queue</h2><span class="tag">ranked — do them in this order</span></div>
-  <p class="lede">Ordered by what unblocks the most. Items 1 and 2 are not improvements, they are <strong>corrections</strong> — nothing measured downstream means anything until they are done.</p>
+  <p class="lede"><strong>I had this order wrong and Tom corrected it.</strong> I put the universe rebuild first. He argued the portfolio simulator goes first, and he is right: it is the only upgrade that can <em>change the sign of the answer</em>, it needs no new data and no subscription, and it is about a day of work. There is no point buying a point-in-time dataset to more precisely measure a strategy that may cost more to trade than it earns. Establish that a net-of-cost, capital-constrained, portfolio-level edge exists at all — <em>then</em> spend money on data.</p>
   <ol class="queue">
     <li>
       <div>
-        <h3>Rebuild the universe on point-in-time constituents</h3>
-        <p>Everything the momentum backtest reports is conditional on this. Until the deleted names are back in the sample, the result is an upper bound on a strategy that buys strength — the exact bias momentum is most vulnerable to.</p>
-        <p class="refs">fixes F-01 · blocks any sizing decision from that test</p>
+        <h3>Thirty free minutes of diagnostics, before writing any code</h3>
+        <p>Add <code>ticker</code> and <code>entry_date</code> to the trade records, then print EV by ticker, <code>spy_bull.mean()</code>, and a concurrency histogram. <strong>If EV by ticker shows the edge living in four names, stop — survivorship is the whole story and nothing else needs building.</strong></p>
+        <p class="refs">Tom · costs nothing, may save the rest</p>
       </div>
     </li>
     <li>
       <div>
-        <h3>Reconcile Pine against Python and write a parameter table</h3>
-        <p>Right now you are trading a chart whose target rule and stop-width cap differ from the engine that was validated. One table, both implementations diffed against it, checked whenever either changes.</p>
-        <p class="refs">fixes F-02, F-03, F-07</p>
+        <h3>One event-driven portfolio simulator, replacing both scripts</h3>
+        <p>A daily loop over a real cash ledger starting at US$1,282. Integer shares via the live sizing function. Explicit <code>MAX_CONCURRENT</code> (start at 5) and a hard heat cap. A full cost model on every fill, plus FX and pessimistic stop fills. Entry at the <em>next</em> bar's open. Output the equity curve, max drawdown, drawdown duration, worst month and the tail — <em>then</em> Sharpe.</p>
+        <p class="refs">Tom U-1 · fixes F-05, F-06, D-02 · the only number Risk can clear against</p>
       </div>
     </li>
     <li>
       <div>
-        <h3>Portfolio simulation with costs, a position cap, and an equity curve</h3>
-        <p>Turn per-trade EV into something you can actually size against: maximum drawdown, time to recovery, worst month. Add a non-zero cost on both legs at the same time — it is the same rewrite.</p>
-        <p class="refs">fixes F-05, F-06 · produces the first number Risk can use</p>
+        <h3>Point-in-time universe with delisted names</h3>
+        <p>Norgate or Sharadar, roughly US$50–150/month. This is the only real fix for the survivorship problem and it cannot be done inside yfinance. Second because it costs money — and step 2 may make it moot.</p>
+        <p class="refs">Tom U-2 · fixes F-01</p>
       </div>
     </li>
     <li>
       <div>
-        <h3>Replace the single split with walk-forward validation</h3>
-        <p>Re-fit on a rolling past window, test forward, repeat. Report the distribution of results rather than one pass/fail. With ~20 tuned thresholds, a single OOS window is not enough evidence for the claim being made.</p>
-        <p class="refs">fixes F-10 · supersedes the current graduation test</p>
+        <h3>Walk-forward with purging and embargo</h3>
+        <p>Fit on the past, test forward, roll. <strong>Purge</strong> trades whose holding window straddles a boundary and <strong>embargo</strong> <code>max_hold</code> bars after each test window — that fixes the boundary-truncation problem properly rather than patching it. Report the distribution across folds, never a single number.</p>
+        <p class="refs">Tom U-3 · fixes F-04, F-10 · supersedes the current graduation test</p>
       </div>
     </li>
     <li>
       <div>
-        <h3>Label the regime coverage honestly</h3>
-        <p>The SPY&gt;MA200 filter means the system only ever trades bull markets. Four years of data containing one dominant regime is far less independent evidence than four years sounds like. Report trades-per-regime alongside every EV.</p>
-        <p class="refs">context for F-04, F-08 · changes how much any result should move you</p>
+        <h3>Count your trials honestly, then deflate</h3>
+        <p>Create <code>trials.csv</code> and retro-populate it: V1 through V6.4, every stop arm, every threshold you moved. Then compute the Deflated Sharpe with the real trial count. Tom's prior is that N ≥ 20 and the result will not clear zero — <em>and that finding would be worth more than any further optimisation.</em></p>
+        <p class="refs">Tom U-4 · quantifies F-10</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3>One shared rules module, and a Pine golden-file test</h3>
+        <p>Extract the ruleset into a single module imported by the backtest, the scanner and the bot. Export historical bars with expected tier / stop / target / R and assert Pine reproduces them. This is the only way F-02, F-03 and F-07 stay closed instead of drifting apart again.</p>
+        <p class="refs">Tom U-6 · fixes F-02, F-03, F-07, D-01, D-05</p>
       </div>
     </li>
   </ol>
 </section>
 
 <section>
-  <div class="sec-head"><h2>Department review in progress</h2><span class="tag">dispatched 2026-07-30</span></div>
-  <p class="lede">Two departments are working the same source independently. Their findings will supersede this preliminary review where they disagree with it — that is the point of having them.</p>
-  <div class="pending">
-    <div>
-      <h3>Backtest methodology</h3>
-      <p class="who">Tom · Dept 3, Quant Research</p>
-      <p>Confirming or refuting each finding above from the code, quantifying the survivorship and truncation biases, and ranking methodology upgrades — walk-forward, purged cross-validation, deflated Sharpe, minimum track-record length.</p>
+  <div class="sec-head"><h2>What the departments found that I missed</h2><span class="tag">Tom · Quant &nbsp;/&nbsp; John · Risk</span></div>
+  <p class="lede">Both reviewed the same source independently. They confirmed my ten findings and went further — <strong>three of the items below are more serious than anything in my preliminary list.</strong></p>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-01</span><span class="chip crit">Critical</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · H-1</span></div>
+    <h3>The chart you trade from implements only Engine 1 — and not Engine 2 at all</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>I found that Pine and Python disagree on target selection. John found the larger version: <strong>the Pine indicator implements the mean-reversion engine only.</strong> There is no trend engine on the chart.</p>
+        <p>So the momentum-pool work — the direction you correctly identified as aligned with Engine 2 — has no representation on the screen you actually look at.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Either implement Engine 2 in Pine, or rename the indicator to state plainly that it is Engine 1, observation only. It is currently titled as though it covers both.</p>
+      </div>
     </div>
-    <div>
-      <h3>Risk architecture</h3>
-      <p class="who">John · Dept 6, Chief Risk Officer</p>
-      <p>Concurrent-position heat, correlation inside a 38-name semiconductor-heavy pool, and whether a HK$10,000 account can mathematically operate a 1% rule on US$200 stocks. Holds veto power.</p>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-02</span><span class="chip crit">Critical</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">Tom · integrity checklist</span></div>
+    <h3>No drawdown estimate exists anywhere in the system</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>Neither script builds an equity curve. Neither computes a drawdown, a Sharpe, a Sortino, a monthly return series, or an exposure profile. A grep for those terms returns <strong>two Cantonese comments reminding the reader to look at drawdown, and zero lines of code that compute one.</strong></p>
+        <p>The closest thing to a risk statistic in the whole system is 最差單筆 — worst single trade — which is not a portfolio risk measure and is not the number that makes people stop trading.</p>
+      </div>
+      <div>
+        <h4>Why it matters</h4>
+        <p>In Tom's words: <em>you are trading real money on a system for which no drawdown estimate exists.</em> That is a structural gap, not a bug.</p>
+        <p>It is also why John cannot clear the system: there is no number for him to size against.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-03</span><span class="chip crit">Critical</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · C-1</span></div>
+    <h3>The 1% rule has no notional cap, so it produces uncapped concentration</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>A single share of any stock above <strong>US$128.21</strong> is already more than 10% of the account. Above that price the system says "buy 1" while any sane concentration limit says "buy 0" — <strong>and the system has no idea the conflict exists.</strong></p>
+        <p>Your 買唔起 guardrail fires at about US$183 on a 7% stop. The concentration limit should have fired at US$128.21. The guardrail is roughly <strong>43% too permissive in the dimension that governs gap risk.</strong></p>
+      </div>
+      <div>
+        <h4>On whether the account is too small</h4>
+        <p>John's answer is more useful than a yes or no: <em>the account is not too small to be safe. It is too small to be efficient, and far too small to replicate what was validated.</em></p>
+        <p>The design assumes many small concurrent positions averaging toward the EV. The capital supports 3–7. <strong>You get the strategy's volatility without the strategy's averaging</strong> — and at 30–60 trades a year, roughly two years to reach 100 trades.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-04</span><span class="chip high">High</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · M-2</span></div>
+    <h3>Integer rounding silently discards up to 45% of the risk budget</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>Whole-share sizing is correct as a safety behaviour (I listed it as a strength, and it stays one). But at this account size the truncation is severe: up to <strong>45% of the intended risk is thrown away</strong>, so realised deployment — and therefore realised return — runs materially below the modelled 1%.</p>
+      </div>
+      <div>
+        <h4>Why it compounds C-2</h4>
+        <p>Smaller realised positions mean the fixed ticket cost is spread over even less notional. The rounding tax and the commission problem are the same problem seen twice.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-05</span><span class="chip high">High</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · C-4, H-6, H-7</span></div>
+    <h3>Three more structural gaps</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p><strong>No position ledger.</strong> A trailing-stop strategy with no position tracking — nothing knows what you hold, so nothing can compute heat, exposure or a stale trail.</p>
+        <p><strong>The scanner's core logic is in a file that is not in the repo.</strong> <code>daily_strong_signals.py</code> imports from <code>dual_engine_v6_4.py</code>, which was not submitted, and John found a confirmed signature divergence against the bot.</p>
+      </div>
+      <div>
+        <h4>And one that may exonerate you</h4>
+        <p>The bot renders a complete, actionable trade plan for instruments it is <em>simultaneously prohibiting</em> — with a <strong>currency-corrupted share count</strong>.</p>
+        <p>Part of what you recorded as a 13 July discipline failure may be that bug. Fix the code first.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-06</span><span class="chip med">Medium</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · H-5</span></div>
+    <h3>The bear filter is opportunity control, not risk control</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>SPY&nbsp;&lt;&nbsp;MA200 blocks new entries — but existing positions ride into the bear on a 3×ATR trail for up to 60 more sessions. <strong>It removes 100% of the upside and 0% of the existing downside.</strong></p>
+      </div>
+      <div>
+        <h4>On timeliness</h4>
+        <p>An MA200 cross is a lagging confirmation by construction, with no buffer and no confirmation period — a single close toggles the system. An index oscillating around its 200-day average maximises flips at exactly the worst moment.</p>
+      </div>
     </div>
   </div>
 </section>
 
+<section>
+  <div class="sec-head"><h2>Nine conditions for clearance</h2><span class="tag">John · binding · risk score rises 22 → ~70</span></div>
+  <p class="lede">John vetoed the system for live capital at its current configuration — but he was precise about scope. <strong>He is not vetoing the research.</strong> He called the process better than most retail systems and better than some institutional ones, and said the discipline in your OOS file should not be lost in what follows. What he vetoed is three things: 1%-risk sizing with no notional or concurrency cap; deploying capital while every guardrail is a <em>display</em> rather than a <em>control</em>; and treating a per-trade gross statistic as a portfolio expectation.</p>
+  <blockquote style="margin-bottom:26px"><p class="q">"The alpha may well be there. The container it is being poured into leaks."</p></blockquote>
+  <ol class="queue">
+    <li><div><h3>Cash-only account, margin disabled</h3><p>No exception, no waiver. Verified by written broker confirmation. Actionable today at zero cost, and it addresses the largest realised risk in the system.</p></div></li>
+    <li><div><h3>A position ledger that actually exists</h3><p>Open count, gross exposure, heat, cash, stale trails — reported on demand.</p></div></li>
+    <li><div><h3>Hard blocks, from one <code>risk_config.py</code></h3><p>Notional &gt; 10% of account blocks; max 5 open positions; max 5% portfolio heat; max 2 per sector. Unit-tested against the US$200-stock case that currently returns 3 shares and must return zero.</p></div></li>
+    <li><div><h3>One stop-width constant per engine</h3><p>Dead branch deleted, and Engine 1 re-validated out-of-sample <em>with</em> its live 15% filter applied — or Engine 1 retired.</p></div></li>
+    <li><div><h3>Portfolio backtest with max drawdown ≤ 20%</h3><p>Under the caps above. Mo Peter to add 1-day 95% VaR (≤3%); Mario to stress it against a semiconductor-complex drawdown using the measured pool correlation matrix.</p></div></li>
+    <li><div><h3>A data-integrity gate</h3><p>Staleness, sanity band, coverage counter, second-source cross-check, pinned dependencies — proven by deliberate failure injection, not by assertion.</p></div></li>
+    <li><div><h3>Your real commission schedule, and net EV above zero</h3><p>If net EV ≤ 0 at your actual fees, the system does not trade at this size. This is the condition most likely to fail.</p></div></li>
+    <li><div><h3>Twenty consecutive paper trades with zero sizing breaches</h3><p>Logged and reconciled against the ticket file. Any breach resets the counter to zero.</p></div></li>
+    <li><div><h3>Pine either implements Engine 2 or is renamed</h3><p>It currently claims more than it does.</p></div></li>
+  </ol>
+</section>
+
 <footer>
-  <p><strong>Standing verdict: the edge is unproven, not refuted.</strong> Nothing in this review shows the system does not work. What it shows is that the evidence gathered so far cannot yet tell you whether it does — and that two of the files disagree with each other about what "it" is.</p>
-  <p>Prepared by the CEO from the five source files as submitted. No performance figures were re-run; where a number is used to illustrate a cost or bias it is labelled as an assumption. Firm rule 5 applies throughout: no invented figures.</p>
+  <p><strong>Final verdict: the edge is UNPROVEN as a gross phenomenon and effectively REFUTED net of cost at HK$10,000 — and Risk has vetoed live capital until nine conditions are met.</strong> Nothing here shows the strategy does not work. It shows that the evidence gathered so far cannot tell you either way, that it has been presented as though it can, and that at your account size the per-trade edge is smaller than a single commission ticket.</p>
+  <p>The design instincts were repeatedly called good by both reviewers — regime gating, an explicit out-of-sample discipline, guardrails, a written refusal to fudge the pool. The measurement is what is broken, and it is broken in a way that systematically flatters.</p>
+  <p>Prepared by the CEO from the five source files as submitted, then extended by Tom (Dept 3, Quant Research) and John (Chief Risk Officer) working the same source independently. No backtest was re-run — market data was unavailable — so every figure is derived from the code or labelled as an illustrative assumption. Broker commission schedules in particular are illustrative and must be replaced with your actual rates. Firm rule 5 applies throughout: no invented figures.</p>
+  <p>Full reports: <code>reports/quant/2026-07-30-v64-backtest-audit.md</code> · <code>reports/risk/2026-07-30-v64-risk-review.md</code></p>
   <p>Research and decision support for the Owner's own system. Not financial advice, and not a recommendation to trade.</p>
 </footer>
 
