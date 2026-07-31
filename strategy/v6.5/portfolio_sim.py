@@ -69,6 +69,32 @@ SECTOR = {
 # 數據
 # ============================================================
 
+def preflight():
+    """開頭就檢查環境,唔好行到一半先死。"""
+    missing = []
+    for m in ("yfinance", "pandas", "numpy"):
+        try:
+            __import__(m)
+        except ImportError:
+            missing.append(m)
+    if missing:
+        print("★ 缺少套件:" + ", ".join(missing))
+        print("  裝法:  pip install " + " ".join(missing))
+        sys.exit(1)
+    try:
+        import yfinance as yf
+        t = yf.Ticker("SPY").history(period="5d")
+        if len(t) == 0:
+            raise RuntimeError("回傳空數據")
+    except Exception as e:
+        print("★ 攞唔到市場數據 —— yfinance 連唔到 Yahoo。")
+        print(f"  錯誤: {type(e).__name__}: {str(e)[:120]}")
+        print("  常見原因:公司/學校網絡封鎖、VPN、或者 yfinance 版本太舊。")
+        print("  試下:  pip install -U yfinance   然後喺屋企網絡再跑。")
+        sys.exit(1)
+    print("環境檢查 OK — yfinance 連得到。\n")
+
+
 def load(tickers, start, end):
     import yfinance as yf
     print(f"下載 {len(tickers)} 隻 + SPY ({start} → {end})...")
@@ -443,6 +469,7 @@ def main():
     ap.add_argument("--end", default="2026-07-01")
     a = ap.parse_args()
 
+    preflight()
     data, spy = load(TICKERS, a.start, a.end)
     if not data:
         print("冇數據。"); sys.exit(1)
