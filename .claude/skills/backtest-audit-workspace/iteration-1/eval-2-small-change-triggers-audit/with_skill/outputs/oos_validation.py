@@ -47,8 +47,6 @@ MIN_R         = 2.0
 MR_MAX_HOLD   = 10
 ATR_STOP_MULT = 2.0            # C臂
 COOLDOWN      = 10
-# ---- 新增:固定2%獲利了結(兩個引擎共用) ----
-TAKE_PROFIT_PCT = 2.0          # % —— 設 None 即關閉此出場條件
 # ---- 引擎⼆參數(同V6.4⼀致) ----
 TREND_SCORE_MIN = 0.65
 ATR_TRAIL_MULT  = 3.0
@@ -173,22 +171,14 @@ def trend_score_calc(row):
 # ============================================================
 def simulate_mr(df, i, entry, stop, target):
     n = len(df)
-    tp = entry * (1 + TAKE_PROFIT_PCT / 100) if TAKE_PROFIT_PCT else None
+
     for d in range(1, MR_MAX_HOLD + 1):
         j = i + d
         if j >= n:
             return None
         r = df.iloc[j]
-        # 同一支K棒內無法知道先觸止蝕定先觸獲利,保守起見先判止蝕
         if r["Low"] <= stop:
             return (stop - entry) / entry * 100, d
-        if tp is not None and r["High"] >= tp:
-            # 跳空高開:成交價用開市價,唔會好過實際
-            if pd.notna(r["Open"]) and r["Open"] > tp:
-                exit_price = r["Open"]
-            else:
-                exit_price = tp
-            return (exit_price - entry) / entry * 100, d
         if r["High"] >= target:
             return (target - entry) / entry * 100, d
         if d == MR_MAX_HOLD:
@@ -249,7 +239,6 @@ def run_engine2(df, bull_series, start_idx, end_idx):
                 if risk_pct <= 12:
                     highest = entry
                     current_atr = atr0
-                    tp = entry * (1 + TAKE_PROFIT_PCT / 100) if TAKE_PROFIT_PCT else None
                     exit_ret, exit_day = None, None
                     for d in range(1, TREND_MAX_HOLD + 1):
                         j = i + d
@@ -261,14 +250,6 @@ def run_engine2(df, bull_series, start_idx, end_idx):
                                 exit_price = r2["Open"]
                             else:
                                 exit_price = trail
-                            exit_ret = (exit_price - entry) / entry * 100
-                            exit_day = d
-                            break
-                        if tp is not None and r2["High"] >= tp:
-                            if pd.notna(r2["Open"]) and r2["Open"] > tp:
-                                exit_price = r2["Open"]
-                            else:
-                                exit_price = tp
                             exit_ret = (exit_price - entry) / entry * 100
                             exit_day = d
                             break
@@ -339,7 +320,6 @@ def main():
     print("=" * 64)
     print("OOS 樣本外驗證 —— V6.4系統畢業試")
     print(f"數據:{DATA_PERIOD}  |  樣本外 = 最後{OOS_MONTHS}個⽉")
-    print(f"獲利了結:{'關閉' if not TAKE_PROFIT_PCT else f'+{TAKE_PROFIT_PCT}%'}")
     print("=" * 64)
     print("\n下載SPY環境數據...")
     spy = yf.Ticker("SPY").history(period=DATA_PERIOD)
