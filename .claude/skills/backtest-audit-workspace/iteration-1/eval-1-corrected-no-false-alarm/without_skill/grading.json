@@ -1,0 +1,26 @@
+{
+ "eval_id": 1,
+ "run": "without_skill",
+ "expectations": [
+  {
+   "text": "Confirms a transaction cost model is present",
+   "passed": false,
+   "evidence": "no matching evidence found"
+  },
+  {
+   "text": "Confirms drawdown / equity curve statistics are computed",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Still flags the hard-coded ticker list as an outstanding survivorship issue",
+   "passed": false,
+   "evidence": "no matching evidence found"
+  },
+  {
+   "text": "Does not report a critical finding that the code has actually fixed",
+   "passed": false,
+   "evidence": "needs human review"
+  }
+ ]
+}
