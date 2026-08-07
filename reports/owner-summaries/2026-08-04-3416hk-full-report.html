@@ -152,6 +152,49 @@
   footer p{ margin:0 0 9px; max-width:74ch; }
   a{ color:var(--acc); }
   a:focus-visible{ outline:2px solid var(--acc); outline-offset:2px; }
+
+  /* ---------- print / PDF ---------- */
+  @page{ size:A4; margin:15mm 14mm 16mm; }
+  @media print{
+    /* force the light palette — a dark PDF is unreadable on paper and wastes ink */
+    :root, :root[data-theme="dark"], :root[data-theme="light"]{
+      --paper:#FFFFFF; --card:#FCFCFB; --card2:#F6F5F1;
+      --ink:#000000; --ink2:#3A3E42; --ink3:#6A7076;
+      --line:#CFCCC4; --hair:#E2E0D9;
+      --acc:#0B5C51; --s1:#2a78d6; --s2:#d4551f;
+      --good:#0a7d0a; --warn:#8A5C0E; --crit:#A82F22;
+      --grid:#e1e0d9; --base:#b6b5aa;
+    }
+    html,body{ background:#fff !important; font-size:10.4pt; line-height:1.5; }
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    .wrap{ max-width:none; padding:0; }
+    header{ padding-top:0; }
+    h1{ font-size:22pt; }
+    h2{ font-size:14pt; }
+    h3{ font-size:11.5pt; }
+    p, .note p, ol.steps p{ max-width:none; }
+    section{ margin-top:22pt; page-break-inside:auto; }
+    .sh{ page-break-after:avoid; break-after:avoid; }
+    h3{ page-break-after:avoid; break-after:avoid; }
+    figure, .note, .verdict, .facts, ol.steps li, tr, svg{
+      page-break-inside:avoid; break-inside:avoid; }
+    table{ min-width:0; }
+    .scroll{ overflow:visible; }
+    figure{ margin-top:14pt; }
+    /* the gap:1px background trick leaves a grey slab when a list breaks
+       across a page — use real borders in print instead */
+    ol.steps, .facts{ background:transparent !important; gap:0 !important; border:none; }
+    /* each item carries its own box, so a page break never strands an empty
+       container border at the foot of the page */
+    ol.steps li{ border:1px solid var(--line); margin-bottom:-1px; }
+    .facts .fact{ border:1px solid var(--line); margin:0 -1px -1px 0; }
+    .verdict{ page-break-after:auto; }
+    footer{ page-break-inside:avoid; }
+    a{ color:var(--acc); text-decoration:none; }
+    a[href^="http"]::after{ content:" (" attr(href) ")"; font-size:7.5pt; color:var(--ink3);
+      word-break:break-all; }
+    .stamp{ font-size:8.5pt; }
+  }
   @media (prefers-reduced-motion:reduce){ *{ transition:none!important; } }
 </style>
 
@@ -160,11 +203,11 @@
 <header>
   <p class="kick">皮褸黃 Capital · Research Report</p>
   <h1>3416.HK — Global X HSCEI Components Covered Call Active ETF</h1>
-  <p class="dek">Full analysis and evaluation, written against a specific question: should an 18-year-old university student put HK$1,000 a month into this?</p>
+  <p class="dek">Full analysis and evaluation, written against two questions: should an 18-year-old university student put HK$1,000 a month into this — and what should someone already holding HK$8,000 of it do?</p>
   <div class="stamp">
-    <span><b>Date</b> 2026-08-04</span>
+    <span><b>Date</b> 2026-08-04, hold/sell section added 2026-08-07</span>
     <span><b>Analyst</b> CEO (皮褸黃)</span>
-    <span><b>Status</b> department pipeline incomplete — see §9</span>
+    <span><b>Status</b> department pipeline incomplete — see §10</span>
     <span><b>Not financial advice</b></span>
   </div>
 </header>
@@ -397,9 +440,63 @@
   </div>
 </section>
 
+
 <!-- ========== 9 ========== -->
 <section>
-  <div class="sh"><span class="n">09</span><h2>What this report does not know</h2></div>
+  <div class="sh"><span class="n">09</span><h2>Hold or sell — an existing HK$8,000 position</h2></div>
+  <p>This section answers a different question from the rest of the report. Everything above asks <em>should someone start buying?</em> This asks <em>what should someone already holding HK$8,000 do?</em> — and the answer is smaller than it feels.</p>
+
+  <div class="facts" style="margin-top:24px">
+    <div class="fact"><div class="l">Position held</div><div class="v">HK$8,000</div><div class="s">= 8 months of contributions</div></div>
+    <div class="fact"><div class="l">Next 10 yrs of the plan</div><div class="v">HK$120,000</div><div class="s">= 120 months</div></div>
+    <div class="fact"><div class="l">Which matters more</div><div class="v">15×</div><div class="s">the future flow, not the stake</div></div>
+  </div>
+
+  <h3 style="margin-top:30px">What staying actually costs, per year</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Item</th><th class="num">On HK$8,000</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Fee gap — 0.75% here vs ~0.10% for a plain index ETF</td><td class="num">HK$52 / yr</td><td>Certain — it is a published fee</td></tr>
+        <tr><td>Observed return gap — 0.39pp over the past year</td><td class="num">HK$31 / yr</td><td>Weak — one year, one regime</td></tr>
+        <tr><td><strong>Indicative total</strong></td><td class="num"><strong>~HK$83 / yr</strong></td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-top:26px">What switching costs, and when it pays back</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Your broker's minimum</th><th class="num">Payback on the fee gap alone</th></tr></thead>
+      <tbody>
+        <tr><td>HK$0 (app broker)</td><td class="num">immediate</td></tr>
+        <tr><td>HK$30</td><td class="num">0.6 years</td></tr>
+        <tr><td>HK$50</td><td class="num">1.0 years</td></tr>
+        <tr><td>HK$100 (bank)</td><td class="num">1.9 years</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--ink3);margin-top:8px">Hong Kong does not levy capital gains tax on share disposals by individuals, so selling does not trigger a tax bill — unusually, nothing argues for holding on tax grounds. Confirm against your own circumstances.</p>
+
+  <div class="note acc">
+    <p><strong>The honest summary: at HK$8,000 there is no urgency and no wrong answer.</strong> Holding costs roughly HK$83 a year. Selling costs one commission and recovers that within two years. Neither is a mistake, and anyone presenting this as an urgent decision has lost proportion.</p>
+    <p><strong>The decision worth 15× more is where the next HK$1,000 a month goes.</strong> The same fee gap on the plan's growing balance is about <strong>HK$429 a year</strong> by year ten — before the structural question of capped upside over a multi-decade horizon, which is the real issue and does not appear in a one-year sample.</p>
+  </div>
+
+  <div class="note crit">
+    <p><strong>One question matters more than all of the above, and this report cannot answer it: is HK$8,000 most of this person's savings?</strong></p>
+    <p>If it sits on top of a cash buffer, the arithmetic above is the whole story and it is a minor optimisation. <strong>If it is essentially everything they have</strong>, the fee gap is irrelevant and the real issues are concentration — one country, one index, heavily Chinese banks and platforms — and the absence of a buffer. The genuine risk to a student is not a mediocre fund; it is being forced to sell at the bottom because something unexpected came up.</p>
+    <p>In that case the question is not "hold or sell 3416" but "how much of this should be in equities at all yet."</p>
+  </div>
+
+  <div class="note">
+    <p><strong>Three things that are not reasons to sell:</strong> what you paid for it (sunk — it says nothing about what happens next); the fact that a report was critical (this fund is competently run and matched the index over the past year); and the urge to act (selling into cash is itself a market bet, usually a worse one).</p>
+    <p><strong>The middle option:</strong> stop adding, keep what you hold, redirect new money. It stops the mismatch compounding without forcing a decision on incomplete information, and it costs nothing.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sh"><span class="n">10</span><h2>What this report does not know</h2></div>
   <p>Stated plainly, because a report that hides its gaps is worth less than one that admits them.</p>
   <div class="scroll">
     <table>
