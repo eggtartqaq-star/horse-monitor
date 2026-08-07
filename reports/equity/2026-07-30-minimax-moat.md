@@ -454,3 +454,33 @@ Handing to Valuation with the following constraints:
 - [S&P Global Market Intelligence — MiniMax revenue forecast](https://www.spglobal.com/market-intelligence/en/news-insights/research/2026/04/minimax-revenue-seen-rising-to-usd219m-in-2026-reaching-usd6b-by-2030) · [Dealroom — 236m users](https://app.dealroom.co/news/feed/minimax-revenue-surges-159-to-79m-with-236m-users-across-200-countries) · [Tiger Brokers — Alibaba 13.66% indirect stake](https://www.itiger.com/news/1126099864)
 
 *Research only. Committee and Owner decide. No investment advice.*
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

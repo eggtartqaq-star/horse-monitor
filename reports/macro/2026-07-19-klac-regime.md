@@ -117,3 +117,29 @@ What would raise it to 65+: another ~10–15% de-rate absent fundamental deterio
 5. **Data caveats:** the ~$307/$301.71 ATH is from a forecast-site split index (moderate confidence); the exact forward P/E is **approximate** given pre/post-split EPS mixing in sources — anchored to gurufocus ~42x (Jul 21). Q3 FY26 figures are from earnings-coverage outlets; recommend 巴爺爺 verify the 10-Q/8-K and the current share count before Committee. Company-level moat durability and China-revenue quality need Dept 2 / LeBron verification — my score assumes the process-control share and China mix are as reported.
 
 *This is research and decision support, not financial advice. The Investment Committee and the Owner decide.*
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing.** This report predates 2026-07-30, when the environment's
+HTTP 403 egress restriction was first observed and verified. Whether
+direct page fetch was available when this was written **was not recorded
+at the time**, so no claim is made either way — rely on the sourcing
+stated in the body of the report itself.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

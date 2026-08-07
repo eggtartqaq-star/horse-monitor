@@ -289,3 +289,29 @@ WIDE/WIDENING, Elon overweight — all correct and un-contested here).
 - [KLA IR — Q4 FY2026 earnings date Jul 28](https://ir.kla.com/news-events/press-releases/detail/517/kla-announces-fourth-quarter-fiscal-year-2026-earnings-date)
 - Firm inputs: `reports/equity/2026-07-19-klac-financials.md` (巴爺爺); `reports/equity/2026-07-19-klac-moat.md` (菲比斯); `reports/macro/2026-07-19-klac-regime.md` (Peterson); `reports/industry/2026-07-19-klac-process-control.md` (Elon); `reports/news/2026-07-19-klac.md` (修大哥)
 - Audit: `reports/committee/2026-07-19-klac-audit.md` (Ai 管理層)
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing.** This report predates 2026-07-30, when the environment's
+HTTP 403 egress restriction was first observed and verified. Whether
+direct page fetch was available when this was written **was not recorded
+at the time**, so no claim is made either way — rely on the sourcing
+stated in the body of the report itself.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

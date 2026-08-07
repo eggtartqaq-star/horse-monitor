@@ -131,3 +131,29 @@ GAAP diluted EPS (pre-split) rose from $13.37 (FY2021) to $30.37 (FY2025), a ~23
 - [KLA stock split history (companiesmarketcap)](https://companiesmarketcap.com/kla/stock-splits/)
 - [KLA nine-month FY2026 profit $3.47B on $9.92B revenue (StockTitan 10-Q)](https://www.stocktitan.net/sec-filings/KLAC/10-q-kla-corp-quarterly-earnings-report-978fb9c17cac.html)
 - [KLA 4.700% Senior Notes due 2034 offering (Latham & Watkins)](https://www.lw.com/en/news/2024/02/latham-watkins-represents-kla-corporation-in-us750-million-senior-notes-offering)
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing.** This report predates 2026-07-30, when the environment's
+HTTP 403 egress restriction was first observed and verified. Whether
+direct page fetch was available when this was written **was not recorded
+at the time**, so no claim is made either way — rely on the sourcing
+stated in the body of the report itself.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

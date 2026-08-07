@@ -124,3 +124,29 @@ What would raise the score to 65+: hyperscaler Q2 capex guides reaffirmed or rai
 5. **Data caveats:** forward P/E at current price and market cap are **my estimates** (derived above, marked); the $214.6B market-cap figure in circulation is stale; the Aug 20 earnings date is "confirmed" by one calendar but disputed by others. FQ1-27 figures come from earnings-coverage outlets, not a direct 10-Q pull — recommend 巴爺爺 verify against the filing before committee.
 
 *This is research and decision support, not financial advice. The Investment Committee and the Owner decide.*
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing.** This report predates 2026-07-30, when the environment's
+HTTP 403 egress restriction was first observed and verified. Whether
+direct page fetch was available when this was written **was not recorded
+at the time**, so no claim is made either way — rely on the sourcing
+stated in the body of the report itself.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

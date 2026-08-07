@@ -318,3 +318,29 @@ Because 菲比斯 rates the moat narrow and eroding from 2029-31, my mandate req
 *Research and decision support only — not financial advice. Every assumption is stated in §3 and sensitised in §5; the arithmetic is reproducible from the model file. Committee and Owner decide.*
 
 **Sources:** [GE Vernova valuation multiples](https://multiples.vc/public-comps/ge-vernova-valuation-multiples) · [GEV statistics](https://stockanalysis.com/stocks/gev/statistics/) · [GEV EV/EBITDA](https://valueinvesting.io/GEV/valuation/ev_ebitda-multiples) · [GEV Q2 2026 8-K](https://www.sec.gov/Archives/edgar/data/0001996810/000199681026000147/gev2q2026form8-k.pdf) · plus all primary sources carried through from `2026-07-19-be-financials.md`, `2026-07-19-be-moat.md` and `2026-07-19-be.md`.
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing.** This report predates 2026-07-30, when the environment's
+HTTP 403 egress restriction was first observed and verified. Whether
+direct page fetch was available when this was written **was not recorded
+at the time**, so no claim is made either way — rely on the sourcing
+stated in the body of the report itself.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.
