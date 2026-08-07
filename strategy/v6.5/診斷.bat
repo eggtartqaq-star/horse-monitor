@@ -1,10 +1,28 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
+setlocal
+
+REM 用 python 產生檔名 —— %DATE% 嘅格式跟系統地區設定變,靠唔住。
+REM python 本身係必要條件,所以呢度用佢冇額外成本。
+for /f %%i in ('python -c "import datetime;print(datetime.date.today().isoformat())" 2^>nul') do set STAMP=%%i
+if "%STAMP%"=="" set STAMP=undated
+set OUT=v65_diagnostics_%STAMP%.txt
+
 echo ============================================================
 echo  V6.5 免費診斷 —— Tom 話跑呢個行先
 echo ============================================================
 echo.
+echo  輸出會同時寫入:  %OUT%
+echo  跑完之後將呢個檔案傳返畀 CEO 就得,唔使喺 console 度抄。
+echo.
+
+python --version >nul 2>&1
+if errorlevel 1 (
+  echo ★ 搵唔到 python。請先裝 Python 3,安裝時記得剔 "Add to PATH"。
+  pause
+  exit /b 1
+)
 
 python -c "import yfinance,pandas,numpy" 2>nul
 if errorlevel 1 (
@@ -15,10 +33,12 @@ if errorlevel 1 (
 
 echo [1/2] 自我測試 —— 確認個模擬器本身冇 bug
 echo.
-python selftest.py
+powershell -NoProfile -Command "python selftest.py 2>&1 | Tee-Object -FilePath '%OUT%'"
+python selftest.py >nul 2>&1
 if errorlevel 1 (
   echo.
-  echo ★ 自我測試失敗。唔好用呢個版本跑真數據。
+  echo ★ 自我測試失敗 —— 唔好用呢個版本跑真數據。
+  echo   請將 %OUT% 傳返畀 CEO。
   pause
   exit /b 1
 )
@@ -26,15 +46,19 @@ if errorlevel 1 (
 echo.
 echo [2/2] 診斷 —— 大約 5 分鐘,download 緊 7 年數據
 echo.
-python portfolio_sim.py --mode diagnostics
+powershell -NoProfile -Command "python portfolio_sim.py --mode diagnostics 2>&1 | Tee-Object -FilePath '%OUT%' -Append"
 
 echo.
 echo ============================================================
-echo  睇完先決定使唔使跑模擬。
-echo  如果訊號同 EV 集中喺三四隻股身上,生存者偏差就係全部答案。
+echo  完成。全部輸出喺:  %OUT%
 echo.
-echo  下一步(想跑就打):
-echo    python portfolio_sim.py --mode sim --broker ibkr_fixed
-echo    python portfolio_sim.py --mode sim --broker free
+echo  ★ 睇兩樣嘢:
+echo    1) 牛市日數佔比 —— 如果超過 80%%,你嘅「4年數據」其實只係
+echo       一個環境嘅4年,獨立證據遠少過你以為。
+echo    2) 訊號集中度 —— 如果訊號集中喺三四隻股身上,生存者偏差
+echo       就係全部答案。唔使再建其他嘢,直接去買 point-in-time 數據。
+echo.
+echo  下一步(睇完覺得值得跑先好跑):
+echo    python portfolio_sim.py --mode compare
 echo ============================================================
 pause
