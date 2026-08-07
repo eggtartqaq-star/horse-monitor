@@ -247,6 +247,9 @@ def simulate(data, spy, broker_key="ibkr_fixed", limits=LIMITS, verbose=True):
         concurrency.append(len(open_pos))
 
         # 回撤預算:超過就停手(唔係建議)
+        # ★ 自我審計 MEDIUM-2:呢個係「終止開關」,唔係會自動重置嘅斷路器。
+        #   一旦觸發,除非淨值升返到距離高位 20% 以內,否則之後每一個交易日
+        #   都唔會再開新倉 —— 而冇新倉通常就升唔返。當佢係永久停手。
         peak = max(e["equity"] for e in equity_hist)
         if (peak - equity) / peak * 100 > limits.drawdown_budget_pct:
             rejects.append({"date": today, "ticker": "-", "reason": "回撤預算耗盡",
@@ -287,6 +290,18 @@ def simulate(data, spy, broker_key="ibkr_fixed", limits=LIMITS, verbose=True):
             if pd.isna(entry) or entry <= sig["stop"]:
                 rejects.append({"date": today, "ticker": tk, "reason": "跳空穿止蝕",
                                 "detail": f"開市 {entry:.2f} <= 止蝕 {sig['stop']:.2f}"})
+                continue
+            # ★ 自我審計 MEDIUM-1:止蝕闊度要用「真實成交價」再驗一次。
+            #   訊號喺 bar t 收市計,成交喺 bar t+1 開市 —— 跳空會令實際風險
+            #   偏離當初檢查嗰個數。引擎二喺 20 日新高突破日入場,正正就係
+            #   最容易跳空嗰啲日子。倉位計算一直用 entry-stop,本身冇錯;
+            #   錯嘅係個「閘」用咗收市價去檢查。
+            cap = (RULES.MR_STOP_WIDTH_MAX_PCT if sig["engine"] == "E1"
+                   else RULES.TREND_STOP_WIDTH_MAX_PCT)
+            actual_width = (entry - sig["stop"]) / entry * 100
+            if actual_width > cap:
+                rejects.append({"date": today, "ticker": tk, "reason": "跳空後止蝕過闊",
+                                "detail": f"成交價計 {actual_width:.1f}% > 上限 {cap:.0f}%"})
                 continue
             try:
                 plan = plan_position(entry, sig["stop"], equity, len(open_pos),
