@@ -570,3 +570,345 @@ Two things bound it, and I state them because a fair case requires its own limit
    that is a fair trade for premium. **Over forty years it is a systematic sale of the part
    of the distribution that produces most of the compounding** — and unlike a market view,
    this argument does not depend on any forecast being right.
+
+## 9. The alternative — what plain HSCEI exposure delivered
+
+*This is the number the brief identified as highest-value and which defeated two previous
+attempts. I have it, and I show the full chain so it can be audited.*
+
+### 9.1 The anchors
+
+| Anchor | Value | Source |
+|---|---|---|
+| HSCEI close, **2024-02-29** | **5,677.88** (−10.58 pts, −0.19% that day) | Business Standard capital-market report, article 124022900874, dated 2024-02-29 |
+| HSCEI level, August 2026 (quote A) | **8,136.73** | Investing.com via search extraction, 2026-08-10; **undated within August** |
+| HSCEI level, August 2026 (quote B) | **8,498.73** (−1.22% on the day) | search extraction, 2026-08-10; **undated within August** |
+| HSCEI dividend yield | **3.14%** | Hang Seng Indexes HSCEI factsheet, **June 2026** |
+
+Fund inception is 2024-02-28 and my index anchor is 2024-02-29 — one trading day later, a
+−0.19% day. **The mismatch is immaterial** (it makes the index comparison marginally
+*conservative*).
+
+I could not resolve quote A against quote B; both were retrieved on 2026-08-10 and neither
+carried a precise date. **I therefore report the comparison as a range rather than a point,**
+and note that the conclusion is unchanged across the whole range.
+
+### 9.2 HSCEI return since fund inception
+
+| Measure | Using 8,136.73 | Using 8,498.73 |
+|---|---|---|
+| Price return, cumulative | +43.3% | +49.7% |
+| Price return, annualised | +15.86%/yr | +17.94%/yr |
+| **Total return, cumulative** | **+54.6%** | **+61.4%** |
+| **Total return, annualised** | **+19.50%/yr** | **+21.65%/yr** |
+
+*Price return is arithmetic on two sourced index levels. **Total return applies the 3.14%
+dividend yield as a constant across the whole period — this is an ESTIMATE**, not a
+computed total-return index. The true figure will differ modestly. The HSCEI Total Return
+Index exists (HKEX publishes it) but every host carrying its history was egress-blocked.*
+
+Cross-check, independent of my arithmetic: the plain HSCEI index ETF **2828.HK** reportedly
+returned **+30.45% in calendar 2024** and **+29.93% over "the past year"** (vendor
+extractions, undated retrieval). Those are consistent with an index compounding in the high
+teens to low twenties annually over this window. **The direction and magnitude corroborate.**
+
+### 9.3 The comparison — what the overlay cost
+
+| | Annualised | Cumulative since 2024-02-28 | HK$8,000 would now be |
+|---|---|---|---|
+| **3416.HK** (reported, unverified) | **10.50%/yr** | **+27.6%** | **HK$10,211** |
+| 3416.HK (best case, if NAV 9.63 were right) | 13.50%/yr | +36.6% | HK$10,902 |
+| **HSCEI total return** (low estimate) | **19.50%/yr** | **+54.6%** | **HK$12,364** |
+| HSCEI total return (high estimate) | 21.65%/yr | +61.4% | HK$13,058 |
+
+**The overlay cost between 6 and 11 percentage points a year.** Central estimate: the fund
+returned **10.5%/yr against roughly 19.5%/yr for the index it holds — it captured a little
+over half the return of its own portfolio**, while paying a distribution yield of ~18%.
+
+On HK$8,000, the shortfall to date is roughly **HK$2,150 (central)** — around **27% of the
+entire position** — and it is entirely invisible on a statement that has shown ~HK$120
+landing every month.
+
+### 9.4 Why this conclusion is robust
+
+It survives every open dispute in this report:
+
+- **NAV conflict (§6):** under the *most favourable* NAV assumption the fund still trails by
+  ~6pp/yr. Under the better-supported one, ~9pp/yr.
+- **Index level ambiguity:** the gap is 6–11pp/yr across the full 8,137–8,499 range.
+- **Dividend-yield estimate:** even at a 0% dividend assumption, HSCEI price return alone
+  (15.9–17.9%/yr) exceeds the fund's total return by 5–7pp/yr.
+- **Coverage-ratio uncertainty (§2.4):** partial coverage would *narrow* the gap, but the
+  10.50% figure is an observed outcome, not a modelled one, so this changes nothing.
+
+**Every path leads to the same conclusion: the covered-call overlay cost materially more
+than it paid over this window.** That is not a criticism of the manager — §3 shows this is
+exactly what the structure does when the index trends up, and HSCEI has trended up hard.
+The strategy was not broken. **It was in the wrong regime, and the holder was told they were
+earning 18% throughout.**
+
+### 9.5 The long-horizon extrapolation — read the caveat
+
+**ILLUSTRATIVE ARITHMETIC, NOT A FORECAST.** Nobody can predict 40 years of returns and this
+firm does not pretend to. The point is only to show what a persistent annual gap does:
+
+| Compounding rate | HK$8,000 after 40 years |
+|---|---|
+| 10.5%/yr | HK$434,000 |
+| 13.5%/yr | HK$1,267,000 |
+| 19.5%/yr | HK$9,950,000 |
+
+The top rate will not persist for forty years — no equity market does that. **The relevant
+observation is the shape, not the level:** a gap of 6–9 percentage points a year, sustained,
+does not cost a fraction of the outcome. It costs an order of magnitude. This is the
+quantified version of the CEO's structural argument, and the structural argument is correct.
+
+## 10. Full risk profile — mandatory disclosure
+
+*Department 8 standing rule: max loss is stated in dollars on every proposal, always.
+This is a held position rather than a proposal, but the disclosure standard is identical.*
+
+**Position modelled: HK$8,000 of 3416.HK.**
+
+### 10.1 Loss, gain, breakeven
+
+| Measure | Value | Notes |
+|---|---|---|
+| **MAXIMUM LOSS** | **HK$8,000 — the entire position, less distributions already received** | If HSCEI went to zero. The covered call provides ~1.9%/month of cushion and **nothing more**. There is no floor, no protection, and no put. |
+| Realistic severe-drawdown loss | **HK$2,400–HK$3,200 (−30% to −40%)** | HSCEI fell >50% peak-to-trough 2021–2022. A repeat, less ~1.9%/month premium, lands in this band. |
+| **MAXIMUM GAIN, per month** | **+HK$312 (+3.90%)** | Hard structural cap = strike distance (2%, inferred) + premium (1.9%, sourced). |
+| Maximum gain, theoretical annual | +58.3% | Only if *every* month is capped and none falls. Has never happened and will not. |
+| Monthly premium income | ~HK$152 (1.9%) | Gross, before fees |
+| **Monthly breakeven** | **HSCEI ≥ −1.90%** | Below a 1.9% monthly index fall, the position loses money. |
+| Annual fee drag | HK$60/yr (0.75%) | Deducted from NAV, not from the distribution |
+| **Reinvestment drag** | **HK$0–HK$1,200/yr** | Entirely determined by broker minimum — §7. At a bank minimum this is the largest single cost in the table. |
+| **Realised opportunity cost to date** | **~HK$2,150 vs holding plain HSCEI** | §9.3, central estimate |
+
+### 10.2 Assignment risk — the good news, stated clearly
+
+**There is no assignment risk to the ETF holder, and this is a genuine structural advantage
+of the index-option design.**
+
+HSCEI index options are **cash-settled European-style** contracts. They cannot be exercised
+early and they never deliver stock. Consequences:
+
+- The fund is **never forced to sell its underlying holdings** to meet an exercise. It settles
+  the option's intrinsic value in cash and retains the portfolio.
+- There is no early-assignment risk around ex-dividend dates — the classic hazard of
+  single-name American-style covered calls, and a real one in high-dividend Chinese financials
+  such as CCB and ICBC, which are large HSCEI weights.
+- The holder of 3416 cannot be assigned anything. They hold ETF units.
+
+**No naked short options are present.** The fund's short calls are covered by its long index
+exposure (physical constituents, the index ETF, and/or long index futures). This complies
+with the firm's prohibition on naked short options in `config/risk-limits.yaml` — though
+note that a covered call on an *index* against a *basket* carries basis risk that a
+single-name covered call does not, if the basket ever diverges from the index it is written
+against.
+
+### 10.3 Greeks
+
+Calibrated Black-Scholes, 1-month HSCEI index call, 24% implied vol, 2% out-of-the-money:
+
+| Greek | Value | Interpretation |
+|---|---|---|
+| Short call delta | **0.40** | |
+| **Net position delta** | **~0.60** | 100% coverage assumed. **The holder has roughly 60% of the equity exposure they think they have, right after each monthly roll.** |
+| Delta drift within the month | 0.60 → 1.00 if index falls; 0.60 → 0.00 if index rallies through the strike | **Delta shrinks exactly when the market rises and expands exactly when it falls.** This is the negative-gamma signature and it is the mathematical core of §3.4. |
+| **Gamma** | **NEGATIVE** | The position gets shorter into rallies and longer into declines — the opposite of what a long-horizon compounder wants. |
+| **Theta** | **POSITIVE, ~+HK$7.2/day** | The only Greek working in the holder's favour. This is the entire economic engine. |
+| **Vega** | **NEGATIVE, ~−HK$8.9 per +1 vol point** | A volatility spike hurts the mark, though it raises *future* premium. |
+
+**Calibration note, and it is a good one:** a 1-month call struck 2% out-of-the-money at 24%
+implied volatility prices at **exactly 1.90%** — the observed premium midpoint from §2.3.
+Assumption (a) in §2.4 therefore reproduces the fund's actual reported premium to two decimal
+places at a plausible HSCEI implied vol. **This materially raises confidence that the fund
+runs approximately full coverage at approximately 2% OTM on a one-month tenor**, and
+correspondingly lowers the probability of the more benign partial-coverage reading (b).
+It remains an inference — a different (coverage, moneyness, vol) triple could produce the
+same premium — but it is now a well-supported one.
+
+### 10.4 Volatility context — is the fund selling cheap or expensive vol?
+
+Per my mandate: selling cheap vol and buying expensive vol are both errors.
+
+| Measure | Value | Source / date |
+|---|---|---|
+| VHSI (HSI 30-day implied vol) | **21.37** | Investing.com via search extraction, 2026-08-10 |
+| VHSI 1-month range | 17.94 – 23.92 | same |
+| HSCEI implied vol (working estimate) | **22–26%** | **INFERRED** — HSCEI implied typically prints above HSI implied |
+| **IV percentile vs history** | **NOT OBTAINED** | VHSCEI history is on `hsi.com.hk` — egress-blocked |
+
+**This is a real gap and I will not paper over it.** Without an IV percentile I cannot say
+whether the fund is currently selling rich or cheap volatility. What I can say:
+
+- VHSI at ~21 is **not** an elevated reading by Hong Kong standards. Chinese equity implied
+  vol has spent much of the last decade in the 20s and spikes well above 40 in stress.
+- The issuer's own August 2025 commentary attributes the drop to 1.74% premium to "decline in
+  market volatility" — confirming the fund is a **price-taker on volatility**, not a
+  timer of it. It writes every month regardless of whether vol is rich or cheap.
+- **Mechanically writing calls monthly without regard to the vol level is, by my department's
+  standards, an error of process** — it guarantees selling cheap vol in quiet regimes.
+  A discretionary manager *could* stand down when premium is poor; the observed data show
+  premium collected in every reported month, so it appears they do not.
+
+The variance risk premium (implied minus subsequent realised) is genuinely positive on
+average in most equity markets, which is the strategy's real edge. **But §9 shows that over
+this particular window that edge was overwhelmed by the trend the calls were sold against.**
+
+## 11. Exit / roll plan — addressing "when should I sell?"
+
+**Structural framing only. John (CRO) holds suitability and the veto; the Owner decides and
+the Owner executes.** I make no recommendation to buy, hold, or sell.
+
+### 11.1 The honest answer to the timing question
+
+**There is no market-timing answer to "when should I sell?", and looking for one is the wrong
+frame.** This is not a position with a thesis that will be proven or disproven by a price
+level. It is a structural mismatch — or not — between an instrument and a horizon. That
+question has the same answer today, next month, and after the next rally.
+
+**If the instrument is wrong for a 40-year horizon, it is wrong at any price**, and waiting
+for a better exit price adds a market-timing bet on top of an already-questionable structure.
+Conversely, if the behavioural argument in §8.4 governs, no price level should trigger a sale.
+
+### 11.2 What genuinely does affect timing
+
+| Consideration | Effect |
+|---|---|
+| **Costs are the binding constraint, not price.** A round trip at a HK$100 bank minimum costs HK$200 = 2.5% of the position. | Argues for **one decision, executed once** — not staged exits. |
+| **HK ETFs are exempt from the 0.1% stamp duty.** | Removes the largest statutory charge. Cost is broker minimum only. |
+| **Ex-distribution dates.** Latest observed ex-date 2026-05-29 for a HK$0.15 payment. | **Immaterial.** Selling before an ex-date forfeits nothing — NAV drops by the distribution. Do **not** hold on to "capture" a distribution; that is the same money either way. |
+| **Board lot (NOT OBTAINED).** | May force a partial position to be sold whole, or block a partial sale entirely. **Check before planning any partial exit.** |
+| **Concentration.** HK$8,000 in a single China-equity product is presumably a large share of this student's net worth. | A concentration question for Zac (Position Sizing) and John, not for me. |
+
+### 11.3 Conditions that would change my structural read
+
+Stated in advance so this report can be scored later:
+
+1. **Coverage ratio confirmed materially below ~80%** (one email to Global X IR, §2.4).
+   The upside cap would be far less binding and the §9 gap should narrow going forward.
+2. **A verified since-inception total return materially above 10.5%.** The whole §9 case
+   rests on one unverified figure; a real one from the fund's own factsheet could move it.
+   Note the §6.2 triangulation independently supports ~10%, so this is unlikely but possible.
+3. **A regime change to a range-bound HSCEI.** If the index goes sideways for years, this
+   fund beats it — materially — and §8.2 becomes the operative section.
+4. **HSCEI implied vol moving to a genuinely high percentile.** Selling expensive vol is a
+   real edge; selling cheap vol is not. **Currently unmeasurable — see §10.4.**
+
+### 11.4 If the position is retained
+
+Two operational changes cost nothing and are worth real money:
+
+1. **Batch reinvestment annually, not monthly.** Saves 0.4–14 percentage points a year
+   depending on broker minimum (§7.2). This is the highest-return action available.
+2. **Track total return, never distribution yield.** The correct measure is
+   `(NAV change + distributions received) ÷ amount invested`. The 18% number should never be
+   used to judge how the position is doing, in either direction.
+
+## 12. Risk-review status
+
+| Item | Status |
+|---|---|
+| Submitted to John (CRO) for risk review | **NOT YET — this report is the input to that review** |
+| Suitability opinion | **John, running in parallel. Not mine to issue.** |
+| Naked short options present | **No.** All short calls are covered by long index exposure (§10.2). Compliant with `config/risk-limits.yaml`. |
+| Committee review held | **No.** No `/committee` has convened on this name. |
+| Decision logged to `memory/decisions/` | **No.** Nothing to log — no decision has been made. |
+| Quant Research (Dept 3) input | **None filed.** Gap carried forward from the CEO's 2026-08-04 note. |
+| Live trading | **None.** No agent of this firm has connected to any broker. |
+
+**No verdict is issued by this report.** It is a structural analysis intended to inform John's
+suitability opinion and the Owner's decision.
+
+## 13. NOT OBTAINED register
+
+Explicit and complete. A short honest report beats a long one that papers over gaps.
+
+### 13.1 Blocked by organisation egress policy (HTTP 403 / EGRESS_BLOCKED)
+
+Every one of these was attempted once and not retried, per standing instruction:
+
+- `www.globalxetfs.com.hk` — fund page, KFS, **distribution income/capital split table**
+- `investments.miraeasset.com.hk` — Covered Call Monthly Commentary PDFs (all months)
+- `stockanalysis.com` — 3416 and 2828 quote/return/dividend pages
+- `en.macromicro.me` — HSCEI history
+- Previously logged: `hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+  `data.nasdaq.com`, `hsi.com.hk`, `chinaamc.com.hk`
+
+`tradingkey.com` is firm-blacklisted as price-data-unusable and was deliberately not consulted.
+
+### 13.2 Material facts NOT OBTAINED
+
+| # | Missing fact | Why it matters | How to get it |
+|---|---|---|---|
+| 1 | **Coverage ratio** | Determines how much upside is actually capped. §10.3 calibration favours ~100%, but this is inference. | One email to Global X HK investor relations |
+| 2 | **Strike moneyness policy** | Sets the monthly cap. Inferred ~2% OTM; not disclosed. | Same email |
+| 3 | **Distribution income/capital split** | The formal return-of-capital answer. §5 gives only an inference. | Monthly factsheet, host blocked |
+| 4 | **BOARD LOT SIZE** | May make partial sales or reinvestment impossible (§7.3). Unobtained since 2026-08-04. | **Any HK broker app, thirty seconds — Owner can settle this** |
+| 5 | **Verified since-inception total return** | §9 rests on one unverified figure (triangulated in §6.2 but not verified). | Fund factsheet, host blocked |
+| 6 | **Precise current NAV and date** | §6 resolves this by inference to HK$8.64, not by a primary print. | Issuer daily NAV page or HKEX ETP quote, both blocked |
+| 7 | **HSCEI Total Return Index history** | Would replace my 3.14%-constant dividend estimate with a computed figure. | HKEX / Hang Seng Indexes, blocked |
+| 8 | **VHSCEI history / IV percentile** | Cannot say whether the fund sells rich or cheap vol (§10.4). | `hsi.com.hk`, blocked |
+| 9 | **Student's actual broker minimum** | Swings the answer by up to 15%/yr (§7.1). | **Owner only** |
+| 10 | **Physical vs futures vs ETF mix in the long leg** | Hidden roll cost outside the 0.75% TER. | Fund holdings disclosure, blocked |
+| 11 | **Exact date of the August 2026 HSCEI level** | Two undated quotes (8,136.73 / 8,498.73); handled as a range in §9. | Any dated index print |
+
+### 13.3 Figures explicitly marked as estimate or inference
+
+- HSCEI **total** return (§9.2) — applies a constant 3.14% dividend yield. **ESTIMATE.**
+- Launch NAV HK$10.00 (§6.2) — market convention. **ASSUMPTION, not sourced.**
+- Cumulative distributions since inception ≈ HK$4.00 (§6.2) — from observed run-rate. **ESTIMATE.**
+- Strike 2% OTM / ~100% coverage (§2.4, §3.1) — **INFERENCE**, strongly supported by the
+  §10.3 premium calibration but not disclosed by the fund.
+- HSCEI implied vol 22–26% (§10.4) — **INFERRED** from VHSI plus a typical HSCEI/HSI spread.
+- One-month tenor and month-end roll (§2.4) — **INFERRED**, high confidence.
+- 40-year projections (§9.5) — **ILLUSTRATIVE ARITHMETIC, NOT A FORECAST.**
+
+### 13.4 Unresolved contradictions, recorded so they are not rediscovered as fact
+
+1. **NAV HK$8.64 vs HK$9.63.** Resolved *by triangulation* to 8.64 (§6.2). **Not verified.**
+2. **NAV 8.64 alongside price 10.570** from one vendor — a 22% premium to NAV, which is
+   **internally impossible** for a HK$22bn market-made ETF. At least one field is stale.
+3. **"−6.43% total return past year" vs "+6.86% NAV return in a year"** — mutually
+   contradictory, both undated. **Neither is used anywhere in this report.**
+4. **Distribution yield 17.96% vs 15.56%**; annual distribution HK$1.69 vs HK$1.71.
+   Minor, and immaterial to every conclusion.
+5. **HSCEI August 2026 level: 8,136.73 vs 8,498.73.** Handled as a range; conclusions hold
+   across the whole range (§9.4).
+
+---
+
+**Prepared by C朗, Options Strategist, Department 8 — Trading Operations.**
+Recommendations only; the Owner executes. Research and decision support, **not financial
+advice**, and markets cannot be reliably predicted.
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.
