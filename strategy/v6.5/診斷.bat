@@ -3,6 +3,12 @@ chcp 65001 >nul
 cd /d "%~dp0"
 setlocal enabledelayedexpansion
 
+REM ── 輸出經 pipe 嗰陣,Python 唔會用 console code page,而係 fallback 去
+REM    locale 預設(英文版 Windows = cp1252),一 print 中文即刻炒。
+REM    .py 入面已經有 reconfigure 做保險,呢兩行係雙保險。
+set PYTHONUTF8=1
+set PYTHONIOENCODING=utf-8
+
 echo ============================================================
 echo  V6.5 免費診斷 —— Tom 話跑呢個行先
 echo ============================================================

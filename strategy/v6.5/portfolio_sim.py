@@ -30,7 +30,19 @@ V6.5 — 組合層模擬器 (Tom 嘅 U-1)
   唔使再建其他嘢。—— Tom
 ============================================================
 """
+
 from __future__ import annotations
+
+# ── Windows 手尾:輸出經 pipe(例如 Tee-Object)嗰陣,Python 唔會用 console
+#    嘅 code page,而係 fallback 去 locale 預設 —— 喺英文版 Windows 就係 cp1252,
+#    一 print 中文即刻 UnicodeEncodeError。呢度強制 UTF-8。
+#    2026-08-14:Owner 部機(Python 3.14)真係炒咗喺呢一行,唔係假設。
+import sys as _sys
+for _stream in (_sys.stdout, _sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):   # 已經係 UTF-8,或者唔係 TextIOWrapper
+        pass
 
 import argparse
 import sys
