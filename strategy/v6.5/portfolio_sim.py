@@ -108,27 +108,43 @@ def preflight():
 
 
 def load(tickers, start, end):
+    """★ 2026-08-14:Owner 跑第一次真數據嗰陣,NVDA/META/TSLA/AVGO/AMD/QCOM/UNH
+    七隻連續拎唔到數據(Yahoo 限流,唔係真係退市),個池靜靜雞由 38 隻變 31 隻,
+    而診斷照樣印結論。呢度加重試,而且逼個 caller 知道邊隻冇到。"""
+    import time
     import yfinance as yf
     print(f"下載 {len(tickers)} 隻 + SPY ({start} → {end})...")
-    out = {}
+    out, missing = {}, []
     for i, tk in enumerate(tickers, 1):
-        try:
-            df = yf.Ticker(tk).history(start=start, end=end, auto_adjust=True)
-            if len(df) < 300:
-                print(f"  [{i}/{len(tickers)}] {tk} 數據不足 ({len(df)}) — 跳過")
-                continue
-            df.index = pd.to_datetime(df.index).tz_localize(None)
-            out[tk] = add_indicators(df)
-            print(f"  [{i}/{len(tickers)}] {tk} {len(df)} 條", end="\r")
-        except Exception as e:
-            print(f"  [{i}/{len(tickers)}] {tk} 失敗: {e}")
+        for attempt, pause in enumerate((0, 2, 5, 10), 1):   # 4 次,遞增等待
+            if pause:
+                time.sleep(pause)
+            try:
+                df = yf.Ticker(tk).history(start=start, end=end, auto_adjust=True)
+            except Exception as e:
+                df = None
+                if attempt == 4:
+                    print(f"  [{i}/{len(tickers)}] {tk} 失敗: {e}")
+            if df is not None and len(df) >= 300:
+                df.index = pd.to_datetime(df.index).tz_localize(None)
+                out[tk] = add_indicators(df)
+                tag = "" if attempt == 1 else f" (第{attempt}次先得)"
+                print(f"  [{i}/{len(tickers)}] {tk} {len(df)} 條{tag}", end="\r")
+                break
+            if attempt == 4:
+                n = 0 if df is None else len(df)
+                print(f"  [{i}/{len(tickers)}] {tk} 試咗4次都拎唔到 ({n} 條) — 缺失")
+                missing.append(tk)
     spy = yf.Ticker("SPY").history(start=start, end=end, auto_adjust=True)
     spy.index = pd.to_datetime(spy.index).tz_localize(None)
     spy["MA200"] = spy["Close"].rolling(RULES.REGIME_MA).mean()
     # ★ 落後 N 條 bar —— 用尋日嘅環境判斷今日,冇前視
     spy["bull"] = (spy["Close"] > spy["MA200"]).shift(RULES.REGIME_LAG_BARS).fillna(False)
-    print(f"\n  成功 {len(out)} 隻,SPY {len(spy)} 條\n")
-    return out, spy
+    print(f"\n  成功 {len(out)} 隻 / 要求 {len(tickers)} 隻,SPY {len(spy)} 條")
+    if missing:
+        print(f"  ★ 缺失 {len(missing)} 隻:{', '.join(missing)}")
+    print()
+    return out, spy, missing
 
 
 # ============================================================
@@ -458,11 +474,21 @@ def report(trades, eq, rejects, concurrency, cost, limits=LIMITS):
     print("\n已儲存: v65_trades.csv / v65_equity.csv / v65_rejects.csv")
 
 
-def diagnostics(data, spy):
+def diagnostics(data, spy, missing=()):
     """Tom 嘅免費30分鐘檢查。喺起模擬器之前跑。"""
     print("=" * 68)
     print("免費診斷 —— 跑呢個之前唔好寫任何新代碼")
     print("=" * 68)
+    if missing:
+        pct = len(missing) / (len(data) + len(missing)) * 100
+        print()
+        print("  " + "!" * 62)
+        print(f"  ★★ 樣本唔完整:{len(missing)} 隻拎唔到數據({pct:.0f}% 個票池)")
+        print(f"     缺失:{', '.join(missing)}")
+        print("     下面第 2 節嘅訊號分佈**唔可以**用嚟判斷生存者偏差 ——")
+        print("     冇數據嘅股票必然係 0 個訊號,睇落好似「唔重要」,其實係冇試過。")
+        print("     多數係 Yahoo 限流,唔係真係退市。等幾分鐘再跑一次。")
+        print("  " + "!" * 62)
     bull = spy["bull"]
     print(f"\n1. 環境覆蓋率")
     print(f"   牛市日數佔比: {bull.mean()*100:.1f}%")
@@ -558,11 +584,11 @@ def main():
     a = ap.parse_args()
 
     preflight()
-    data, spy = load(TICKERS, a.start, a.end)
+    data, spy, missing = load(TICKERS, a.start, a.end)
     if not data:
         print("冇數據。"); sys.exit(1)
     if a.mode == "diagnostics":
-        diagnostics(data, spy)
+        diagnostics(data, spy, missing)
         print("\n★ 睇完先決定使唔使跑 --mode sim / --mode compare。")
     elif a.mode == "compare":
         compare(data, spy).to_csv("v65_broker_compare.csv", index=False, encoding="utf-8-sig")
