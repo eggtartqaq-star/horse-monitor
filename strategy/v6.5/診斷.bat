@@ -1,18 +1,55 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-setlocal
-
-REM 用 python 產生檔名 —— %DATE% 嘅格式跟系統地區設定變,靠唔住。
-REM python 本身係必要條件,所以呢度用佢冇額外成本。
-for /f %%i in ('python -c "import datetime;print(datetime.date.today().isoformat())" 2^>nul') do set STAMP=%%i
-if "%STAMP%"=="" set STAMP=undated
-set OUT=v65_diagnostics_%STAMP%.txt
+setlocal enabledelayedexpansion
 
 echo ============================================================
 echo  V6.5 免費診斷 —— Tom 話跑呢個行先
 echo ============================================================
 echo.
+echo  工作資料夾: %CD%
+echo.
+
+REM ── 預檢 ──────────────────────────────────────────────
+REM 上次就係喺呢度炒:.bat 喺 Downloads,但係 .py 唔喺同一個資料夾,
+REM 結果 PowerShell 掉返一堆睇唔明嘅嘢出嚟。而家自己查清楚先。
+set MISSING=
+for %%F in (rules.py risk_config.py portfolio_sim.py selftest.py) do (
+  if not exist "%%F" (
+    if exist "%%F.txt" (
+      echo   自動改名: %%F.txt  ^-^>  %%F
+      ren "%%F.txt" "%%F"
+    ) else (
+      set MISSING=!MISSING! %%F
+    )
+  )
+)
+
+if not "!MISSING!"=="" (
+  echo ★ 呢個資料夾入面搵唔到呢啲檔案:
+  echo    !MISSING!
+  echo.
+  echo   五個檔案要放晒喺**同一個資料夾**入面。
+  echo   而家呢個資料夾入面有:
+  echo   ------------------------------------------------------
+  dir /b *.py 2>nul
+  dir /b *.txt 2>nul
+  dir /b *.bat 2>nul
+  echo   ------------------------------------------------------
+  echo.
+  echo   最穩陣嘅做法:開一個新資料夾,例如 C:\v65\
+  echo   將六個檔案全部放入去,再喺嗰度撳 run_diagnostics.bat。
+  echo   唔好留喺 Downloads —— 嗰度好易有「selftest (1).py」呢類重複檔案。
+  echo.
+  pause
+  exit /b 1
+)
+
+REM 用 python 產生檔名 —— %DATE% 嘅格式跟系統地區設定變,靠唔住。
+for /f %%i in ('python -c "import datetime;print(datetime.date.today().isoformat())" 2^>nul') do set STAMP=%%i
+if "%STAMP%"=="" set STAMP=undated
+set OUT=v65_diagnostics_%STAMP%.txt
+
 echo  輸出會同時寫入:  %OUT%
 echo  跑完之後將呢個檔案傳返畀 CEO 就得,唔使喺 console 度抄。
 echo.
@@ -33,8 +70,7 @@ if errorlevel 1 (
 
 echo [1/2] 自我測試 —— 確認個模擬器本身冇 bug
 echo.
-powershell -NoProfile -Command "python selftest.py 2>&1 | Tee-Object -FilePath '%OUT%'"
-python selftest.py >nul 2>&1
+powershell -NoProfile -Command "python selftest.py 2>&1 | Tee-Object -FilePath '%OUT%'; exit $LASTEXITCODE"
 if errorlevel 1 (
   echo.
   echo ★ 自我測試失敗 —— 唔好用呢個版本跑真數據。
