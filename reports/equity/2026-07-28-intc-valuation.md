@@ -1,5 +1,8 @@
 # Intel Corporation (NASDAQ: INTC) — Valuation / Sum-of-the-Parts
 
+> ⚠️ **SOURCE-QUALITY NOTICE (added 2026-08-21).** This report cites **tradingkey.com**, which was subsequently **blacklisted firm-wide as price-data-unusable** after an erroneous price print was found in the MU work (see `reports/technical/2026-07-18-mu-structure.md`). Any figure here sourced to it is **unverified and must not be carried into new work**. On 2026-08-21 Industry Research separately traced a circulating "Microsoft FY2027 capex $255–260bn guidance" figure back to a pre-earnings preview on the same host, laundered downstream into apparent guidance — the same failure mode.
+
+
 **Analyst:** 𢦀鳩仔, Valuation Analyst — Department 2, Equity Research
 **Reference date:** 2026-07-28 · **Price used: $91.68** (close 27 Jul 2026)
 **Inputs:** 巴爺爺 `2026-07-28-intc-financials.md` (grade C+, 55/100) · 菲比斯 `2026-07-28-intc-moat.md` (Products NARROW/ERODING, Foundry NONE)
