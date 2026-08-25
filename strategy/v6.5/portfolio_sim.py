@@ -107,40 +107,70 @@ def preflight():
     print("環境檢查 OK — yfinance 連得到。\n")
 
 
+def _fetch(tk, start, end, label=""):
+    """攞一隻嘅數據,限流就重試。回傳 (df, status)。
+    status: "ok" | "short" | "none"
+    ★ 分開 "short"(真係新股,歷史唔夠長)同 "none"(乜都攞唔到,多數係限流)——
+      舊版把兩者混為一談,對住一隻新股會白等 17 秒然後叫你「等陣再跑」,
+      但再跑一萬次歷史都唔會變長。"""
+    import time
+    import yfinance as yf
+    df = None
+    for attempt, pause in enumerate((0, 2, 5, 10), 1):
+        if pause:
+            time.sleep(pause)
+        try:
+            df = yf.Ticker(tk).history(start=start, end=end, auto_adjust=True)
+        except Exception as e:
+            df = None
+            if attempt == 4:
+                print(f"  {label}{tk} 失敗: {e}")
+        if df is not None and len(df) >= 300:
+            tag = "" if attempt == 1 else f" (第{attempt}次先得)"
+            return df, "ok", tag
+        if df is not None and len(df) > 0:
+            # 有數據但唔夠長 —— 唔使重試,重試改變唔到歷史長度
+            return df, "short", ""
+    return None, "none", ""
+
+
 def load(tickers, start, end):
     """★ 2026-08-14:Owner 跑第一次真數據嗰陣,NVDA/META/TSLA/AVGO/AMD/QCOM/UNH
     七隻連續拎唔到數據(Yahoo 限流,唔係真係退市),個池靜靜雞由 38 隻變 31 隻,
-    而診斷照樣印結論。呢度加重試,而且逼個 caller 知道邊隻冇到。"""
-    import time
-    import yfinance as yf
+    而診斷照樣印結論。呢度加重試,而且逼個 caller 知道邊隻冇到。
+    ★ 2026-08-21 自我審計:SPY 之前係唯一冇重試嘅一個 call,而且排喺 38 隻之後
+      —— 即係最容易被限流嗰刻。SPY 一失敗,整個環境濾網就冇晒,而環境覆蓋率
+      正正係上次唯一站得住嘅發現。而家 SPY 同樣重試,而且失敗即刻 sys.exit。"""
     print(f"下載 {len(tickers)} 隻 + SPY ({start} → {end})...")
-    out, missing = {}, []
+    out, missing, short = {}, [], []
     for i, tk in enumerate(tickers, 1):
-        for attempt, pause in enumerate((0, 2, 5, 10), 1):   # 4 次,遞增等待
-            if pause:
-                time.sleep(pause)
-            try:
-                df = yf.Ticker(tk).history(start=start, end=end, auto_adjust=True)
-            except Exception as e:
-                df = None
-                if attempt == 4:
-                    print(f"  [{i}/{len(tickers)}] {tk} 失敗: {e}")
-            if df is not None and len(df) >= 300:
-                df.index = pd.to_datetime(df.index).tz_localize(None)
-                out[tk] = add_indicators(df)
-                tag = "" if attempt == 1 else f" (第{attempt}次先得)"
-                print(f"  [{i}/{len(tickers)}] {tk} {len(df)} 條{tag}", end="\r")
-                break
-            if attempt == 4:
-                n = 0 if df is None else len(df)
-                print(f"  [{i}/{len(tickers)}] {tk} 試咗4次都拎唔到 ({n} 條) — 缺失")
-                missing.append(tk)
-    spy = yf.Ticker("SPY").history(start=start, end=end, auto_adjust=True)
+        lbl = f"[{i}/{len(tickers)}] "
+        df, status, tag = _fetch(tk, start, end, lbl)
+        if status == "ok":
+            df.index = pd.to_datetime(df.index).tz_localize(None)
+            out[tk] = add_indicators(df)
+            print(f"  {lbl}{tk} {len(df)} 條{tag}", end="\r")
+        elif status == "short":
+            print(f"  {lbl}{tk} 數據不足 ({len(df)} 條,要 300) — 跳過")
+            short.append(tk)
+        else:
+            print(f"  {lbl}{tk} 試咗4次都拎唔到 — 缺失")
+            missing.append(tk)
+
+    # ── SPY:環境濾網嘅唯一來源。冇佢就冇分析,所以失敗要即刻死,唔好靜靜雞行落去 ──
+    spy, status, _ = _fetch("SPY", start, end, "[SPY] ")
+    if status != "ok":
+        print("\n★★ SPY 攞唔到 —— 環境濾網冇晒,冇得繼續。")
+        print("   多數係 Yahoo 限流(SPY 排喺全部股票之後先攞)。等 10 分鐘再跑。")
+        sys.exit(1)
     spy.index = pd.to_datetime(spy.index).tz_localize(None)
     spy["MA200"] = spy["Close"].rolling(RULES.REGIME_MA).mean()
     # ★ 落後 N 條 bar —— 用尋日嘅環境判斷今日,冇前視
     spy["bull"] = (spy["Close"] > spy["MA200"]).shift(RULES.REGIME_LAG_BARS).fillna(False)
+
     print(f"\n  成功 {len(out)} 隻 / 要求 {len(tickers)} 隻,SPY {len(spy)} 條")
+    if short:
+        print(f"  · 歷史不足(非限流,重跑冇用):{', '.join(short)}")
     if missing:
         print(f"  ★ 缺失 {len(missing)} 隻:{', '.join(missing)}")
     print()
