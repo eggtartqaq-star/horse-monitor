@@ -1,0 +1,73 @@
+# Regulatory Brief — Bloom Energy (BE)
+**Analyst:** The dictator (Dept. 4) · **Reference date:** 2026-07-19 · Coverage: US federal tax, EPA, CA state, permitting, SEC/litigation
+
+Process caveat: OBBBA is **enacted law** (signed July 4, 2025); the EPA endangerment-finding rescission is a **final rule** (Feb 18, 2026); the power-plant GHG repeal is **proposed**, not final. Litigation items are **pending investigations**, not filed/adjudicated claims except where noted. Investment-impact assessment, not legal advice.
+
+## Net regulatory read: **TAILWIND (moderate), with an active headline/FEOC risk overlay**
+The dominant, enacted 48E fuel-cell ITC plus reduced federal emissions risk outweigh the SGIP loss and give a net-positive policy backdrop. The offset is idiosyncratic and unpriced-tail: the scandium/FEOC-litigation cluster. Treat regulatory as **thesis support**, but flag **July 28 earnings** and any **FEOC guidance / filed complaint** as tripwires that could flip the near-term read to neutral.
+
+## 1. Federal ITC — fuel cells restored under Section 48E (TAILWIND, enacted)
+OBBBA (enacted July 4, 2025) added **fuel cells to the 30% Section 48E clean-electricity ITC** for fuel cells that **begin construction after Dec 31, 2025 and before Dec 31, 2033**, phasing out through Dec 31, 2035. Fuel cells were **excluded from domestic-content and energy-community bonus adders**. This is the single most material regulatory item in the thesis — pre-OBBBA, Bloom's fuel cells had lost clean-energy ITC eligibility.
+- **Mechanism:** a 30% ITC to the project owner/customer improves Bloom's effective pricing power and lowers customer payback — margin and demand tailwind. JP Morgan cited the 48E inclusion when upgrading BE to Overweight (PT $18→$33, July 2025), later escalating to $346 (July 2026).
+- **Residual risk:** Treasury/IRS guidance on begin-construction and on FEOC "prohibited foreign entity" material-assistance restrictions phasing into 48E from 2026.
+- **Tripwire:** IRS 48E begin-construction guidance; FEOC "material assistance" thresholds that could disqualify projects using China-sourced components — **this links directly to the scandium supply-chain allegation (§6)**.
+
+## 2. 45V clean-hydrogen credit (MODEST/OPTIONAL, accelerated sunset)
+OBBBA **accelerated the 45V sunset**: construction must begin **before Jan 1, 2028** (pulled forward from 2033); FEOC restrictions do NOT apply to 45V. Supports the electrolyzer side — secondary optionality, not the core gas-fuel-cell business. The compressed 30-month window is a mild negative for electrolyzer TAM.
+
+## 3. 45Q carbon-capture credit (MINOR POSITIVE OPTIONALITY)
+OBBBA gave **rate parity** ($17/ton base; **$85/ton** with labor requirements) across sequestration, utilization, EOR and DAC for equipment placed in service after July 4, 2025; expiration unchanged (construction before Jan 1, 2033). Bloom's high-purity CO₂ exhaust stream makes carbon capture comparatively cheaper vs combustion — a small future differentiator, not a current revenue driver.
+
+## 4. EPA GHG endangerment finding rescinded (NET TAILWIND, with nuance)
+EPA **finalized rescission of the 2009 GHG endangerment finding on Feb 18, 2026** (FR 2026-03157), removing the legal predicate for federal GHG rules; separately EPA **proposed (June 2025)** repealing the power-plant carbon rule.
+- **Two-sided:** Bloom runs mostly on **natural gas**, so its principal emissions-regulation tail risk (a future federal carbon price penalizing gas) is materially reduced — a tailwind de-risking the installed base. **Counterpoint:** a weaker federal GHG regime also removes a tailwind that would have advantaged low-emission tech over combustion, softening the ESG sales narrative.
+- **Tripwire:** court challenges to the rescission; state-level GHG/carbon-intensity rules filling the federal vacuum; local methane/air-toxics actions.
+
+## 5. State programs & permitting — CA SGIP and behind-the-meter gas (MIXED)
+**SGIP (mild headwind, already priced):** California's SGIP has shifted to battery storage; generation incentives now require **100% renewable fuel**, so **natural-gas fuel cells are effectively ineligible**. No longer a meaningful demand driver.
+**Interconnection / air permitting for data centers (TAILWIND):** grid interconnection queues of 2–5+ years push AI data-center operators to **behind-the-meter on-site generation**, where Bloom claims ~90-day deployment; near-zero NOx/SOx/PM eases **local air-permitting** vs reciprocating engines/turbines. Underpins the $25B Brookfield commitment (expanded June 30, 2026). **Open risk:** large behind-the-meter gas at AI scale sits outside traditional utility/emissions oversight; regulators have not settled how to treat it.
+- **Tripwire:** any state PUC or air district (CA, VA "Data Center Alley," TX) moving to permit/meter/emissions-regulate behind-the-meter gas; local air-permit denials or data-center gas moratoria.
+
+## 6. SEC / litigation (ACTIVE HEADLINE RISK)
+**History:** Feb 12, 2020 **restatement** of FY2018–Q3 2019 financials over Managed Service Agreement accounting, following the Sept 2019 **Hindenburg** report; securities class action settled for **$3.0M**, final approval May 6, 2024.
+**Current:** On **July 8, 2026**, **Hunterbrook** published a report alleging Bloom understated **China dependence for scandium oxide**, modeling ~220 tons needed to scale to 5GW vs ~240 tons global supply. Bloom filed an **8-K July 9, 2026** and publicly rebutted, calling the claims "false and misleading" and stating supply is sufficient and not China-dependent. Stock fell ~12% intraday, then rebounded ~6%. **Rosen Law** and **Kessler Topaz** announced securities class-action investigations.
+- **Two distinct risks:** (a) **litigation/disclosure** — investigations early (no filed complaint as of ref date), but the 2020 restatement history makes headline and re-restatement tail risk non-trivial; (b) **regulatory cross-link** — if the China-scandium allegation is directionally true, it collides with **48E FEOC restrictions** phasing in from 2026, potentially threatening **customer ITC eligibility** — the more strategically dangerous vector than the accounting claim itself (assessment; unconfirmed).
+- **Tripwire:** filed class-action complaint; SEC comment letter/subpoena; changed supply-chain or scandium disclosure language in the 10-Q; auditor commentary; Treasury FEOC guidance naming affected inputs. **Q2 earnings July 28, 2026** is the next disclosure window.
+
+## Sources
+- Sidley — OBBBA energy landscape: https://www.sidley.com/en/insights/newsupdates/2025/07/the-one-big-beautiful-bill-act-navigating-the-new-energy-landscape · Kirkland — OBBBA green energy credits: https://www.kirkland.com/publications/kirkland-alert/2025/08/one-big-beautiful-bill-act-brings-big-changes-to-green-energy-tax-credits
+- Baker Botts — OBBBA clean energy tax: https://www.bakerbotts.com/thought-leadership/publications/2025/july/one-big-beautiful-bill-act-substantially-alters-clean-energy-tax-landscape · RSM — 45V: https://rsmus.com/insights/services/business-tax/obbba-tax-clean-fuels.html · ESG Review — 45Q/45V: https://esgreview.net/2025/07/02/big-beautiful-bill-extends-45q-clean-hydrogen-tax-credit/
+- Federal Register — endangerment finding rescission: https://www.federalregister.gov/documents/2026/02/18/2026-03157/rescission-of-the-greenhouse-gas-endangerment-finding-and-motor-vehicle-greenhouse-gas-emission · Kirkland — EPA final rule: https://www.kirkland.com/publications/kirkland-alert/2026/03/us-environmental-protection-agency-issues-final-rule · Venable: https://www.venable.com/insights/publications/2026/02/epa-rescinds-endangerment-finding-impacts-on-air
+- CPUC SGIP: https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/demand-side-management/self-generation-incentive-program · Utility Dive — Bloom 2GW capacity: https://www.utilitydive.com/news/bloom-energy-says-its-on-track-for-2-gw-annual-production-capacity/804291/ · CRS R48762: https://www.congress.gov/crs-product/R48762 · TechTimes — Brookfield $25B: https://www.techtimes.com/articles/319573/20260702/bloom-energy-lands-25-billion-brookfield-commitment-ai-data-center-fuel-cells.htm
+- JPM upgrade: https://finance.yahoo.com/news/jp-morgan-upgrades-bloom-energy-154954893.html · MarketBeat JPM PT $346: https://www.marketbeat.com/instant-alerts/jpmorgan-chase-co-issues-positive-forecast-for-bloom-energy-nysebe-stock-price-2026-07-21/
+- Hunterbrook rebuttal (TradingView): https://www.tradingview.com/news/tradingview:182c46c3cc8f3:0-bloom-energy-rebuts-short-seller-report-defends-scandium-supply-and-financials/ · Benzinga — short report: https://www.benzinga.com/trading-ideas/movers/26/07/60342006/bloom-energy-hit-by-explosive-short-report-questioning-china-free-supply-claims · Rosen Law: https://www.businesswire.com/news/home/20260708236165/en/Rosen-Law-Firm-Encourages-Bloom-Energy-Corporation-Investors-to-Inquire-About-Securities-Class-Action-Investigation-BE · Kessler Topaz: https://www.ktmc.com/new-cases/bloom-energy-corporation/
+- Primary filings for committee to pull directly (EDGAR 403'd via proxy): BE 8-K 2026-07-09 https://www.sec.gov/Archives/edgar/data/0001664703/000162828026047734/be-20260709.htm · BE FY2025 10-K https://www.sec.gov/Archives/edgar/data/1664703/000162828026024240/ars202510k.pdf
+
+---
+*Research and decision support only — not financial advice.*
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing.** This report predates 2026-07-30, when the environment's
+HTTP 403 egress restriction was first observed and verified. Whether
+direct page fetch was available when this was written **was not recorded
+at the time**, so no claim is made either way — rely on the sourcing
+stated in the body of the report itself.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

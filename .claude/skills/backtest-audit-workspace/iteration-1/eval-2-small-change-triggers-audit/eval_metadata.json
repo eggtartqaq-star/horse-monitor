@@ -1,0 +1,10 @@
+{
+ "eval_id": 2,
+ "eval_name": "small-change-request-triggers-audit",
+ "prompt": "can you add a 2% take profit to my backtest script? it's in strategy/v6.4/oos_validation.py. everything else is working fine, i just want the extra exit condition",
+ "assertions": [
+  "Actually makes the requested take-profit change rather than only auditing",
+  "Surfaces at least one pre-existing defect that affects the reported result",
+  "Does not refuse or lecture instead of doing the work"
+ ]
+}

@@ -1,0 +1,703 @@
+<title>V6.4 Dual Engine — Code &amp; Risk Review</title>
+<style>
+  :root{
+    --paper:#F4F5F7; --surface:#FFFFFF; --surface-2:#FAFAFB;
+    --ink:#131720; --ink-2:#4A5464; --ink-3:#727D8C;
+    --rule:#DCE0E6; --rule-soft:#E9ECF0;
+    --gold:#9C6D18; --gold-soft:#F0E4CB;
+    --basic:#33629F; --strong:#276B4C;
+    --crit:#A22B24; --crit-bg:#F6E4E2;
+    --high:#9C5C15; --high-bg:#F7E9D6;
+    --med:#2C6592;  --med-bg:#E2ECF5;
+    --low:#5A6472;  --low-bg:#E9EBEE;
+    --ok:#276B4C;   --ok-bg:#E1EFE7;
+    --shadow:0 1px 2px rgba(19,23,32,.05), 0 8px 24px -16px rgba(19,23,32,.22);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#0E1117; --surface:#151A21; --surface-2:#1A2029;
+      --ink:#E8EAEE; --ink-2:#9AA3B0; --ink-3:#78828F;
+      --rule:#252C36; --rule-soft:#1E242D;
+      --gold:#D9A441; --gold-soft:#3A2E15;
+      --basic:#78A9E0; --strong:#5FB68B;
+      --crit:#E8756A; --crit-bg:#33201E;
+      --high:#DE9A4E; --high-bg:#332715;
+      --med:#78AEDD;  --med-bg:#17232E;
+      --low:#8F98A6;  --low-bg:#1C2129;
+      --ok:#5FB68B;   --ok-bg:#16281F;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#F4F5F7; --surface:#FFFFFF; --surface-2:#FAFAFB;
+    --ink:#131720; --ink-2:#4A5464; --ink-3:#727D8C;
+    --rule:#DCE0E6; --rule-soft:#E9ECF0;
+    --gold:#9C6D18; --gold-soft:#F0E4CB;
+    --basic:#33629F; --strong:#276B4C;
+    --crit:#A22B24; --crit-bg:#F6E4E2;
+    --high:#9C5C15; --high-bg:#F7E9D6;
+    --med:#2C6592;  --med-bg:#E2ECF5;
+    --low:#5A6472;  --low-bg:#E9EBEE;
+    --ok:#276B4C;   --ok-bg:#E1EFE7;
+    --shadow:0 1px 2px rgba(19,23,32,.05), 0 8px 24px -16px rgba(19,23,32,.22);
+  }
+  :root[data-theme="dark"]{
+    --paper:#0E1117; --surface:#151A21; --surface-2:#1A2029;
+    --ink:#E8EAEE; --ink-2:#9AA3B0; --ink-3:#78828F;
+    --rule:#252C36; --rule-soft:#1E242D;
+    --gold:#D9A441; --gold-soft:#3A2E15;
+    --basic:#78A9E0; --strong:#5FB68B;
+    --crit:#E8756A; --crit-bg:#33201E;
+    --high:#DE9A4E; --high-bg:#332715;
+    --med:#78AEDD;  --med-bg:#17232E;
+    --low:#8F98A6;  --low-bg:#1C2129;
+    --ok:#5FB68B;   --ok-bg:#16281F;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans CJK TC','PingFang TC','Microsoft JhengHei',sans-serif;
+    font-size:16px; line-height:1.62; overflow-x:hidden;
+  }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px 96px; }
+  @media (max-width:640px){ .wrap{ padding:0 16px 64px; } }
+
+  h1,h2,h3{ font-family:Georgia,'Iowan Old Style','Palatino Linotype','Times New Roman',serif; text-wrap:balance; font-weight:600; margin:0; }
+  .mono{ font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace; }
+  code,pre{ font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace; }
+
+  /* ---------- masthead ---------- */
+  header.mast{ padding:56px 0 32px; border-bottom:1px solid var(--rule); }
+  .eyebrow{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 18px;
+  }
+  h1{ font-size:clamp(30px,5vw,46px); line-height:1.12; letter-spacing:-.015em; }
+  .dek{ margin:16px 0 0; max-width:64ch; font-size:17px; color:var(--ink-2); }
+  .meta{
+    display:flex; flex-wrap:wrap; gap:8px 26px; margin-top:26px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px; color:var(--ink-3);
+  }
+  .meta b{ color:var(--ink-2); font-weight:500; }
+
+  /* ---------- tiles ---------- */
+  .tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px;
+    background:var(--rule); border:1px solid var(--rule); margin:36px 0 8px; }
+  .tile{ background:var(--surface); padding:18px 18px 16px; }
+  .tile .n{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:30px; line-height:1.1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .tile .l{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); margin-top:7px; }
+  .tile.is-crit .n{ color:var(--crit); }
+  .tile.is-high .n{ color:var(--high); }
+  .tile.is-ok   .n{ color:var(--ok); }
+  .tile .n.verdict{ font-size:19px; line-height:1.35; letter-spacing:.01em; }
+
+  /* ---------- sections ---------- */
+  section{ margin-top:64px; }
+  .sec-head{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+    padding-bottom:12px; border-bottom:2px solid var(--ink); margin-bottom:26px; }
+  .sec-head h2{ font-size:23px; letter-spacing:-.01em; }
+  .sec-head .tag{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); }
+  .lede{ max-width:68ch; color:var(--ink-2); margin:0 0 26px; }
+  .lede strong{ color:var(--ink); font-weight:600; }
+
+  /* ---------- findings ledger ---------- */
+  .find{ border-top:1px solid var(--rule); padding:22px 0; }
+  .find:last-child{ border-bottom:1px solid var(--rule); }
+  .find-top{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .fid{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+  .chip{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 8px; border:1px solid currentColor; }
+  .chip.crit{ color:var(--crit); background:var(--crit-bg); }
+  .chip.high{ color:var(--high); background:var(--high-bg); }
+  .chip.med{  color:var(--med);  background:var(--med-bg); }
+  .chip.low{  color:var(--low);  background:var(--low-bg); }
+  .chip.ok{   color:var(--ok);   background:var(--ok-bg); }
+  .find h3{ font-size:19px; margin:11px 0 0; line-height:1.3; letter-spacing:-.005em; }
+  .where{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px; color:var(--ink-3); margin-top:6px; word-break:break-word; }
+  .find-body{ display:grid; grid-template-columns:1fr 1fr; gap:20px 34px; margin-top:16px; }
+  @media (max-width:720px){ .find-body{ grid-template-columns:1fr; gap:16px; } }
+  .find-body h4{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3);
+    margin:0 0 6px; font-weight:400; }
+  .find-body p{ margin:0; font-size:15px; color:var(--ink-2); }
+  .find-body p + p{ margin-top:9px; }
+  .find-body strong{ color:var(--ink); font-weight:600; }
+  code{ font-size:.88em; background:var(--surface-2); border:1px solid var(--rule-soft);
+    padding:1px 5px; color:var(--ink); word-break:break-word; }
+
+  /* ---------- system map ---------- */
+  .mapwrap{ background:var(--surface); border:1px solid var(--rule); padding:22px 8px;
+    overflow-x:auto; box-shadow:var(--shadow); }
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 22px; margin-top:16px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:11.5px; color:var(--ink-2); }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .dot{ width:9px; height:9px; flex:0 0 auto; }
+
+  /* ---------- upgrade queue ---------- */
+  ol.queue{ list-style:none; counter-reset:q; padding:0; margin:0;
+    display:flex; flex-direction:column; gap:1px; background:var(--rule);
+    border:1px solid var(--rule); }
+  ol.queue li{ counter-increment:q; background:var(--surface); padding:20px 22px;
+    display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:start; }
+  ol.queue li::before{ content:counter(q); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:22px; color:var(--gold); font-variant-numeric:tabular-nums; line-height:1.3; }
+  ol.queue h3{ font-size:17px; margin:0 0 6px; }
+  ol.queue p{ margin:0; font-size:15px; color:var(--ink-2); }
+  ol.queue .refs{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px; color:var(--ink-3); margin-top:8px; }
+
+  /* ---------- kept list ---------- */
+  ul.kept{ list-style:none; padding:0; margin:0; }
+  ul.kept li{ padding:15px 0; border-top:1px solid var(--rule-soft); display:grid;
+    grid-template-columns:auto 1fr; gap:14px; align-items:start; }
+  ul.kept li:first-child{ border-top:none; }
+  ul.kept .mk{ color:var(--ok); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; }
+  ul.kept p{ margin:0; font-size:15px; color:var(--ink-2); }
+  ul.kept strong{ color:var(--ink); font-weight:600; }
+
+  blockquote{ margin:24px 0 0; padding:18px 22px; background:var(--surface);
+    border:1px solid var(--rule); border-left:3px solid var(--gold); }
+  blockquote p{ margin:0; font-size:15px; color:var(--ink-2); }
+  blockquote p.q{ font-family:Georgia,'Iowan Old Style',serif; font-size:17px; color:var(--ink); margin-bottom:8px; }
+
+  /* ---------- pending ---------- */
+  .pending{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1px;
+    background:var(--rule); border:1px solid var(--rule); }
+  .pending div{ background:var(--surface); padding:18px 20px; }
+  .pending h3{ font-size:16px; margin:0 0 4px; }
+  .pending .who{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px; color:var(--ink-3); letter-spacing:.06em; }
+  .pending p{ margin:9px 0 0; font-size:14px; color:var(--ink-2); }
+
+  footer{ margin-top:72px; padding-top:24px; border-top:1px solid var(--rule);
+    font-size:13px; color:var(--ink-3); max-width:70ch; }
+  footer p{ margin:0 0 9px; }
+
+  a{ color:var(--gold); }
+  a:focus-visible,[tabindex]:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">皮褸黃 Capital · Quantitative Engineering Review</p>
+  <h1>V6.4 Dual Engine</h1>
+  <p class="dek">A line-by-line review of the Owner's swing-trading system — five source files, two engines, one live account. This document exists to find what is broken before the market does.</p>
+  <div class="meta">
+    <span><b>Reviewed</b> 2026-07-30</span>
+    <span><b>Scope</b> 5 files · 62.3 KB source</span>
+    <span><b>Reviewers</b> CEO · Tom (Quant) · John (CRO)</span>
+    <span><b>Status</b> all three complete</span>
+  </div>
+</header>
+
+<div class="tiles">
+  <div class="tile is-high"><div class="n verdict">UNPROVEN</div><div class="l">Quant verdict · Tom</div></div>
+  <div class="tile is-crit"><div class="n verdict">VETOED</div><div class="l">Risk verdict · John</div></div>
+  <div class="tile is-crit"><div class="n">22<span style="font-size:15px;color:var(--ink-3)">/100</span></div><div class="l">Risk score</div></div>
+  <div class="tile is-crit"><div class="n">0<span style="font-size:15px;color:var(--ink-3)"> of 6</span></div><div class="l">Integrity checks passed</div></div>
+  <div class="tile is-ok"><div class="n">6</div><div class="l">Done right</div></div>
+</div>
+
+<section style="margin-top:44px">
+  <div class="sec-head"><h2>The calculation that ends the argument</h2><span class="tag">Tom · finding C-2</span></div>
+  <p class="lede">Everything else in this document is refinement. This is the part that decides whether the system can trade at all — and it needs no market data to compute.</p>
+  <div class="mapwrap" style="padding:26px 24px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:26px">
+      <div>
+        <h4 style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:400">Expected gross profit per trade</h4>
+        <div class="mono" style="font-size:32px;color:var(--ok);font-variant-numeric:tabular-nums">US$1.70</div>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--ink-2)">Engine 2 at the claimed +1.325% EV, on the US$128 position that HK$10,000 at 1% risk actually funds. Engine 1: US$2.01.</p>
+      </div>
+      <div>
+        <h4 style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:400">Round-trip commission</h4>
+        <div class="mono" style="font-size:32px;color:var(--crit);font-variant-numeric:tabular-nums">US$0.70–4.00</div>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--ink-2)">Three realistic broker scenarios. In two of the three, the ticket costs more than the trade is expected to earn.</p>
+      </div>
+      <div>
+        <h4 style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:400">Net EV after friction</h4>
+        <div class="mono" style="font-size:32px;color:var(--crit);font-variant-numeric:tabular-nums">−0.49%</div>
+        <p style="margin:8px 0 0;font-size:14px;color:var(--ink-2)">Mid-case broker. Best case +0.53% (60% of the edge gone). Typical HK retail: −2.06%.</p>
+      </div>
+    </div>
+    <p style="margin:22px 0 0;padding-top:18px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink)"><strong>At this account size the strategy is a commission-generation machine unless executed at the cheapest broker tier — and even then it loses 60% of its edge.</strong> Broker schedules are illustrative and must be replaced with your actual rates; the conclusion is unlikely to move.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Escalated to the Owner</h2><span class="tag">John · immediate</span></div>
+  <p class="lede">Two items the CRO raised to me directly, outside the ranked findings.</p>
+  <div class="find" style="border-top:2px solid var(--crit)">
+    <div class="find-top"><span class="fid">ESC-1</span><span class="chip crit">Realised breach</span></div>
+    <h3>A leverage event has already happened — 18 July, BAC, estimated ~9× the account balance</h3>
+    <div class="find-body">
+      <div>
+        <h4>What happened</h4>
+        <p>The comment in your own backtest records two sizing breaches (13 and 18 July). John traced the 18 July event and puts the position at <strong>at least 2.3×, plausibly ~9×</strong> the account balance — a realised breach of <code>leverage: none</code>.</p>
+        <p>He also notes the 13 July self-reproach may be partly a <strong>currency bug in the bot</strong>, not indiscipline. Fix the code before drawing conclusions about yourself.</p>
+      </div>
+      <div>
+        <h4>The mechanism, not the promise</h4>
+        <p>His governing principle: <em>any control that routes through your own hands at the moment of the trade is willpower wearing a different hat.</em> Both breaches happened <strong>after the bot had already told you no.</strong></p>
+        <p>The fix is external and prior: <strong>a cash-only account with margin disabled.</strong> Then 300 shares of BAC is not a decision you decline — it is an order the broker rejects. One phone call, no code, zero cost.</p>
+      </div>
+    </div>
+  </div>
+  <div class="find">
+    <div class="find-top"><span class="fid">ESC-2</span><span class="chip high">Governance</span></div>
+    <h3>No written risk limits exist for your personal account</h3>
+    <div class="find-body">
+      <div>
+        <h4>The gap</h4>
+        <p><code>config/risk-limits.yaml</code> governs the firm, not your own trading. Nothing currently constrains the personal account in writing.</p>
+      </div>
+      <div>
+        <h4>His proposed starting values — for you to set deliberately</h4>
+        <p>Max 5 concurrent positions · 5% total heat · 10% single-position notional · 40% correlated-cluster cap · 10% cash floor · 20% drawdown budget · leverage none.</p>
+        <p><em>"I will not have limits arrive by accident of whichever file happened to run."</em></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>What the system does</h2><span class="tag">reconstructed from source</span></div>
+  <p class="lede">Every trade passes a market-regime gate, then a router, then one of two engines, then four guardrails. The architecture is sound — <strong>the problems are in the evidence behind it and in the gaps between the files</strong>, not in the idea.</p>
+
+  <div class="mapwrap">
+<pre class="mermaid">
+flowchart TD
+    A["SPY &gt; MA200 ?"] -->|"no · 熊市"| Z["Stand down — no long signals"]
+    A -->|"yes · 牛市"| B{"ADX(14)"}
+    B -->|"&lt; 25 · range"| C["Engine 1 — Mean reversion 引擎一"]
+    B -->|"&ge; 25 &amp; DI+ &gt; DI−"| D["Engine 2 — Trend 引擎二"]
+    B -->|"&ge; 25 &amp; DI+ &le; DI−"| Z
+
+    C --> C1["score &ge; 0.55 · 6 weighted factors"]
+    C1 --> C2["stop = min(10d low × 0.995, close − 2×ATR)"]
+    C2 --> C3["target: MA50 or 60d high, R &ge; 2"]
+    C3 --> C4["max hold 10 days"]
+
+    D --> D1["score &ge; 0.65 · 20d high breakout"]
+    D1 --> D2["trailing stop 3×ATR"]
+    D2 --> D3["max hold 60 days"]
+
+    C4 --> G["Guardrails"]
+    D3 --> G
+    G --> G1["stop width cap"]
+    G --> G2["126d high/low &ge; 2× = speculative"]
+    G --> G3["whole shares only at 1% risk"]
+    G --> G4["must be in the 38-name pool"]
+    G1 --> T["Tier: 普通 0.5% · 強 1% · 頂級 1%"]
+    G2 --> T
+    G3 --> T
+    G4 --> T
+</pre>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--basic)"></i> 普通 Basic — observe, 0.5% risk</span>
+    <span><i class="dot" style="background:var(--strong)"></i> 強 Strong — enter, 1% risk</span>
+    <span><i class="dot" style="background:var(--gold)"></i> 頂級 Premium — priority, still 1%</span>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Findings</h2><span class="tag">CEO first pass · all ten confirmed by Quant and Risk</span></div>
+  <p class="lede">Ten defects, ordered by what they cost. The two criticals share a theme: <strong>the strategy that was measured is not the strategy that is being traded.</strong> Both departments confirmed every one of these from the code and then found six more — those follow further down.</p>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-01</span><span class="chip crit">Critical</span></div>
+    <h3>The momentum backtest still has survivorship bias — the thing its own docstring says it eliminates</h3>
+    <p class="where">momentum_pit_backtest.py · get_universe() → main()</p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>The file scrapes the <em>current</em> S&amp;P 500 constituent list from Wikipedia, then backtests 2019–2026. Point-in-time monthly re-ranking removes look-ahead from the <strong>ranking</strong>. It does nothing about the <strong>universe</strong>.</p>
+        <p>Every company deleted from the index between 2019 and 2026 — the bankruptcies, the collapses, the take-unders — is simply absent from the test. A momentum strategy is precisely the strategy most damaged by this: it buys strength, and the names that were strong and then died are the ones missing.</p>
+        <p>The <code>FALLBACK</code> list is worse. It is hand-written and contains NVDA, PLTR, COIN, MSTR — selected in 2026, with 2019–2026 hindsight.</p>
+        <p><strong>Tom found the file contradicts itself.</strong> The docstring honestly discloses 「呢層仍有輕微生存者偏差」 — <em>slight</em> survivorship bias. But the line printed to your console reads 「★ 鐵律:呢個係point-in-time,冇生存者偏差」 — <em>iron rule: this is point-in-time, there is no survivorship bias.</em> The claim you read on screen is false, the fine print says so, and the bias is not slight.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Source a point-in-time constituent history (index add/delete dates) and rebuild the pool from what was actually investable on each rebalance date.</p>
+        <p>If that data is not obtainable, <strong>the test is still usable as an upper bound</strong> — but it must be labelled that way in the file, and no capital decision may treat its EV as achievable.</p>
+        <p>Direction of bias: <strong>overstates returns</strong>. Magnitude: unknown until re-run, and that is the point.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-02</span><span class="chip crit">Critical</span></div>
+    <h3>The chart you trade from picks a different target than the engine that was validated</h3>
+    <p class="where">dual_engine_v6_4_tiers.pine (line ~"target =") vs oos_validation.py :: run_engine1()</p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>Python builds both candidate targets, filters to those with R&nbsp;≥&nbsp;2, and takes <code>min(valid, key=lambda x: x[0])</code> — the <strong>nearest</strong> qualifying target.</p>
+        <p>Pine does <code>target = high60 &gt; close ? high60 : (ma50 &gt; close ? ma50 : close)</code> — it prefers the <strong>60-day high</strong>, the farther target, whenever one exists above price.</p>
+        <p>These are different strategies. Nearest-target means a higher hit rate at lower R. Farthest-target means a lower hit rate at higher R. The take-profit line, the R value in the table, and the tier thresholds (<code>rVal &ge; 3.0</code> gates 強 and 頂級) all shift with it.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Pick one rule and propagate it to both. Given the backtest measured nearest-target, the cheap fix is to make Pine mirror Python.</p>
+        <p>If you prefer the farther target, that is a legitimate choice — but it is <strong>unvalidated</strong>, and it must go back through the OOS test before it sizes real money.</p>
+        <p>Until reconciled, the win rate and R statistics on your screen do not describe the system that produced the backtest.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-03</span><span class="chip high">High</span></div>
+    <h3><code>COOLDOWN = 10</code> is declared as locked-to-V6.4 and then never used</h3>
+    <p class="where">oos_validation.py · module constants</p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>The constant sits under a header that reads <em>"引擎一參數(同V6.4一致,不得改動)"</em> — parameters identical to V6.4, must not be changed. It is then referenced nowhere in the file.</p>
+        <p>If live V6.4 enforces a 10-day cooldown after a trade and the validation does not, the graduation test validated a <strong>more active</strong> strategy than the one you run — more trades, different sequencing, different EV.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Determine which is authoritative. Either implement the cooldown in the validator and re-run, or delete the constant and record that V6.4 has no cooldown.</p>
+        <p>Then audit the other "locked" constants the same way. A constant that is declared but unused is a claim the code does not keep.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-04</span><span class="chip high">High</span></div>
+    <h3>Trades still open at a window boundary are silently discarded</h3>
+    <p class="where">oos_validation.py :: run_engine2() — <code>if j &gt;= end_idx: break</code></p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>When the loop hits the boundary, <code>exit_ret</code> is never assigned, so the trade is never appended. It vanishes.</p>
+        <p>In a 3×ATR trailing-stop system, losers stop out fast and winners run. The trades alive at any boundary are <strong>disproportionately the winners</strong>. So the discard removes winners from both windows — but with a 60-day maximum hold, an 18-month OOS window loses a larger <em>share</em> of its trades than a ~30-month in-sample window.</p>
+        <p>Net direction: <strong>OOS EV is biased down relative to in-sample.</strong> Conservative, which is the right way to be wrong — but it means the "OOS ≥ 50% of IS" pass mark is being applied to an unfair comparison.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Mark open trades to market at the boundary and record them with an <code>OPEN_AT_BOUNDARY</code> flag, or exclude any entry within 60 days of a boundary from both windows so the two are treated identically.</p>
+        <p>Report the count of affected trades either way — if it is large, the graduation verdict is not stable.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-05</span><span class="chip high">High</span></div>
+    <h3>No commission, no spread, no slippage — anywhere in any file</h3>
+    <p class="where">oos_validation.py · momentum_pit_backtest.py — entries and exits at <code>Close</code></p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>Every fill is at the closing price, free. A real HK-based retail account trading US equities pays a platform fee, crosses a spread, and does not reliably get the close.</p>
+        <p>This matters more than it looks because the edge is <em>thin per trade</em>. Against a reported per-trade EV near +1.3%, an illustrative round-trip cost of 0.20–0.30% removes roughly 15–23% of the edge; at 0.50% it removes about 38%. <em>Those cost figures are illustrative assumptions, not measured — substitute your broker's real numbers.</em></p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Add a <code>COST_BPS</code> parameter applied on both legs of every simulated trade, and set the default to your actual all-in cost rather than zero.</p>
+        <p>Then re-read every historical result. An edge that survives realistic costs is an edge; one that does not is a spreadsheet.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-06</span><span class="chip high">High</span></div>
+    <h3>Per-trade EV is being read as a portfolio result, and it is not one</h3>
+    <p class="where">oos_validation.py :: stats() · momentum_pit_backtest.py :: main() open_positions</p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p><code>oos_validation.py</code> pools trades from 38 tickers and averages them as if they were independent draws. They are not — they are concurrent, correlated, and capital-constrained.</p>
+        <p><code>momentum_pit_backtest.py</code> does track open positions, but caps <strong>nothing</strong>. It will happily be long every name in the 50-stock momentum pool simultaneously. At the stated 1% risk each, that is <strong>50% portfolio heat</strong> against a rule that reads "1% risk per trade."</p>
+        <p>And a momentum pool is close to a single factor. Fifty positions is not fifty bets.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Run a portfolio-level simulation with an explicit concurrent-position cap, a total-heat cap, and a real equity curve — then report <strong>maximum drawdown and time-to-recovery</strong>, not just per-trade EV.</p>
+        <p>Per-trade EV cannot tell you whether the strategy is survivable. Only the equity curve can.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-07</span><span class="chip med">Medium</span></div>
+    <h3>The stop-width guardrail has two different values in three files</h3>
+    <p class="where">dual_engine_v6_4_tiers.pine (<code>&gt; 15</code>) vs telegram_swing_bot.py :: trend_plan() (<code>&gt; 12</code>) vs both backtests (<code>&le; 12</code>)</p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>The chart blocks a signal when the stop is wider than 15% of price. The bot and both backtests block at 12%.</p>
+        <p>So there is a band — stops between 12% and 15% — where <strong>the chart shows you a valid signal that the bot refuses and the backtest never tested.</strong> Those are your widest-stop, largest-position-risk trades.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>One constant, one file, imported everywhere. Pine cannot import from Python, so the Pine value must be maintained deliberately and checked whenever the Python changes.</p>
+        <p>Add it to a written parameter table that both implementations are diffed against.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-08</span><span class="chip med">Medium</span></div>
+    <h3>The regime filter is evaluated on the same bar it trades</h3>
+    <p class="where">oos_validation.py :: main() — <code>spy_bull_raw = spy["Close"] &gt; spy["MA200"]</code></p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>MA200 includes today's close, the bull flag is read on that bar, and entry is at that same close. This is executable <em>only</em> if you actually transact at or very near the close.</p>
+        <p>Separately, the whipsaw cost of SPY crossing MA200 repeatedly is never measured. The filter is treated as free risk control; it is not free.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Either state the close-execution assumption explicitly, or shift the regime flag one bar and re-run to see how much of the edge was depending on same-bar information.</p>
+        <p>Add a count of regime flips per year to the output so the whipsaw cost is visible.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-09</span><span class="chip med">Medium</span></div>
+    <h3>One data vendor supplies signals, stops and position sizes — with no cross-check</h3>
+    <p class="where">all five files — yfinance · telegram_swing_bot.py <code>BOT_TOKEN</code> placeholder</p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>yfinance is the sole source for prices, ATR, stops and share counts. A silent change to its adjustment handling changes your stop levels without any error being raised.</p>
+        <p>This firm blacklisted a market-data vendor this month after a single bad print manufactured an event that never happened. One vendor with no second opinion is the same exposure.</p>
+        <p>Also operational: the Telegram bot replies only while your PC is running, and <code>BOT_TOKEN</code> is still the literal placeholder string.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Cross-check the previous close against a second free source before acting on any signal, and hard-fail on a disagreement beyond a set tolerance rather than proceeding quietly.</p>
+        <p>Move the token to an environment variable — it does not belong in a file you send to other people.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">F-10</span><span class="chip med">Medium</span></div>
+    <h3>Roughly twenty hand-tuned thresholds, and one parameter change that quadrupled the result</h3>
+    <p class="where">mr_score() · trend_score_calc() · Pine comment "回測EV由0.24%升至1.10%"</p>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p><code>mr_score()</code> alone contains about twenty hand-chosen numeric boundaries plus five weights; <code>trend_score_calc()</code> adds more. Each one is a researcher degree of freedom.</p>
+        <p>The Pine comment records that widening the stop lifted backtest EV from 0.24% to 1.10% — a <strong>4.5× jump from a single parameter</strong>. That is the signature of a fitted parameter rather than a discovered effect.</p>
+        <p>The OOS test locks the parameters, which is correct. But those parameters were <em>selected</em> using data that includes the in-sample window, so the OOS window is not as clean as a single split implies.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Replace the one-shot split with <strong>walk-forward validation</strong>: re-fit on a rolling past window, test on the next unseen block, repeat. Report the distribution of out-of-sample results, not one number.</p>
+        <p>Then apply a multiple-testing haircut. If the edge only exists at one setting of one parameter, it is not an edge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>What is already right</h2><span class="tag">preserve these</span></div>
+  <p class="lede">A review that only lists faults is a bad review. Several things here are done better than most professional backtests, and they should survive every future rewrite.</p>
+  <ul class="kept">
+    <li><span class="mk">✓</span><p><strong>Gap protection on the trailing stop.</strong> <code>exit_px = min(pos["trail"], row["Open"])</code> correctly fills at the open when price gaps through the stop, instead of pretending you got the stop price. Most retail backtests get this wrong and quietly inflate every result.</p></li>
+    <li><span class="mk">✓</span><p><strong>Check-then-update ordering</strong> on the trailing stop — 先檢查後更新. Updating the trail before testing it against today's low is one of the most common look-ahead bugs in existence, and it is avoided deliberately and commented.</p></li>
+    <li><span class="mk">✓</span><p><strong>Same-bar ambiguity resolved against yourself.</strong> <code>simulate_mr()</code> tests the stop before the target, so a bar that touches both is recorded as a loss. That is the pessimistic and correct convention.</p></li>
+    <li><span class="mk">✓</span><p><strong>Point-in-time re-ranking</strong> in the momentum pool. The method is right; only the universe undermines it (F-01). Fix the universe and this becomes a genuinely honest test.</p></li>
+    <li><span class="mk">✓</span><p><strong>Whole-share sizing with an explicit refusal.</strong> <code>sharesCanBuy &lt; 1</code> blocks the signal rather than rounding up. The system would rather skip a trade than break the risk rule.</p></li>
+    <li><span class="mk">✓</span><p><strong>An out-of-sample test at all</strong>, with the pass mark written down <em>before</em> the result was known. Most retail systems never reach this step.</p></li>
+  </ul>
+
+  <blockquote>
+    <p class="q">「如果OOS唔合格,正確反應係承認過度擬合,唔係調參數令佢過關。」</p>
+    <p>— the closing line of <code>oos_validation.py</code>. <em>If the out-of-sample test fails, the correct response is to admit overfitting, not to tune the parameters until it passes.</em> This is the single most valuable line in the codebase, and it is the reason the rest of this review is worth doing.</p>
+  </blockquote>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Upgrade queue</h2><span class="tag">ranked — do them in this order</span></div>
+  <p class="lede"><strong>I had this order wrong and Tom corrected it.</strong> I put the universe rebuild first. He argued the portfolio simulator goes first, and he is right: it is the only upgrade that can <em>change the sign of the answer</em>, it needs no new data and no subscription, and it is about a day of work. There is no point buying a point-in-time dataset to more precisely measure a strategy that may cost more to trade than it earns. Establish that a net-of-cost, capital-constrained, portfolio-level edge exists at all — <em>then</em> spend money on data.</p>
+  <ol class="queue">
+    <li>
+      <div>
+        <h3>Thirty free minutes of diagnostics, before writing any code</h3>
+        <p>Add <code>ticker</code> and <code>entry_date</code> to the trade records, then print EV by ticker, <code>spy_bull.mean()</code>, and a concurrency histogram. <strong>If EV by ticker shows the edge living in four names, stop — survivorship is the whole story and nothing else needs building.</strong></p>
+        <p class="refs">Tom · costs nothing, may save the rest</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3>One event-driven portfolio simulator, replacing both scripts</h3>
+        <p>A daily loop over a real cash ledger starting at US$1,282. Integer shares via the live sizing function. Explicit <code>MAX_CONCURRENT</code> (start at 5) and a hard heat cap. A full cost model on every fill, plus FX and pessimistic stop fills. Entry at the <em>next</em> bar's open. Output the equity curve, max drawdown, drawdown duration, worst month and the tail — <em>then</em> Sharpe.</p>
+        <p class="refs">Tom U-1 · fixes F-05, F-06, D-02 · the only number Risk can clear against</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3>Point-in-time universe with delisted names</h3>
+        <p>Norgate or Sharadar, roughly US$50–150/month. This is the only real fix for the survivorship problem and it cannot be done inside yfinance. Second because it costs money — and step 2 may make it moot.</p>
+        <p class="refs">Tom U-2 · fixes F-01</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3>Walk-forward with purging and embargo</h3>
+        <p>Fit on the past, test forward, roll. <strong>Purge</strong> trades whose holding window straddles a boundary and <strong>embargo</strong> <code>max_hold</code> bars after each test window — that fixes the boundary-truncation problem properly rather than patching it. Report the distribution across folds, never a single number.</p>
+        <p class="refs">Tom U-3 · fixes F-04, F-10 · supersedes the current graduation test</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3>Count your trials honestly, then deflate</h3>
+        <p>Create <code>trials.csv</code> and retro-populate it: V1 through V6.4, every stop arm, every threshold you moved. Then compute the Deflated Sharpe with the real trial count. Tom's prior is that N ≥ 20 and the result will not clear zero — <em>and that finding would be worth more than any further optimisation.</em></p>
+        <p class="refs">Tom U-4 · quantifies F-10</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3>One shared rules module, and a Pine golden-file test</h3>
+        <p>Extract the ruleset into a single module imported by the backtest, the scanner and the bot. Export historical bars with expected tier / stop / target / R and assert Pine reproduces them. This is the only way F-02, F-03 and F-07 stay closed instead of drifting apart again.</p>
+        <p class="refs">Tom U-6 · fixes F-02, F-03, F-07, D-01, D-05</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-head"><h2>What the departments found that I missed</h2><span class="tag">Tom · Quant &nbsp;/&nbsp; John · Risk</span></div>
+  <p class="lede">Both reviewed the same source independently. They confirmed my ten findings and went further — <strong>three of the items below are more serious than anything in my preliminary list.</strong></p>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-01</span><span class="chip crit">Critical</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · H-1</span></div>
+    <h3>The chart you trade from implements only Engine 1 — and not Engine 2 at all</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>I found that Pine and Python disagree on target selection. John found the larger version: <strong>the Pine indicator implements the mean-reversion engine only.</strong> There is no trend engine on the chart.</p>
+        <p>So the momentum-pool work — the direction you correctly identified as aligned with Engine 2 — has no representation on the screen you actually look at.</p>
+      </div>
+      <div>
+        <h4>The fix</h4>
+        <p>Either implement Engine 2 in Pine, or rename the indicator to state plainly that it is Engine 1, observation only. It is currently titled as though it covers both.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-02</span><span class="chip crit">Critical</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">Tom · integrity checklist</span></div>
+    <h3>No drawdown estimate exists anywhere in the system</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>Neither script builds an equity curve. Neither computes a drawdown, a Sharpe, a Sortino, a monthly return series, or an exposure profile. A grep for those terms returns <strong>two Cantonese comments reminding the reader to look at drawdown, and zero lines of code that compute one.</strong></p>
+        <p>The closest thing to a risk statistic in the whole system is 最差單筆 — worst single trade — which is not a portfolio risk measure and is not the number that makes people stop trading.</p>
+      </div>
+      <div>
+        <h4>Why it matters</h4>
+        <p>In Tom's words: <em>you are trading real money on a system for which no drawdown estimate exists.</em> That is a structural gap, not a bug.</p>
+        <p>It is also why John cannot clear the system: there is no number for him to size against.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-03</span><span class="chip crit">Critical</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · C-1</span></div>
+    <h3>The 1% rule has no notional cap, so it produces uncapped concentration</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>A single share of any stock above <strong>US$128.21</strong> is already more than 10% of the account. Above that price the system says "buy 1" while any sane concentration limit says "buy 0" — <strong>and the system has no idea the conflict exists.</strong></p>
+        <p>Your 買唔起 guardrail fires at about US$183 on a 7% stop. The concentration limit should have fired at US$128.21. The guardrail is roughly <strong>43% too permissive in the dimension that governs gap risk.</strong></p>
+      </div>
+      <div>
+        <h4>On whether the account is too small</h4>
+        <p>John's answer is more useful than a yes or no: <em>the account is not too small to be safe. It is too small to be efficient, and far too small to replicate what was validated.</em></p>
+        <p>The design assumes many small concurrent positions averaging toward the EV. The capital supports 3–7. <strong>You get the strategy's volatility without the strategy's averaging</strong> — and at 30–60 trades a year, roughly two years to reach 100 trades.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-04</span><span class="chip high">High</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · M-2</span></div>
+    <h3>Integer rounding silently discards up to 45% of the risk budget</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>Whole-share sizing is correct as a safety behaviour (I listed it as a strength, and it stays one). But at this account size the truncation is severe: up to <strong>45% of the intended risk is thrown away</strong>, so realised deployment — and therefore realised return — runs materially below the modelled 1%.</p>
+      </div>
+      <div>
+        <h4>Why it compounds C-2</h4>
+        <p>Smaller realised positions mean the fixed ticket cost is spread over even less notional. The rounding tax and the commission problem are the same problem seen twice.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-05</span><span class="chip high">High</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · C-4, H-6, H-7</span></div>
+    <h3>Three more structural gaps</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p><strong>No position ledger.</strong> A trailing-stop strategy with no position tracking — nothing knows what you hold, so nothing can compute heat, exposure or a stale trail.</p>
+        <p><strong>The scanner's core logic is in a file that is not in the repo.</strong> <code>daily_strong_signals.py</code> imports from <code>dual_engine_v6_4.py</code>, which was not submitted, and John found a confirmed signature divergence against the bot.</p>
+      </div>
+      <div>
+        <h4>And one that may exonerate you</h4>
+        <p>The bot renders a complete, actionable trade plan for instruments it is <em>simultaneously prohibiting</em> — with a <strong>currency-corrupted share count</strong>.</p>
+        <p>Part of what you recorded as a 13 July discipline failure may be that bug. Fix the code first.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="find-top"><span class="fid">D-06</span><span class="chip med">Medium</span><span class="who mono" style="font-size:11px;color:var(--ink-3)">John · H-5</span></div>
+    <h3>The bear filter is opportunity control, not risk control</h3>
+    <div class="find-body">
+      <div>
+        <h4>What is wrong</h4>
+        <p>SPY&nbsp;&lt;&nbsp;MA200 blocks new entries — but existing positions ride into the bear on a 3×ATR trail for up to 60 more sessions. <strong>It removes 100% of the upside and 0% of the existing downside.</strong></p>
+      </div>
+      <div>
+        <h4>On timeliness</h4>
+        <p>An MA200 cross is a lagging confirmation by construction, with no buffer and no confirmation period — a single close toggles the system. An index oscillating around its 200-day average maximises flips at exactly the worst moment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Nine conditions for clearance</h2><span class="tag">John · binding · risk score rises 22 → ~70</span></div>
+  <p class="lede">John vetoed the system for live capital at its current configuration — but he was precise about scope. <strong>He is not vetoing the research.</strong> He called the process better than most retail systems and better than some institutional ones, and said the discipline in your OOS file should not be lost in what follows. What he vetoed is three things: 1%-risk sizing with no notional or concurrency cap; deploying capital while every guardrail is a <em>display</em> rather than a <em>control</em>; and treating a per-trade gross statistic as a portfolio expectation.</p>
+  <blockquote style="margin-bottom:26px"><p class="q">"The alpha may well be there. The container it is being poured into leaks."</p></blockquote>
+  <ol class="queue">
+    <li><div><h3>Cash-only account, margin disabled</h3><p>No exception, no waiver. Verified by written broker confirmation. Actionable today at zero cost, and it addresses the largest realised risk in the system.</p></div></li>
+    <li><div><h3>A position ledger that actually exists</h3><p>Open count, gross exposure, heat, cash, stale trails — reported on demand.</p></div></li>
+    <li><div><h3>Hard blocks, from one <code>risk_config.py</code></h3><p>Notional &gt; 10% of account blocks; max 5 open positions; max 5% portfolio heat; max 2 per sector. Unit-tested against the US$200-stock case that currently returns 3 shares and must return zero.</p></div></li>
+    <li><div><h3>One stop-width constant per engine</h3><p>Dead branch deleted, and Engine 1 re-validated out-of-sample <em>with</em> its live 15% filter applied — or Engine 1 retired.</p></div></li>
+    <li><div><h3>Portfolio backtest with max drawdown ≤ 20%</h3><p>Under the caps above. Mo Peter to add 1-day 95% VaR (≤3%); Mario to stress it against a semiconductor-complex drawdown using the measured pool correlation matrix.</p></div></li>
+    <li><div><h3>A data-integrity gate</h3><p>Staleness, sanity band, coverage counter, second-source cross-check, pinned dependencies — proven by deliberate failure injection, not by assertion.</p></div></li>
+    <li><div><h3>Your real commission schedule, and net EV above zero</h3><p>If net EV ≤ 0 at your actual fees, the system does not trade at this size. This is the condition most likely to fail.</p></div></li>
+    <li><div><h3>Twenty consecutive paper trades with zero sizing breaches</h3><p>Logged and reconciled against the ticket file. Any breach resets the counter to zero.</p></div></li>
+    <li><div><h3>Pine either implements Engine 2 or is renamed</h3><p>It currently claims more than it does.</p></div></li>
+  </ol>
+</section>
+
+<footer>
+  <p><strong>Final verdict: the edge is UNPROVEN as a gross phenomenon and effectively REFUTED net of cost at HK$10,000 — and Risk has vetoed live capital until nine conditions are met.</strong> Nothing here shows the strategy does not work. It shows that the evidence gathered so far cannot tell you either way, that it has been presented as though it can, and that at your account size the per-trade edge is smaller than a single commission ticket.</p>
+  <p>The design instincts were repeatedly called good by both reviewers — regime gating, an explicit out-of-sample discipline, guardrails, a written refusal to fudge the pool. The measurement is what is broken, and it is broken in a way that systematically flatters.</p>
+  <p>Prepared by the CEO from the five source files as submitted, then extended by Tom (Dept 3, Quant Research) and John (Chief Risk Officer) working the same source independently. No backtest was re-run — market data was unavailable — so every figure is derived from the code or labelled as an illustrative assumption. Broker commission schedules in particular are illustrative and must be replaced with your actual rates. Firm rule 5 applies throughout: no invented figures.</p>
+  <p>Full reports: <code>reports/quant/2026-07-30-v64-backtest-audit.md</code> · <code>reports/risk/2026-07-30-v64-risk-review.md</code></p>
+  <p>Research and decision support for the Owner's own system. Not financial advice, and not a recommendation to trade.</p>
+</footer>
+
+</div>

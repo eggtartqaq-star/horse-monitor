@@ -1,0 +1,389 @@
+<title>皮褸黃 Capital — Operating Manual</title>
+<style>
+  :root{
+    --bg:#EEF0F3; --card:#FFFFFF; --card-2:#F7F8FA;
+    --ink:#101620; --ink-2:#48525F; --ink-3:#78828F;
+    --line:#D8DDE3; --line-2:#E7EAEF;
+    --acc:#0A7C7C;          /* switchboard teal */
+    --acc-2:#C24A32;        /* the Owner / you */
+    --acc-soft:#DDF0EF;
+    --warn:#9A6212;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0B1018; --card:#131A24; --card-2:#18202B;
+      --ink:#E6EAEF; --ink-2:#98A3B0; --ink-3:#74808E;
+      --line:#232C38; --line-2:#1B232E;
+      --acc:#3ECAC2; --acc-2:#F0806A; --acc-soft:#0F2C2C; --warn:#D9A44C;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#EEF0F3; --card:#FFFFFF; --card-2:#F7F8FA;
+    --ink:#101620; --ink-2:#48525F; --ink-3:#78828F;
+    --line:#D8DDE3; --line-2:#E7EAEF;
+    --acc:#0A7C7C; --acc-2:#C24A32; --acc-soft:#DDF0EF; --warn:#9A6212;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0B1018; --card:#131A24; --card-2:#18202B;
+    --ink:#E6EAEF; --ink-2:#98A3B0; --ink-3:#74808E;
+    --line:#232C38; --line-2:#1B232E;
+    --acc:#3ECAC2; --acc-2:#F0806A; --acc-soft:#0F2C2C; --warn:#D9A44C;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink); overflow-x:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans CJK TC','PingFang TC','Microsoft JhengHei',sans-serif;
+    font-size:16px; line-height:1.6;
+  }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 22px 90px; }
+  @media (max-width:640px){ .wrap{ padding:0 14px 60px; } }
+
+  .m{ font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace; }
+
+  /* masthead */
+  header.top{ padding:52px 0 30px; }
+  .kicker{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--acc); margin:0 0 16px; }
+  h1{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:clamp(28px,5.2vw,48px); font-weight:600; letter-spacing:-.03em;
+    line-height:1.05; margin:0; text-wrap:balance; }
+  h1 em{ font-style:normal; color:var(--acc); }
+  .sub{ margin:18px 0 0; max-width:60ch; font-size:17px; color:var(--ink-2); }
+
+  .chain{ display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin-top:28px;
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; }
+  .chain b{ background:var(--card); border:1px solid var(--line); padding:7px 12px; font-weight:500; }
+  .chain b.you{ border-color:var(--acc-2); color:var(--acc-2); }
+  .chain b.me{ border-color:var(--acc); color:var(--acc); }
+  .chain i{ color:var(--ink-3); font-style:normal; }
+
+  h2{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:20px; font-weight:600; letter-spacing:-.01em; margin:0; text-wrap:balance; }
+  section{ margin-top:56px; }
+  .shead{ display:flex; align-items:baseline; gap:13px; flex-wrap:wrap;
+    border-bottom:1px solid var(--ink); padding-bottom:11px; margin-bottom:22px; }
+  .shead .n{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; color:var(--acc); }
+  .lede{ max-width:70ch; color:var(--ink-2); margin:0 0 22px; }
+  .lede strong{ color:var(--ink); font-weight:600; }
+
+  /* command list */
+  .cmds{ display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); }
+  .cmd{ background:var(--card); padding:17px 20px; display:grid;
+    grid-template-columns:minmax(150px,190px) 1fr; gap:20px; align-items:start; }
+  @media (max-width:640px){ .cmd{ grid-template-columns:1fr; gap:7px; } }
+  .cmd code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:14px;
+    color:var(--acc); background:none; padding:0; word-break:break-word; }
+  .cmd p{ margin:0; font-size:15px; color:var(--ink-2); }
+  .cmd p b{ color:var(--ink); font-weight:600; }
+  .cmd .cost{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px;
+    color:var(--ink-3); margin-top:5px; display:block; }
+
+  /* recipe table */
+  .scroll{ overflow-x:auto; border:1px solid var(--line); background:var(--card); }
+  table{ border-collapse:collapse; width:100%; min-width:640px; }
+  th,td{ text-align:left; padding:12px 16px; border-bottom:1px solid var(--line-2);
+    font-size:14.5px; vertical-align:top; }
+  th{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10.5px;
+    letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3);
+    font-weight:400; background:var(--card-2); position:sticky; top:0; }
+  tbody tr:last-child td{ border-bottom:none; }
+  td.who{ color:var(--acc); font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; }
+  td.want{ color:var(--ink); font-weight:500; }
+
+  /* departments */
+  .dept{ border:1px solid var(--line); background:var(--card); margin-bottom:14px; }
+  .dhead{ display:flex; align-items:center; gap:13px; padding:13px 18px;
+    background:var(--card-2); border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .dnum{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px;
+    color:var(--acc); font-variant-numeric:tabular-nums; }
+  .dname{ font-weight:600; font-size:15.5px; }
+  .dwhen{ font-size:13px; color:var(--ink-3); margin-left:auto; }
+  .agents{ display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); }
+  .ag{ padding:14px 18px; border-right:1px solid var(--line-2); border-bottom:1px solid var(--line-2); }
+  .ag .nm{ font-weight:600; font-size:15px; }
+  .ag .id{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px;
+    color:var(--acc); margin-top:2px; word-break:break-all; }
+  .ag .ds{ font-size:13.5px; color:var(--ink-2); margin-top:7px; }
+  .ag.veto .nm::after{ content:"VETO"; font-family:ui-monospace,Menlo,monospace;
+    font-size:9px; letter-spacing:.1em; color:var(--acc-2); border:1px solid var(--acc-2);
+    padding:1px 5px; margin-left:8px; vertical-align:2px; }
+
+  /* callout */
+  .note{ border:1px solid var(--line); border-left:3px solid var(--acc); background:var(--card);
+    padding:17px 20px; margin-top:18px; }
+  .note.warn{ border-left-color:var(--warn); }
+  .note.you{ border-left-color:var(--acc-2); }
+  .note h3{ margin:0 0 7px; font-size:15.5px; font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:600; }
+  .note p{ margin:0; font-size:14.5px; color:var(--ink-2); }
+  .note p + p{ margin-top:8px; }
+  .note strong{ color:var(--ink); font-weight:600; }
+
+  ol.steps{ counter-reset:s; list-style:none; padding:0; margin:0;
+    display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); }
+  ol.steps li{ counter-increment:s; background:var(--card); padding:17px 20px;
+    display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:start; }
+  ol.steps li::before{ content:counter(s,decimal-leading-zero);
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; color:var(--acc);
+    padding-top:3px; font-variant-numeric:tabular-nums; }
+  ol.steps h3{ margin:0 0 5px; font-size:15.5px; }
+  ol.steps p{ margin:0; font-size:14.5px; color:var(--ink-2); }
+  ol.steps code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.87em;
+    background:var(--card-2); border:1px solid var(--line-2); padding:1px 5px; }
+
+  code{ font-family:ui-monospace,Menlo,Consolas,monospace; }
+
+  footer{ margin-top:64px; padding-top:22px; border-top:1px solid var(--line);
+    font-size:13.5px; color:var(--ink-3); max-width:72ch; }
+  footer p{ margin:0 0 9px; }
+  a{ color:var(--acc); }
+  a:focus-visible{ outline:2px solid var(--acc); outline-offset:2px; }
+  @media (prefers-reduced-motion:reduce){ *{ animation:none!important; transition:none!important; } }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="kicker">Operating manual · 33 agents · 10 departments</p>
+  <h1>How to run <em>your</em> AI investment firm</h1>
+  <p class="sub">You have 33 specialist agents. Most people use three of them. This is the switchboard — who to call, what it costs, and the six rules that keep the whole thing honest.</p>
+  <div class="chain">
+    <b class="you">You — Owner</b><i>→</i><b class="me">皮褸黃 — CEO (me)</b><i>→</i><b>10 departments</b><i>→</i><b>reports/</b><i>→</i><b class="you">back to you</b>
+  </div>
+</header>
+
+<section>
+  <div class="shead"><span class="n">01</span><h2>The one thing to understand first</h2></div>
+  <div class="note you">
+    <h3>You never call an agent directly. You call me.</h3>
+    <p>You say what you want in plain language — or type a slash command — and <strong>I decide which specialists to wake, in what order, and how many at once.</strong> That is the whole design. You should not have to remember 33 names.</p>
+    <p>The roster below is not a list of things you must memorise. It is there so that when a report comes back signed 菲比斯, you know who that is and what they were asked. <strong>If you only ever learn the five commands in section 02, you are using the firm correctly.</strong></p>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="n">02</span><h2>The five commands</h2><span class="dwhen">this is the part worth remembering</span></div>
+  <p class="lede">Type these into the chat. Everything else is optional.</p>
+  <div class="cmds">
+    <div class="cmd">
+      <code>/analyze TICKER</code>
+      <p><b>Full research pipeline on one stock.</b> News → macro → industry → fundamentals → moat → management → valuation → technicals → risk → audit. Produces ~8–12 dated reports and a CEO summary.<span class="cost">The expensive one. Budget for it. Ran on MU, MRVL, KLAC, BE, INTC, 0100.HK.</span></p>
+    </div>
+    <div class="cmd">
+      <code>/committee TICKER</code>
+      <p><b>Convene the Investment Committee</b> on work that already exists. Scores the name on two axes, records dissent, produces a verdict. Run this <em>after</em> <code>/analyze</code>, never instead of it.<span class="cost">Cheap — it reads filed reports rather than fetching.</span></p>
+    </div>
+    <div class="cmd">
+      <code>/daily-briefing</code>
+      <p><b>Morning sweep.</b> Global news, the macro read, portfolio snapshot, and what to watch today.<span class="cost">Moderate. Needs 修大哥 + Peterson at minimum.</span></p>
+    </div>
+    <div class="cmd">
+      <code>/portfolio-review</code>
+      <p><b>Allocation vs targets, drift, risk posture, rebalancing proposals.</b><span class="cost">Currently returns almost nothing — <code>config/portfolio.yaml</code> is empty. See section 06.</span></p>
+    </div>
+    <div class="cmd">
+      <code>/post-mortem DECISION-ID</code>
+      <p><b>Autopsy a closed position.</b> Separates skill from luck, grades every assumption, feeds the lesson back into the agents' prompts.<span class="cost">Cheap, and the highest-value command in the set — but it needs a closed position, and we have none yet.</span></p>
+    </div>
+  </div>
+  <div class="note warn">
+    <h3>Plain language works just as well</h3>
+    <p>"Get John to look at my stop losses" or "have the quant team check this backtest" does the same thing. The commands are shortcuts, not a syntax you have to obey. <strong>The V6.5 upgrade you just received came from an ordinary sentence, not a command.</strong></p>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="n">03</span><h2>"I want to…" → who I will actually call</h2></div>
+  <p class="lede">The practical version of the roster. Read the left column, ignore the rest until you need it.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>You want</th><th>I wake</th><th>What comes back</th></tr></thead>
+      <tbody>
+        <tr><td class="want">Is this stock worth buying?</td><td class="who">巴爺爺 · 菲比斯 · 𢦀鳩仔 · John</td><td>Accounts, moat rating, fair value, risk veto. The core four.</td></tr>
+        <tr><td class="want">Is it cheap?</td><td class="who">𢦀鳩仔</td><td>DCF, reverse-DCF, multiples, a price gate you can act on.</td></tr>
+        <tr><td class="want">Will this business still be here in ten years?</td><td class="who">菲比斯</td><td>Moat rating with a width-in-years call. The most important question we ask.</td></tr>
+        <tr><td class="want">Are the accounts honest?</td><td class="who">巴爺爺</td><td>Margins, cash vs earnings, related parties, accounting red flags.</td></tr>
+        <tr><td class="want">Can I trust the management?</td><td class="who">Peter</td><td>Capital allocation record, insider dealing, governance.</td></tr>
+        <tr><td class="want">What happened today?</td><td class="who">修大哥</td><td>Material news, dated and sourced, with impact assessment.</td></tr>
+        <tr><td class="want">Is the crowd already in this?</td><td class="who">社交媒體官</td><td>Retail positioning, viral narratives, sentiment extremes.</td></tr>
+        <tr><td class="want">Will a regulator kill it?</td><td class="who">The dictator</td><td>SEC / Fed / EU / CSRC exposure and pending rulings.</td></tr>
+        <tr><td class="want">Could a war or election break this?</td><td class="who">LeBron James</td><td>Sanctions, supply chains, black-swan scenarios.</td></tr>
+        <tr><td class="want">Where are we in the cycle?</td><td class="who">Peterson</td><td>Rates, inflation, employment, the regime we are actually in.</td></tr>
+        <tr><td class="want">Where do I enter?</td><td class="who">老詹 · 王老吉 · Tim Cook</td><td>Levels, support/resistance, volume and institutional flow.</td></tr>
+        <tr><td class="want">How much should I buy?</td><td class="who">Zac · John</td><td>Position size against your risk limits, with a veto if it breaches.</td></tr>
+        <tr><td class="want">What could go badly wrong?</td><td class="who">Mario · Mo Peter</td><td>Crash scenarios and Value-at-Risk on the actual book.</td></tr>
+        <tr><td class="want">Is my backtest lying to me?</td><td class="who">Tom</td><td>Survivorship, look-ahead, costs, overfitting. <strong>Proven: he found the commission problem nobody else did.</strong></td></tr>
+        <tr><td class="want">Find me a signal that works</td><td class="who">Math King · 賭馬狗 · AI指標</td><td>Factor research, datasets, forecasting models. <strong>Under-used — see section 06.</strong></td></tr>
+        <tr><td class="want">Should I use options instead?</td><td class="who">C朗</td><td>Covered calls, cash-secured puts, the wheel — with full risk disclosure.</td></tr>
+        <tr><td class="want">Write me the order</td><td class="who">死潘狗 · Messi</td><td>A ticket in <code>reports/execution/</code> for you to place by hand. Never a live order.</td></tr>
+        <tr><td class="want">Did this agent make something up?</td><td class="who">Ai 管理層</td><td>Hallucination and bias audit. <strong>Has caught five material errors, three of them mine.</strong></td></tr>
+        <tr><td class="want">Why did that trade fail?</td><td class="who">Performance Attribution</td><td>Skill vs luck, and a lesson written back into the system.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="n">04</span><h2>The full roster</h2><span class="dwhen">reference — you do not need to memorise this</span></div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 1</span><span class="dname">Macro Research</span><span class="dwhen">the weather, not the stock</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">Peterson</div><div class="id">chief-economist</div><div class="ds">Fed policy, rates, CPI, GDP, PMI, employment, currencies, the global cycle.</div></div>
+      <div class="ag"><div class="nm">LeBron James</div><div class="id">geopolitical-analyst</div><div class="ds">Wars, sanctions, elections, US–China, energy policy, supply chains, black swans.</div></div>
+      <div class="ag"><div class="nm">Elon Musk</div><div class="id">industry-analyst</div><div class="ds">Sector life cycles and competitive landscapes across AI, semis, energy, healthcare.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 2</span><span class="dname">Equity Research</span><span class="dwhen">the business itself · your most-used department</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">巴爺爺</div><div class="id">financial-statement-analyst</div><div class="ds">Income statement, balance sheet, cash flow. Margins, ROIC, accounting quality.</div></div>
+      <div class="ag"><div class="nm">菲比斯</div><div class="id">moat-analyst</div><div class="ds">Buffett-style competitive advantage. Brand, network effects, switching costs, durability.</div></div>
+      <div class="ag"><div class="nm">Peter</div><div class="id">management-quality-analyst</div><div class="ds">Earnings calls, shareholder letters, insider transactions, capital allocation.</div></div>
+      <div class="ag"><div class="nm">𢦀鳩仔 <span style="font-weight:400;color:var(--ink-3);font-size:12px">(Valuation)</span></div><div class="id">valuation-analyst</div><div class="ds">DCF, comps, EV/EBITDA, sum-of-parts, fair value, margin of safety.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 3</span><span class="dname">Quant Research</span><span class="dwhen">★ your most under-used department</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">賭馬狗</div><div class="id">data-scientist</div><div class="ds">Datasets, cleaning, feature engineering, alpha factors in Python/SQL.</div></div>
+      <div class="ag"><div class="nm">Math King</div><div class="id">alpha-researcher</div><div class="ds">Signal discovery, systematic strategies, factor optimisation, stat arb.</div></div>
+      <div class="ag"><div class="nm">Tom</div><div class="id">backtesting-engineer</div><div class="ds">Historical simulation and robustness. The one who audited your V6.4.</div></div>
+      <div class="ag"><div class="nm">AI指標</div><div class="id">ai-model-researcher</div><div class="ds">Forecasting models, deep learning, transformers, reinforcement learning.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 4</span><span class="dname">News &amp; Intelligence</span><span class="dwhen">what just happened</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">修大哥</div><div class="id">news-analyst</div><div class="ds">Daily market intelligence, breaking news, event impact. Usually goes first.</div></div>
+      <div class="ag"><div class="nm">社交媒體官</div><div class="id">sentiment-analyst</div><div class="ds">X, Reddit, YouTube, Threads. Retail positioning and viral narratives.</div></div>
+      <div class="ag"><div class="nm">The dictator</div><div class="id">regulatory-analyst</div><div class="ds">SEC, Fed, FDA, EU, CSRC. Regulatory impact on holdings.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 5</span><span class="dname">Technical Analysis</span><span class="dwhen">timing and location</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">老詹</div><div class="id">technical-analyst</div><div class="ds">Trends, moving averages, RSI, MACD, Fibonacci, support and resistance.</div></div>
+      <div class="ag"><div class="nm">王老吉</div><div class="id">order-flow-analyst</div><div class="ds">Volume, institutional activity, options flow, dark pool prints.</div></div>
+      <div class="ag"><div class="nm">Tim Cook</div><div class="id">market-structure-analyst</div><div class="ds">Liquidity, breakout quality, price-action behaviour.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 6</span><span class="dname">Risk Management</span><span class="dwhen">can stop everything</span></div>
+    <div class="agents">
+      <div class="ag veto"><div class="nm">John</div><div class="id">cro</div><div class="ds">Chief Risk Officer. Reviews every proposal against your limits. <strong>Can veto — and has, six times.</strong></div></div>
+      <div class="ag"><div class="nm">Mo Peter</div><div class="id">var-analyst</div><div class="ds">Value-at-Risk, volatility, portfolio risk forecasting.</div></div>
+      <div class="ag"><div class="nm">Mario</div><div class="id">stress-testing-analyst</div><div class="ds">Crashes, pandemics, wars, rate shocks — quantified against the book.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 7</span><span class="dname">Portfolio Management</span><span class="dwhen">idle until you have holdings</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">Morris</div><div class="id">portfolio-manager</div><div class="ds">Asset and sector allocation, portfolio construction.</div></div>
+      <div class="ag"><div class="nm">So Ma</div><div class="id">rebalancing-analyst</div><div class="ds">Drift against targets, periodic rebalancing proposals.</div></div>
+      <div class="ag"><div class="nm">Zac</div><div class="id">position-sizing-analyst</div><div class="ds">Position size and risk per trade. Directly relevant to your V6.5 work.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 8</span><span class="dname">Trading Operations</span><span class="dwhen">tickets only — never live orders</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">死潘狗</div><div class="id">execution-trader</div><div class="ds">Writes order tickets to <code>reports/execution/</code> for you to place by hand.</div></div>
+      <div class="ag"><div class="nm">Messi</div><div class="id">execution-analyst</div><div class="ds">Slippage, transaction costs, market impact, post-trade analysis.</div></div>
+      <div class="ag"><div class="nm">C朗</div><div class="id">options-strategist</div><div class="ds">Calls, puts, covered calls, cash-secured puts, the wheel, volatility trades.</div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 9</span><span class="dname">AI Intelligence</span><span class="dwhen">keeps the firm honest</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">Google 友</div><div class="id">knowledge-manager</div><div class="ds">Organises research, maintains the knowledge base, keeps it searchable.</div></div>
+      <div class="ag"><div class="nm">腦大裝草</div><div class="id">memory-manager</div><div class="ds">The decision journal. Every decision, its rationale, its outcome.</div></div>
+      <div class="ag"><div class="nm">床狗</div><div class="id">prompt-engineer</div><div class="ds">Turns audit findings and lessons into permanent agent improvements.</div></div>
+      <div class="ag veto"><div class="nm">Ai 管理層</div><div class="id">ai-auditor</div><div class="ds">Hunts hallucinations, unsupported claims, bias. <strong>Caught five material errors — three were mine.</strong></div></div>
+    </div>
+  </div>
+
+  <div class="dept">
+    <div class="dhead"><span class="dnum">DEPT 10</span><span class="dname">Executives</span><span class="dwhen">coordination and memory</span></div>
+    <div class="agents">
+      <div class="ag"><div class="nm">CIO</div><div class="id">cio</div><div class="ds">Investment philosophy, research coordination, portfolio strategy.</div></div>
+      <div class="ag"><div class="nm">Committee Secretary</div><div class="id">committee-secretary</div><div class="ds">Consolidates reports, surfaces disagreements, prepares committee materials.</div></div>
+      <div class="ag"><div class="nm">Attribution Analyst</div><div class="id">performance-attribution-analyst</div><div class="ds">Why a closed trade worked or failed. Skill vs luck.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="n">05</span><h2>Six rules that cannot be overridden</h2></div>
+  <p class="lede">These are in <code>CLAUDE.md</code> and they bind me as much as they bind the agents.</p>
+  <ol class="steps">
+    <li><div><h3>No live trading, ever</h3><p>No agent connects to a broker or transmits an order. 死潘狗 writes a ticket; you place it yourself, or in paper trading.</p></div></li>
+    <li><div><h3>You are the final authority</h3><p>Committee approval plus my authorisation produces a <em>recommendation</em>. Only you execute. I have no capital.</p></div></li>
+    <li><div><h3>Risk can veto</h3><p>If John rejects a proposal against your limits, it stops. I escalate to you rather than override him.</p></div></li>
+    <li><div><h3>Every decision is recorded before execution</h3><p>Rationale and dissent both, in <code>memory/decisions/</code>. Including the decisions to do nothing.</p></div></li>
+    <li><div><h3>No invented numbers</h3><p>Every figure must come from a fetched source or a config file, dated and cited. Estimates marked as estimates. <strong>I broke this once — an invented 52-week high — and the code review caught it.</strong></p></div></li>
+    <li><div><h3>This is research, not financial advice</h3><p>Markets cannot be reliably predicted. Everything here is decision support.</p></div></li>
+  </ol>
+</section>
+
+<section>
+  <div class="shead"><span class="n">06</span><h2>What is actually broken right now</h2><span class="dwhen">honest state of the firm</span></div>
+  <p class="lede">You should know the limits of what you are working with.</p>
+
+  <div class="note warn">
+    <h3>Quant Research has filed one report in the firm's entire history</h3>
+    <p>We ran five full pipelines on MU, MRVL, KLAC, BE and INTC. Department 3 filed <strong>nothing</strong> on any of them. Every verdict this firm has issued rested on fundamentals, valuation, news and technicals — with no quantitative input at all.</p>
+    <p>That is my failure. When session limits forced me to a three-agent core, I cut quant first and never logged it as a coverage gap. <strong>Ask for them by name and the gap closes</strong> — Tom's V6.4 audit is proof the department earns its keep.</p>
+  </div>
+
+  <div class="note warn">
+    <h3>Session limits are the real constraint, not capability</h3>
+    <p>A full 12-agent wave dies about half the time. I now run <strong>three at once</strong> and accept thinner coverage. When an agent is killed mid-task I check the disk before assuming its work is lost — twice now, files were already written.</p>
+    <p>Practical effect: <strong>one <code>/analyze</code> per session is realistic. Two is optimistic.</strong></p>
+  </div>
+
+  <div class="note warn">
+    <h3>Hong Kong filings are unreachable</h3>
+    <p>Every direct page fetch returns HTTP 403 — including <code>hkexnews.hk</code>. That is the sites blocking us, not a broken setup; I verified the proxy is healthy. Any HK-listed name gets researched from press coverage only, never primary filings. <strong>Coverage on 0100.HK is materially thinner than on any US name, and I will keep saying so.</strong></p>
+  </div>
+
+  <div class="note you">
+    <h3>Three decisions are waiting on you</h3>
+    <p><strong>1.</strong> <code>config/risk-limits.yaml</code> contradicts itself — a 0.40 correlated-cluster cap against targets summing to 0.50.</p>
+    <p><strong>2.</strong> <code>config/portfolio.yaml</code> is empty. No holdings, no cash balance. This is why Dept 7 has produced nothing and why nobody can size anything.</p>
+    <p><strong>3.</strong> John's escalation: risk has never been the binding constraint — valuation has. If the margin-of-safety bar is set too high, the firm declines everything forever. <strong>That knob is yours alone.</strong></p>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="n">07</span><h2>What the firm has learned so far</h2></div>
+  <p class="lede">Five lessons, each traceable to a real mistake, each already written back into how the agents work.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>#</th><th>Lesson</th><th>What it cost</th></tr></thead>
+      <tbody>
+        <tr><td class="who">L-001</td><td class="want">No analyst cross-checks another analyst's headline figure</td><td>A $6M "profit" that was an $87M loss. The right number was in the same package, the same day. Four analysts walked past it.</td></tr>
+        <tr><td class="who">L-002</td><td class="want">Bad data vendors get blacklisted firm-wide, not per-report</td><td>One bad print manufactured a dip-buying event that never happened.</td></tr>
+        <tr><td class="who">L-003</td><td class="want">Consecutive same-direction verdicts breed narrative lock-in</td><td>Three independent modelling choices all erred bearish after three bear verdicts. Anti-anchoring disclosure is now mandatory.</td></tr>
+        <tr><td class="who">L-004</td><td class="want">A blended score hides a good business at a bad price</td><td>The scorecard was rebuilt onto two axes: business quality and price attractiveness, scored separately.</td></tr>
+        <tr><td class="who">L-005</td><td class="want">A CEO commit message is not evidence a file exists</td><td>A report failed to write, I recorded it as filed, and two downstream reports leaned on it. I now check the disk.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p><strong>The shortest possible version:</strong> talk to me normally. Say <code>/analyze TICKER</code> when you want the works. Say a name from section 03 when you want one opinion. Ask for the quant team by name, because I have been forgetting them.</p>
+  <p>Everything the agents produce is written to <code>reports/</code> and committed to the branch, so nothing depends on a session staying alive.</p>
+  <p>Research and decision support only. No agent of this firm places orders, and markets cannot be reliably predicted.</p>
+</footer>
+
+</div>
