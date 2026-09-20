@@ -1,0 +1,273 @@
+<title>Biotech landscape — HKEX &amp; US</title>
+<style>
+  :root{ --paper:#FFFFFF; --card:#FBFBF9; --card2:#F4F4F0;
+    --ink:#101215; --ink2:#454A50; --ink3:#71767C; --line:#D8D8D2; --hair:#E8E8E3;
+    --acc:#1B5E6B; --s1:#2a78d6; --s2:#c0562a;
+    --good:#0a7d0a; --warn:#8A5C0E; --crit:#A82F22; }
+  *{ box-sizing:border-box; }
+  html,body{ background:var(--paper); }
+  body{ margin:0; color:var(--ink); font-size:10.3pt; line-height:1.5;
+    font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,'Noto Sans CJK TC','PingFang TC',sans-serif; }
+  .m{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-variant-numeric:tabular-nums; }
+  @page{ size:A4; margin:14mm 13mm 15mm; }
+  @media print{ *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    h2,h3{ break-after:avoid; } table,.note,.tiles,figure,.keep{ break-inside:avoid; } tr{ break-inside:avoid; }
+    a{ color:var(--acc); text-decoration:none; } }
+  .wrap{ max-width:none; }
+  header{ border-bottom:2.5pt solid var(--ink); padding-bottom:10pt; margin-bottom:16pt; }
+  .kick{ font-family:ui-monospace,Menlo,monospace; font-size:7.5pt; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--acc); margin:0 0 8pt; }
+  h1{ font-family:Georgia,'Times New Roman',serif; font-size:23pt; line-height:1.12; margin:0;
+    letter-spacing:-.01em; font-weight:600; }
+  .dek{ margin:9pt 0 0; color:var(--ink2); font-size:11pt; max-width:60em; }
+  .stamp{ margin-top:10pt; font-family:ui-monospace,Menlo,monospace; font-size:8pt; color:var(--ink3); }
+  h2{ font-family:Georgia,serif; font-size:14pt; margin:20pt 0 3pt; font-weight:600;
+    border-bottom:1pt solid var(--line); padding-bottom:4pt; }
+  h3{ font-family:Georgia,serif; font-size:11.5pt; margin:13pt 0 4pt; font-weight:600; }
+  p{ margin:6pt 0 0; }
+  table{ border-collapse:collapse; width:100%; font-size:8.8pt; margin-top:7pt; }
+  th,td{ text-align:left; padding:4pt 6pt; border-bottom:.5pt solid var(--hair); vertical-align:top; }
+  th{ font-family:ui-monospace,Menlo,monospace; font-size:7pt; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--ink3); font-weight:400; background:var(--card2);
+    border-bottom:.8pt solid var(--line); }
+  td.t{ font-family:ui-monospace,Menlo,monospace; font-weight:600; white-space:nowrap; }
+  td.n{ text-align:right; font-family:ui-monospace,Menlo,monospace; white-space:nowrap; }
+  .note{ margin-top:10pt; background:var(--card); border:.5pt solid var(--line);
+    border-left:2.5pt solid var(--acc); padding:8pt 11pt; }
+  .note.crit{ border-left-color:var(--crit); } .note.warn{ border-left-color:var(--warn); }
+  .note p{ margin:0; font-size:9.6pt; color:var(--ink2); } .note p+p{ margin-top:5pt; }
+  .note strong{ color:var(--ink); }
+  .tiles{ display:grid; grid-template-columns:repeat(4,1fr); gap:.5pt; background:var(--line);
+    border:.5pt solid var(--line); margin-top:11pt; }
+  .tile{ background:var(--card); padding:7pt 9pt; }
+  .tile .l{ font-family:ui-monospace,Menlo,monospace; font-size:6.6pt; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink3); }
+  .tile .v{ font-family:ui-monospace,Menlo,monospace; font-size:15pt; margin-top:3pt; }
+  .tile .s{ font-size:7.6pt; color:var(--ink3); margin-top:2pt; }
+  .seg{ font-family:ui-monospace,Menlo,monospace; font-size:7pt; letter-spacing:.08em;
+    text-transform:uppercase; color:#fff; background:var(--acc); padding:1.5pt 5pt; }
+  .seg.d{ background:var(--crit); }
+  footer{ margin-top:20pt; padding-top:8pt; border-top:.5pt solid var(--line);
+    font-size:8pt; color:var(--ink3); }
+  footer p{ margin:0 0 4pt; }
+</style>
+<div class="wrap">
+<header>
+  <p class="kick">皮褸黃 Capital · Industry Research · Elon Musk (Dept 1)</p>
+  <h1>The biotech landscape — Hong Kong &amp; the United States</h1>
+  <p class="dek">A map of the sector and where WuXi AppTec (2359.HK) sits in it. Built because
+  "all biotech stocks" is neither obtainable nor useful — and the reason why is itself the
+  most important thing in this document.</p>
+  <p class="stamp">2026-08-07 · price and news data through 10 Aug 2026 · research and decision
+  support, not financial advice</p>
+</header>
+
+<div class="note crit">
+  <p><strong>Read this first: this is not a complete list, and no honest one exists here.</strong>
+  Hong Kong has <strong>75 Chapter 18A listings</strong> and ~77 names on a broader pharma screen.
+  The United States has <strong>403 companies</strong> on an industry screen, 500+ counting related
+  life sciences. Direct page fetching is blocked in this environment, so a complete enumeration
+  would have meant inventing tickers.</p>
+  <p><strong>Every name here was verified against a source.</strong> 54 securities and 5 ETFs —
+  roughly 10% of the universe by count, far more by market capitalisation. Names that could not be
+  verified were left out rather than guessed. Catalent was deliberately excluded: it was acquired
+  by Novo Holdings for $16.5bn and delisted in December 2024. <strong>Any list still showing it is
+  stale.</strong></p>
+</div>
+
+<div class="tiles">
+  <div class="tile"><div class="l">HK universe</div><div class="v">75</div><div class="s">Chapter 18A listings</div></div>
+  <div class="tile"><div class="l">US universe</div><div class="v">403+</div><div class="s">industry screen; 500+ broader</div></div>
+  <div class="tile"><div class="l">Verified here</div><div class="v">54</div><div class="s">+ 5 ETFs</div></div>
+  <div class="tile"><div class="l">Phase I → approval</div><div class="v" style="color:var(--crit)">9.6%</div><div class="s">BIO, 9,985 transitions</div></div>
+</div>
+
+<h2>1 · "Biotech" is five different asset classes</h2>
+<p>The single most useful thing in this document. A pre-revenue Chapter 18A name and a contract
+research organisation are not the same investment, are not exposed to the same risks, and do not
+belong in the same sentence — but both get called "biotech".</p>
+<table><thead><tr><th>Segment</th><th>What kills you</th><th>Time to find out</th><th>Can it go to zero?</th></tr></thead><tbody><tr><td>CRO / CDMO</td><td>Customer funding cycle; POLICY and sanctions; backlog cancellation</td><td>Quarters</td><td>Very unlikely</td></tr><tr><td>Large-cap pharma</td><td>Patent cliff; drug pricing policy; tariffs</td><td>Years</td><td>Effectively no</td></tr><tr><td>Commercial-stage biotech</td><td>Product concentration; competitor entry; reimbursement</td><td>Quarters–years</td><td>Unlikely but possible</td></tr><tr><td>Clinical-stage / 18A</td><td>ONE trial readout; cash runway</td><td>A single morning</td><td>YES, routinely</td></tr><tr><td>Tools / diagnostics</td><td>Customer capex cycle; funding; China</td><td>Quarters</td><td>Very unlikely</td></tr></tbody></table>
+<div class="note warn">
+  <p><strong>Only one row can go to zero on a single morning</strong>, and it is the row most
+  beginners buy — because pre-revenue names are cheap per share and have the best stories.</p>
+</div>
+
+<h2>2 · The number to read twice</h2>
+<p>BIO analysed <strong>9,985 phase transitions across 7,455 development programmes at 1,103
+companies</strong> and found a cumulative approval rate from Phase I of <strong>9.6%</strong>.
+Wong, Siah &amp; Lo put it at 13.8% overall, with recent Phase I likelihood of approval as low as
+6.7%. Phase II is the killing field — roughly a third survive it.</p>
+<p><strong>Buy one pre-revenue biotech and roughly nine times in ten the lead asset never becomes
+an approved drug.</strong> Selection helps but does not rescue it: rare-disease non-oncology
+programmes reach ~25%, biomarker-guided ~26%. That is still one in four.</p>
+<div class="note crit">
+  <p>The market confirms the arithmetic. At mid-2026 <strong>nearly half of publicly traded US
+  biotechs traded below the cash on their own balance sheets</strong>, and <strong>219 companies
+  have been lost from the sector in four years.</strong></p>
+  <p>This is why the index route is a mathematical argument rather than a stylistic preference.
+  157 shots on goal captures the ~10% that work. Three hand-picked names plausibly captures zero.</p>
+</div>
+
+<h2>3 · Hong Kong — 23 verified names</h2>
+<h3><span class="seg">CRO / CDMO</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">2359.HK</td><td>WuXi AppTec</td><td>Largest China-based integrated CRDMO. H1 2026 revenue RMB28.90bn, +38.9% YoY</td></tr><tr><td class="t">2269.HK</td><td>WuXi Biologics</td><td>Global biologics CRDMO, discovery to commercial manufacture</td></tr><tr><td class="t">2268.HK</td><td>WuXi XDC</td><td>ADC / bioconjugate CRDMO; HKEX main board Nov 2023</td></tr><tr><td class="t">3759.HK</td><td>Pharmaron Beijing</td><td>Lab chemistry, biology, small-molecule CDMO; dual-listed 300759.SZ</td></tr><tr><td class="t">3347.HK</td><td>Hangzhou Tigermed</td><td>Clinical CRO</td></tr></tbody></table>
+<h3><span class="seg">Large-cap pharma</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">1177.HK</td><td>Sino Biopharmaceutical</td><td>Diversified China pharma: oncology, liver, respiratory</td></tr><tr><td class="t">1093.HK</td><td>CSPC Pharmaceutical</td><td>Manufacturing and sale of pharmaceuticals</td></tr><tr><td class="t">3692.HK</td><td>Hansoh Pharmaceutical</td><td>R&D through sales; Hang Seng Biotech constituent</td></tr><tr><td class="t">2196.HK</td><td>Shanghai Fosun Pharma</td><td>Diversified pharma / healthcare group</td></tr><tr><td class="t">1099.HK</td><td>Sinopharm Group</td><td>Pharmaceutical DISTRIBUTION — not a drug developer</td></tr></tbody></table>
+<h3><span class="seg">Commercial-stage</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">6160.HK</td><td>BeOne Medicines (ex-BeiGene)</td><td>Global-scale China-origin oncology</td></tr><tr><td class="t">1801.HK</td><td>Innovent Biologics</td><td>Commercial oncology / metabolic portfolio</td></tr><tr><td class="t">9926.HK</td><td>Akeso</td><td>Bispecific antibody developer</td></tr><tr><td class="t">9688.HK</td><td>Zai Lab</td><td>In-licensing plus internal pipeline</td></tr><tr><td class="t">9995.HK</td><td>RemeGen</td><td>ADC and fusion-protein developer</td></tr><tr><td class="t">6990.HK</td><td>Sichuan Kelun-Biotech</td><td>ADC-focused biopharmaceutical</td></tr></tbody></table>
+<h3><span class="seg d">Clinical-stage / pre-revenue — highest risk</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">1877.HK</td><td>Shanghai Junshi Biosciences</td><td>Antibody developer</td></tr><tr><td class="t">6185.HK</td><td>CanSino Biologics</td><td>Vaccines</td></tr><tr><td class="t">2171.HK</td><td>CARsgen Therapeutics</td><td>CAR-T cell therapy</td></tr><tr><td class="t">2162.HK</td><td>Keymed Biosciences</td><td>Antibody / biologics</td></tr><tr><td class="t">6996.HK</td><td>Antengene</td><td>Oncology, Asia-Pacific</td></tr><tr><td class="t">9606.HK</td><td>DualityBio</td><td>ADC platform</td></tr><tr><td class="t">2197.HK</td><td>Clover Biopharmaceuticals</td><td>Vaccines</td></tr></tbody></table>
+<p style="font-size:8.6pt;color:var(--ink3)">Hong Kong also ran <strong>12 biotech IPOs raising
+$1.3bn in 2026 — first globally by biotech IPO fundraising.</strong> Combined biotech and
+healthcare market capitalisation exceeds HK$5 trillion.</p>
+
+<h2>4 · United States — 31 verified names</h2>
+<h3><span class="seg">Large-cap pharma</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">LLY</td><td>Eli Lilly</td><td>Largest pharma by market cap, ~$1.5tn (Feb 2026); obesity/diabetes franchise</td></tr><tr><td class="t">JNJ</td><td>Johnson & Johnson</td><td>Diversified pharma + medtech, $488.7bn</td></tr><tr><td class="t">ABBV</td><td>AbbVie</td><td>Immunology-led diversified pharma, $388.4bn</td></tr><tr><td class="t">MRK</td><td>Merck & Co.</td><td>Oncology-led large pharma, ~$262bn</td></tr><tr><td class="t">PFE</td><td>Pfizer</td><td>Diversified large pharma</td></tr><tr><td class="t">BMY</td><td>Bristol-Myers Squibb</td><td>Diversified large pharma</td></tr><tr><td class="t">AMGN</td><td>Amgen</td><td>Largest IBB holding at 8.42% of the fund</td></tr><tr><td class="t">GILD</td><td>Gilead Sciences</td><td>Virology-led; IBB weight 7.14%</td></tr></tbody></table>
+<h3><span class="seg">Commercial-stage biotech</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">VRTX</td><td>Vertex Pharmaceuticals</td><td>Cystic fibrosis franchise; IBB 7.87%</td></tr><tr><td class="t">REGN</td><td>Regeneron</td><td>Antibody platform; IBB 5.84%</td></tr><tr><td class="t">ARGX</td><td>argenx SE</td><td>Autoimmune / FcRn; IBB 3.55%</td></tr><tr><td class="t">ALNY</td><td>Alnylam</td><td>RNAi leader; first $1bn product-revenue quarter Q1 2026</td></tr><tr><td class="t">NBIX</td><td>Neurocrine Biosciences</td><td>Commercial CNS / endocrine franchise</td></tr><tr><td class="t">INSM</td><td>Insmed</td><td>Rare / serious disease; XBI 1.36%</td></tr><tr><td class="t">UTHR</td><td>United Therapeutics</td><td>Pulmonary arterial hypertension portfolio</td></tr></tbody></table>
+<h3><span class="seg">Tools / diagnostics</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">TMO</td><td>Thermo Fisher Scientific</td><td>Q2 2026 revenue $11.99bn, +10%; guidance raised</td></tr><tr><td class="t">DHR</td><td>Danaher</td><td>FY2026 adj. EPS guidance raised to $8.45–8.60</td></tr><tr><td class="t">ILMN</td><td>Illumina</td><td>Dominant DNA sequencing, ~$4bn revenue</td></tr><tr><td class="t">A</td><td>Agilent Technologies</td><td>~$6.5bn analytical instruments, genomics</td></tr><tr><td class="t">TWST</td><td>Twist Bioscience</td><td>Synthetic DNA; largest XBI position at 1.62%</td></tr><tr><td class="t">NTRA</td><td>Natera</td><td>Molecular diagnostics; XBI 1.42%</td></tr></tbody></table>
+<h3><span class="seg">CRO / CDMO</span></h3>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>Note</th></tr></thead><tbody><tr><td class="t">IQV</td><td>IQVIA Holdings</td><td>Largest full-service CRO; 2026 revenue outlook $17.28–17.48bn</td></tr><tr><td class="t">CRL</td><td>Charles River Laboratories</td><td>Preclinical / discovery services</td></tr><tr><td class="t">MEDP</td><td>Medpace Holdings</td><td>Mid-size full-service CRO; backlog $2.93bn at 31 Mar 2026</td></tr></tbody></table>
+<h3><span class="seg d">Clinical-stage / pre-revenue — examples only, not recommendations</span></h3>
+<p style="font-size:8.8pt;color:var(--ink2);margin-top:4pt">Drawn from XBI's largest equal-weight
+positions because index membership is verifiable. <strong>Nothing here is a view on any of
+them</strong> — they illustrate what the segment looks like.</p>
+<table><thead><tr><th>Ticker</th><th>Name</th><th>XBI weight</th></tr></thead><tbody><tr><td class="t">APGE</td><td>Apogee Therapeutics</td><td class="n">1.55%</td></tr><tr><td class="t">ORKA</td><td>Oruka Therapeutics</td><td class="n">1.46%</td></tr><tr><td class="t">PRAX</td><td>Praxis Precision Medicines</td><td class="n">1.42%</td></tr><tr><td class="t">DNTH</td><td>Dianthus Therapeutics</td><td class="n">1.35%</td></tr><tr><td class="t">RVMD</td><td>Revolution Medicines</td><td class="n">1.35%</td></tr><tr><td class="t">SYRE</td><td>Spyre Therapeutics</td><td class="n">1.33%</td></tr></tbody></table>
+
+<h2>5 · The routes a retail investor can actually take</h2>
+<h3>United States</h3>
+<table><thead><tr><th>Ticker</th><th>Fund</th><th>Structure — and why it matters</th></tr></thead><tbody><tr><td class="t">XBI</td><td>SPDR S&P Biotech</td><td>EQUAL-weighted, 157 holdings, top-10 only 13.3%. Small/mid-cap biotech beta — far more volatile</td></tr><tr><td class="t">IBB</td><td>iShares Biotechnology</td><td>CAP-weighted, 252 holdings, top-10 = 45.5%. Effectively large-cap biopharma with a long tail</td></tr></tbody></table>
+<h3>Hong Kong</h3>
+<table><thead><tr><th>Ticker</th><th>Fund</th><th>Note</th></tr></thead><tbody><tr><td class="t">3069.HK</td><td>ChinaAMC Hang Seng HK Biotech</td><td>Explicitly includes Chapter 18A stocks. USD (9069) and RMB (83069) counters exist</td></tr><tr><td class="t">3174.HK</td><td>CSOP Hang Seng Biotech</td><td>Hang Seng Biotech Index — 30 largest, Southbound-eligible, 10% cap</td></tr><tr><td class="t">2820.HK</td><td>Global X China Biotech</td><td>Solactive China Biotech. Only 37 holdings — still concentrated</td></tr></tbody></table>
+<div class="note">
+  <p><strong>XBI and IBB are genuinely different bets, not two versions of the same one.</strong>
+  XBI is equal-weighted with its top ten at 13.3% — small and mid-cap innovation, and far more
+  volatile. IBB is cap-weighted with its top ten at 45.5% — that is a large-cap biopharma position
+  wearing a sector label.</p>
+</div>
+
+<h2>6 · Where 2359.HK sits — and the one thing that decides it</h2>
+<p>WuXi AppTec is a <strong>CRDMO</strong>, not a drug developer. Contracted revenue, no binary
+trial risk. Operationally it is performing exceptionally: H1 2026 revenue <strong>RMB28.90bn,
++38.9% YoY</strong>, gross margin +9.4pp, backlog +25.2%, full-year guidance raised to
+RMB58.5–60.5bn. It has also <em>actually</em> divested its US/UK cell-therapy unit to Altaris and
+has a Delaware site starting up in Q4 2026 — action, not announcement. In the first half of 2026 it
+out-earned Lonza for the first time (US$4.28bn vs US$4.17bn): it is now the largest firm in its
+category, not the challenger.</p>
+<div class="keep">
+<h3>What the price has already done</h3>
+<p>Six sessions, +25%, to an all-time high. Anything written on a stale quote is wrong by a wide
+margin, so the prices are dated individually. Closes, except 10 August, which is intraday.</p>
+<table><thead><tr><th>Date</th><th>2359.HK</th><th>603259.SS</th><th>Event</th></tr></thead><tbody>
+<tr><td class="t">3 Aug</td><td class="n">HK$162.90</td><td class="n">RMB128.50</td><td>H1 2026 results released</td></tr>
+<tr><td class="t">4 Aug</td><td class="n">HK$181.10 <span style="color:var(--good)">+11.2%</span></td><td class="n">RMB141.35 <span style="color:var(--good)">+10.0%</span></td><td>Results reaction; A limit-up, H intraday +14%</td></tr>
+<tr><td class="t">7 Aug</td><td class="n">HK$192.30</td><td class="n">RMB154.82</td><td>CICC target → HK$211; Jefferies → HK$210</td></tr>
+<tr><td class="t">10 Aug</td><td class="n">HK$204.20</td><td class="n">RMB166.66</td><td><strong>All-time high, intraday</strong> — injunction announced to market 9 Aug evening</td></tr>
+</tbody></table>
+</div>
+<p>Year to date the H line is <strong>+97%</strong> against the A line's <strong>+73.5%</strong>
+(7 Aug basis). The 52-week low was HK$96.70 — the stock has roughly doubled.</p>
+
+<div class="note warn">
+  <p><strong>The Hong Kong line is the expensive one.</strong> WuXi is one of a small set of
+  Chinese "hard tech" names where the usual A-share premium has <strong>inverted</strong>: the H
+  shares traded at a <strong>~5% premium to the A shares</strong> on 10 August (~10% on 4 August,
+  &gt;4% back in April). Buying 2359.HK rather than 603259.SS means paying up. The honest reasons
+  to do it anyway are account access, Stock Connect flow and index membership — not value.</p>
+  <p><strong>Two number traps in the public coverage.</strong> Vendor market-cap fields for this
+  dual-listed name span <strong>HK$440bn to HK$609bn</strong> — a 35% spread — because some count
+  the H float only; the ~HK$600bn figure is the one consistent with the current price and the
+  share count. And several English summaries rendered 288.97億元 as "RMB 289bn": the correct
+  first-half revenue is <strong>RMB28.897bn</strong>, ten times smaller.</p>
+</div>
+
+<p><strong>But read what the growth actually is.</strong> Chemistry is ~86.5% of revenue and grew
++53.3%; Biology grew +11.2%, roughly flat in real terms. Inside Chemistry, TIDES — oligonucleotides
+and peptides — is RMB7.26bn, +44.3%, and WuXi is reported to hold about a quarter of the global
+clinical-stage GLP-1 market across 24 programmes. Three concentrations sit on top of each other:
+one segment, one drug class, one country of customer. That is a diversified-CRDMO label on a GLP-1
+manufacturing business, and Chinese CDMOs are adding peptide capacity fast.</p>
+
+<h3>The policy timeline, stated precisely</h3>
+<p>Most coverage blurs "introduced", "passed", "enacted" and "in force". Those distinctions
+decide the whole case.</p>
+<table><thead><tr><th>Date</th><th>What actually happened</th></tr></thead><tbody>
+<tr><td class="t">2023–24</td><td>BIOSECURE introduced, <strong>naming WuXi AppTec and WuXi Biologics in the bill text</strong></td></tr>
+<tr><td class="t">Sep 2024</td><td>Passed the House only — then <strong>died</strong> with the 118th Congress</td></tr>
+<tr><td class="t">9 Oct 2025</td><td>Re-introduced; Senate passed it as an FY2026 NDAA amendment</td></tr>
+<tr><td class="t">18 Dec 2025</td><td><strong>ENACTED.</strong> But the enacted text does <strong>not name WuXi</strong> — it defines a "biotechnology company of concern" by reference to lists, and WuXi was on none of them. A genuine reprieve.</td></tr>
+<tr><td class="t">8 Jun 2026</td><td>Reprieve ends — Dept of War adds <strong>WuXi AppTec to the Section 1260H list</strong> of Chinese military companies</td></tr>
+<tr><td class="t">7 Aug 2026</td><td><strong>Chief Judge Boasberg (D.D.C.) preliminarily ENJOINS the designation</strong>, finding it likely arbitrary and capricious and that officials "repeatedly misread the evidence." Case 1:26-cv-02069. The court then <strong>refused the Pentagon a stay pending appeal</strong> and set WuXi's bond at <strong>US$1</strong> — an appeal is therefore signalled, though no notice of appeal was verified.</td></tr>
+<tr><td class="t">18 Dec 2026</td><td><strong>OMB's initial list is due.</strong> Four months out, and the nearest real event.</td></tr>
+<tr><td class="t">~late 2028</td><td>Earliest date prohibitions actually bite: OMB guidance +180 days → FAR rule +1 year → +60 days</td></tr>
+</tbody></table>
+
+<div class="note">
+  <p><strong>Three facts that cut in WuXi's favour, and are widely missed.</strong> The scope is
+  <strong>federal procurement, grant and loan nexus only</strong> — private pharma with no federal
+  contract is not barred from using WuXi. Grandfathering runs <strong>five years</strong>, and the
+  carve-out that would deny it applies only to firms listed as of 18 Dec 2025 — WuXi was added
+  later, so <strong>its existing contracts qualify.</strong> And nothing is in force today.</p>
+  <p>Anyone calling this "uninvestable China risk" has not read the statute.</p>
+</div>
+
+<div class="note crit">
+  <p><strong>And the fact that decides it anyway.</strong> Boasberg's own irreparable-harm finding
+  records that customers <strong>had already cancelled contracts and moved business to competitors
+  within eight weeks of the listing — before any prohibition was operative.</strong></p>
+  <p><strong>The market punishes the label, not the effective date.</strong> That is why "nothing
+  bites until 2028" is false comfort. Aggregate growth of +38.9% will mask new-award diversion for
+  several reporting periods before it shows in the headline.</p>
+  <p><strong>And the half-year the market just bought cannot contain it.</strong> The designation
+  was live for roughly three weeks of a six-month reporting period (8–30 June). The cancellations
+  a federal judge found as fact land in <strong>second-half 2026</strong>. Watch the
+  <strong>RMB66.43bn backlog</strong> rather than revenue — cancelled work leaves the backlog
+  first. Named customers and contract values were not disclosed.</p>
+  <p>Roughly <strong>60–68% of revenue is US</strong> — the range is honest; the sources do not
+  reconcile to a point estimate. Growth engine and political risk are the same jurisdiction, so the
+  company cannot hedge it internally. <strong>Verdict: LIVE, not resolved.</strong> The injunction
+  is interim and appealable, and policy pressure is still increasing.</p>
+</div>
+
+<h3>Read-across — where the same risk sits without the same protection</h3>
+<p><strong>WuXi Biologics (2269.HK) and WuXi XDC (2268.HK) are NOT on the 1260H list</strong> — but
+both were named in a December 2025 congressional letter. Same targeting, <strong>none of the legal
+protection WuXi AppTec has just won.</strong> The next 1260H cycle is June 2027 and is not priced.</p>
+<p>Capacity beneficiaries if Chinese CROs are restricted: <strong>Samsung Biologics, Lonza, Charles
+River (CRL), Fujifilm Diosynth</strong> — all capacity-constrained with two-to-five-year lead times.</p>
+<div class="note warn">
+  <p><strong>On timing, honestly:</strong> on the injunction we are <em>behind</em> the market, not
+  ahead of it. The stock re-rated 25% in six sessions to an all-time high, and the consensus
+  average 12-month target of <strong>HK$183.46</strong> now sits <em>below</em> spot — any screen
+  reading "trades below target" is broken on this name today. Whatever edge remains sits in the
+  <strong>OMB list on 18 December 2026</strong>, the <strong>appellate ruling</strong>, and the
+  <strong>June 2027 1260H cycle for 2269 and 2268</strong> — none of which appears priced.</p>
+</div>
+
+<h2>7 · What this document does not know</h2>
+<p>Every external domain was blocked (HTTP 403) — <span class="m">hsi.com.hk</span> and
+<span class="m">chinaamc.com.hk</span> among them — so a complete Hang Seng Biotech 30-name constituent list remains open. <strong>WuXi's US revenue share reconciles only to a 60–68% range, not a point estimate</strong>, and the 2026 first-half split by geography could not be obtained at
+all — the ~70% US figure is a full-year 2025 disclosure reaching us through secondary media, not a
+filing anyone here read. No court docket was opened either, so the ruling date is reported as
+"on or about 7–8 August" and the Pentagon's appeal is inferred from its refused stay motion rather
+than from a filed notice — the highest-value open question on this name. <strong>ICON plc</strong> is the second-largest full-service CRO by
+revenue ($8,251.3m FY2025) but is named without a ticker because none was verified against a
+market-data source. Asymchem, Everest Medicines and the Novo Nordisk ADR were omitted for the same
+reason. Nothing was guessed to fill a gap.</p>
+
+<footer>
+  <p><strong>Research and decision support — not financial advice.</strong> No name in this
+  document is a recommendation. Clinical-stage names in particular are listed to illustrate a risk
+  category, and the base rate in section 2 applies to all of them.</p>
+  <p>Compiled by Elon Musk, Industry Research (Dept 1), with section 6 policy work by The dictator
+  (Regulatory, Dept 4) and price, results and A/H analysis by 修大哥 (Global News, Dept 4).
+  皮褸黃 Capital, 2026-08-07; prices through 10 Aug 2026. Full sourced reports with citations:
+  <span class="m">reports/industry/2026-08-07-biotech-landscape.md</span>,
+  <span class="m">reports/news/2026-08-07-2359hk-regulatory.md</span>,
+  <span class="m">reports/news/2026-08-07-2359hk-news.md</span>.
+  Universe counts: HKEX Group Insight 2026; ChartMill US industry screen; XBI/IBB holdings via
+  stockanalysis.com, Aug 2026.</p>
+</footer>
+</div>

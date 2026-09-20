@@ -1,0 +1,11 @@
+{
+ "eval_id": 1,
+ "eval_name": "corrected-codebase-no-false-alarm",
+ "prompt": "Review strategy/v6.5/ for me — is the measurement sound now?",
+ "assertions": [
+  "Confirms a transaction cost model is present",
+  "Confirms drawdown / equity curve statistics are computed",
+  "Still flags the hard-coded ticker list as an outstanding survivorship issue",
+  "Does not report a critical finding that the code has actually fixed"
+ ]
+}

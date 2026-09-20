@@ -1,0 +1,21 @@
+{
+ "eval_id": 2,
+ "run": "with_skill",
+ "expectations": [
+  {
+   "text": "Actually makes the requested take-profit change rather than only auditing",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Surfaces at least one pre-existing defect that affects the reported result",
+   "passed": false,
+   "evidence": "no matching evidence found"
+  },
+  {
+   "text": "Does not refuse or lecture instead of doing the work",
+   "passed": true,
+   "evidence": "pattern matched"
+  }
+ ]
+}

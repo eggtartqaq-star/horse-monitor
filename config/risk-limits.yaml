@@ -1,0 +1,30 @@
+# 皮褸黃 Capital — hard risk limits, enforced by John (CRO), who holds veto power.
+# These limits change only with the Owner's explicit approval. Conservative
+# defaults; tighten or adjust to the Owner's risk tolerance.
+
+portfolio:
+  max_drawdown: 0.20            # 20% peak-to-trough budget; breach = de-risk review
+  cash_floor: 0.10              # never fully invested below 10% cash
+  leverage: none                # no margin, no borrowed money — hard rule
+  max_var_95_1d: 0.03           # 1-day 95% VaR ceiling as fraction of portfolio
+
+concentration:
+  max_single_position: 0.10     # 10% of portfolio per name at cost
+  max_single_position_drifted: 0.15  # trim trigger if a winner grows past 15%
+  max_sector: 0.35              # per GICS-style sector
+  max_correlated_cluster: 0.40  # e.g. total AI-complex exposure across sleeves
+
+per_trade:
+  max_risk_per_trade: 0.01      # 1% of portfolio at risk (size x distance to stop)
+  stop_required: true           # every position carries 老詹's invalidation level
+  max_adv_participation: 0.05   # position size vs avg daily $ volume (Tim Cook checks)
+
+options:                        # C朗's strategies
+  naked_short_options: forbidden
+  covered_only: true            # short options covered by stock or cash
+  max_options_premium_at_risk: 0.02  # of portfolio, aggregate long premium
+
+process:
+  committee_approval_required: true
+  decision_record_before_ticket: true
+  live_trading: forbidden       # tickets for Owner review / paper trading only

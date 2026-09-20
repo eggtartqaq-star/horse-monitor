@@ -1,0 +1,29 @@
+# 皮褸黃 Capital — portfolio state (single source of truth)
+# Updated only with Owner approval. All values illustrative until the Owner
+# enters real holdings.
+
+base_currency: USD
+benchmark: SPY          # change to the Owner's preferred benchmark
+
+# Target allocation (from the founding vision; Morris proposes changes,
+# the Owner approves them)
+targets:
+  ai: 0.30              # AI-focused equities
+  technology: 0.20      # broader technology
+  etf: 0.20             # index / sector ETFs
+  cash: 0.30            # strategic cash floor — see risk-limits.yaml
+
+# Rebalancing bands (absolute percentage points; So Ma monitors)
+rebalance_band: 0.05
+rebalance_cadence: quarterly
+
+# Current holdings — REPLACE WITH REAL DATA. Format:
+#   - ticker: NVDA
+#     sleeve: ai
+#     shares: 0
+#     cost_basis: 0.00        # per share
+#     opened: 2026-01-01
+#     decision_record: memory/decisions/YYYY-MM-DD-nvda-long.md
+holdings: []
+
+cash_balance: 0.00      # REPLACE WITH REAL DATA

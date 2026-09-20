@@ -1,0 +1,152 @@
+<title>At the computer — do list</title>
+<style>
+  :root{ --bg:#F3F3F1; --card:#FFFFFF; --ink:#131418; --ink2:#4B4E56; --ink3:#7B7F87;
+         --line:#DEDEDA; --acc:#4739B8; --ok:#12833E; --warn:#9A6212; --crit:#B3342A; }
+  @media (prefers-color-scheme:dark){ :root:where(:not([data-theme="light"])){
+    --bg:#0F0F12; --card:#17181C; --ink:#ECEDEF; --ink2:#A3A6AD; --ink3:#767A82;
+    --line:#25262B; --acc:#9B90F0; --ok:#4BC176; --warn:#D9A44C; --crit:#E4695B; } }
+  :root[data-theme="dark"]{ --bg:#0F0F12; --card:#17181C; --ink:#ECEDEF; --ink2:#A3A6AD;
+    --ink3:#767A82; --line:#25262B; --acc:#9B90F0; --ok:#4BC176; --warn:#D9A44C; --crit:#E4695B; }
+  :root[data-theme="light"]{ --bg:#F3F3F1; --card:#FFFFFF; --ink:#131418; --ink2:#4B4E56;
+    --ink3:#7B7F87; --line:#DEDEDA; --acc:#4739B8; --ok:#12833E; --warn:#9A6212; --crit:#B3342A; }
+  *{ box-sizing:border-box; } html,body{ background:var(--bg); }
+  body{ margin:0; color:var(--ink); overflow-x:hidden; font-size:16px; line-height:1.6;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,'Noto Sans CJK TC','PingFang TC','Microsoft JhengHei',sans-serif; }
+  .wrap{ max-width:760px; margin:0 auto; padding:44px 20px 90px; }
+  .m{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .kick{ font-family:ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:.17em;
+    text-transform:uppercase; color:var(--acc); margin:0 0 13px; }
+  h1{ font-size:clamp(26px,4.8vw,38px); margin:0; letter-spacing:-.02em; line-height:1.14; }
+  .dek{ margin:13px 0 0; color:var(--ink2); max-width:60ch; }
+
+  .prog{ position:sticky; top:0; z-index:5; background:var(--bg); padding:16px 0 12px;
+    margin-top:24px; border-bottom:1px solid var(--line); }
+  .bar{ height:6px; background:var(--line); overflow:hidden; }
+  .bar i{ display:block; height:100%; width:0; background:var(--acc); transition:width .18s; }
+  .pt{ font-family:ui-monospace,Menlo,monospace; font-size:12px; color:var(--ink3); margin-top:7px; }
+
+  h2{ font-size:19px; margin:38px 0 4px; letter-spacing:-.01em; }
+  .sub{ color:var(--ink3); font-size:13.5px; margin:0 0 14px;
+    font-family:ui-monospace,Menlo,monospace; }
+
+  ul{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:1px;
+    background:var(--line); border:1px solid var(--line); }
+  li{ background:var(--card); padding:14px 17px; display:grid;
+    grid-template-columns:auto 1fr; gap:13px; align-items:start; }
+  li.done .txt{ opacity:.45; }
+  li.done .txt > b{ text-decoration:line-through; }
+  input[type=checkbox]{ width:19px; height:19px; margin:3px 0 0; accent-color:var(--acc);
+    cursor:pointer; flex:0 0 auto; }
+  /* only the item title is a block — bold inside a paragraph stays inline */
+  .txt > b{ font-weight:640; display:block; }
+  .txt p b{ font-weight:640; }
+  .txt p{ margin:5px 0 0; font-size:14.5px; color:var(--ink2); }
+  .txt p.m{ font-size:13.5px; color:var(--ink); }
+  .tag{ font-family:ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:.08em;
+    text-transform:uppercase; padding:2px 7px; border:1px solid currentColor; margin-left:8px;
+    vertical-align:2px; white-space:nowrap; }
+  .tag.hi{ color:var(--crit); } .tag.mid{ color:var(--warn); } .tag.lo{ color:var(--ink3); }
+  .note{ margin-top:15px; background:var(--card); border:1px solid var(--line);
+    border-left:3px solid var(--acc); padding:15px 18px; }
+  .note p{ margin:0; font-size:14.5px; color:var(--ink2); } .note p+p{ margin-top:8px; }
+  .note strong{ color:var(--ink); }
+  a{ color:var(--acc); }
+  a:focus-visible, input:focus-visible{ outline:2px solid var(--acc); outline-offset:2px; }
+  footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
+    font-size:13px; color:var(--ink3); }
+</style>
+<div class="wrap">
+  <p class="kick">皮褸黃 Capital · action list</p>
+  <h1>When you're at the computer</h1>
+  <p class="dek">Ordered so each step unblocks the next. The first two take five minutes and matter more than everything below them.</p>
+
+  <div class="prog"><div class="bar"><i id="fill"></i></div><div class="pt" id="ptxt">0 of 0 done</div></div>
+
+  <h2>A · Five minutes, free, do first</h2>
+  <p class="sub">nothing else on this list protects you the way these two do</p>
+  <ul>
+    <li><input type="checkbox"><div class="txt"><b>Phone the broker: switch to a cash account, margin disabled<span class="tag hi">highest value</span></b>
+      <p>A ~9× leverage position already happened on 18 July. With margin off it stops being a decision you have to win and becomes an order the broker rejects. One call, no cost.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>While you're on the phone: ask the exact minimum commission per trade</b>
+      <p>On a HK$1,000 purchase, a HK$100 minimum is 10% gone before the market opens. This single number changes more than any view on markets.</p></div></li>
+  </ul>
+
+  <h2>B · Ten minutes in the broker app</h2>
+  <p class="sub">two facts that settle open questions</p>
+  <ul>
+    <li><input type="checkbox"><div class="txt"><b>Confirm 3416's board lot size</b>
+      <p>I have <b>500 units (~HK$4,320)</b> at moderate confidence — two sources, neither page openable. If it's 500, then "HK$1,000 a month" is not executable: one lot takes ~4.3 months of saving.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Check the current 3416 price</b>
+      <p>My last hard print is HK$8.64 (23 July), near the bottom of its range. Confirm it hasn't moved far.</p></div></li>
+  </ul>
+
+  <h2>C · Twenty minutes — the diagnostic</h2>
+  <p class="sub">this is the one that answers whether your edge is real</p>
+  <ul>
+    <li><input type="checkbox"><div class="txt"><b>Open the download page and save all six files into one new folder</b>
+      <p><a href="https://claude.ai/code/artifact/a285cbb6-8103-45e6-9c1f-b517f5416bf4">claude.ai/code/artifact/a285cbb6…</a></p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Turn on <em>File name extensions</em> in File Explorer's View tab</b>
+      <p>Windows hides them by default, and you can't do the next step without seeing them.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Delete the trailing <span class="m">.txt</span> from the five code files</b>
+      <p class="m">rules.py.txt → rules.py &nbsp;·&nbsp; run_diagnostics.bat.txt → run_diagnostics.bat</p>
+      <p>README.md is already correct. The viewer won't accept .py or .bat, which is why they arrive this way.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Double-click <span class="m">run_diagnostics.bat</span></b>
+      <p>It installs what's missing, runs the self-test, and stops if that fails. If it does stop, send me the file anyway — that's information too.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Send me <span class="m">v65_diagnostics_&lt;date&gt;.txt</span><span class="tag hi">the deliverable</span></b>
+      <p>It saves itself so you don't have to copy from the console.</p></div></li>
+  </ul>
+
+  <div class="note">
+    <p><strong>If you're on university wifi it may fail.</strong> Yahoo's data hosts are blocked on many institutional networks — the same restriction that blocks me. The script will say so plainly rather than crash. Run it on home wifi instead.</p>
+  </div>
+
+  <h2>D · Five minutes — fix my broken copy</h2>
+  <p class="sub">my V6.4 files don't compile; yours almost certainly do</p>
+  <ul>
+    <li><input type="checkbox"><div class="txt"><b>Zip your real <span class="m">.py</span> and <span class="m">.pine</span> files and send them</b>
+      <p>You sent PDFs, and the PDFs clipped every line at ~80 characters. All four Python files fail to parse. The structural findings survive, but <b>every line number I quoted needs re-checking</b> against the real thing.</p></div></li>
+  </ul>
+
+  <h2>E · Decisions only you can make</h2>
+  <p class="sub">no computer needed — but they're blocking work</p>
+  <ul>
+    <li><input type="checkbox"><div class="txt"><b>Is the HK$8,000 most of that person's savings?<span class="tag hi">answer first</span></b>
+      <p>If yes, the fee arithmetic is irrelevant and the real issues are concentration and having no cash buffer. If it sits on top of savings, it's a minor optimisation worth ~HK$83/year either way.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Decide where future monthly contributions go</b>
+      <p>Worth roughly <b>15× more</b> than the existing HK$8,000. That's the real decision; the holding is a footnote.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Fill in <span class="m">config/portfolio.yaml</span><span class="tag mid">escalated 6×</span></b>
+      <p>Still empty — no holdings, no cash. Risk can't size anything against nothing, and Portfolio Management has produced nothing all month because of it.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Resolve the risk-limit contradiction<span class="tag mid">escalated 6×</span></b>
+      <p>The file caps a correlated cluster at 0.40 but the targets sum to 0.50 (AI 0.30 + tech 0.20). Pick one.</p></div></li>
+    <li><input type="checkbox"><div class="txt"><b>Set the margin-of-safety bar<span class="tag lo">John's escalation</span></b>
+      <p>Risk has never been the binding constraint — valuation has. Set too high, the firm declines everything forever. Only you can turn that knob.</p></div></li>
+  </ul>
+
+  <footer>
+    <p>Ticks are remembered in this browser only — they won't follow you to another device. Research and decision support, not financial advice.</p>
+  </footer>
+</div>
+<script>
+const boxes = [...document.querySelectorAll('input[type=checkbox]')];
+const fill = document.getElementById('fill'), ptxt = document.getElementById('ptxt');
+const KEY = 'v65-todo-v1';
+
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { saved = {}; }
+
+function render(){
+  const n = boxes.filter(b => b.checked).length;
+  fill.style.width = (n / boxes.length * 100) + '%';
+  ptxt.textContent = `${n} of ${boxes.length} done`;
+  boxes.forEach(b => b.closest('li').classList.toggle('done', b.checked));
+}
+boxes.forEach((b, i) => {
+  b.checked = !!saved[i];
+  b.addEventListener('change', () => {
+    saved[i] = b.checked;
+    try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+    render();
+  });
+});
+render();
+</script>
