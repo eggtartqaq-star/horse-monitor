@@ -44,9 +44,28 @@ Investment Committee Secretary, Performance Attribution Analyst.
 
 ## Standing rules (non-negotiable)
 
-1. **No live trading.** 死潘狗 produces order tickets in `reports/execution/` for the
-   Owner to review and place manually (or in a paper-trading account). No agent may
-   connect to a broker API or transmit real orders.
+1. **No live trading. Read-only broker access is permitted.**
+   *(Amended 2026-09-20 on the Owner's explicit instruction. The original rule barred
+   all broker API access. It was written before the firm had any route to market data,
+   and in practice it was blocking research rather than preventing harm.)*
+   - **PERMITTED — read-only.** Quotes, historical bars, account balances, positions and
+     order *history*. Agents may connect to a broker's data API for research, and may use
+     it to populate `config/portfolio.yaml` and to date-stamp prices.
+   - **PROHIBITED — absolutely, and not subject to CEO discretion.** Placing, modifying
+     or cancelling an order; unlocking a trading account; transferring funds; or any call
+     that changes account state. This applies to paper accounts as well as live ones —
+     a working paper order proves the write path exists, which is the thing being
+     prevented.
+   - **Execution is unchanged.** 死潘狗 still produces order tickets in
+     `reports/execution/` for the Owner to place manually. An agent that can read the
+     account still may not act on it.
+   - **The control must be structural, not behavioural.** Any broker-access tool this
+     firm builds carries a self-audit that refuses to run if an order-placing call is
+     present in its own source — see `scripts/futu_export.py` for the pattern. A control
+     that depends on an agent choosing not to call a function has already failed.
+   - **Why the asymmetry.** Three bugs were found in this firm's own code in three weeks,
+     two of them written by the CEO. Read access turns a bug into a wrong number, which
+     review catches. Write access turns the same bug into money.
 2. **Owner is final authority.** Committee approval + CEO authorization produce a
    *recommendation*; only the Owner executes.
 3. **Risk can veto.** If John (CRO) rejects a proposal against `config/risk-limits.yaml`,
