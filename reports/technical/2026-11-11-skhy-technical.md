@@ -2,7 +2,7 @@
 
 **Analyst:** 老詹, Technical Analysis (Dept 5)
 **Date:** 2026-11-11
-**Status:** DRAFT — skeleton on disk; sections filled incrementally (checkpointed)
+**Status:** COMPLETE (v1, 2026-11-12). All sections filled; §7 premium shown as FX sensitivity pending a dated USD/KRW
 **Nature:** Research only. Inputs for John (CRO) and Zac (sizing). Not a recommendation, not financial advice.
 
 ## 0. Honest constraints (read first)
@@ -257,19 +257,187 @@ peak); ~30% (23 Jul); ~33% (undated, Jul/Aug); **~41%** (late Sep, Asia Times "A
 does not arbitrage away.
 
 **Computed premium at the 10 Nov close under a USD/KRW sensitivity (FX NOT OBTAINED):**
-PENDING-PREMIUM
 
-## 8. Lock-up expiry as a dated supply event
-PENDING
+| USD/KRW assumed | Premium at 10 Nov close (SKHY $129.66 vs ₩121,200/ADS) | Premium late Aug (SKHY $161.61 vs ₩175,900/ADS, 24–27 Aug) |
+|---|---|---|
+| 1,350 | 44.4% | 24.0% |
+| 1,380 | 47.6% | 26.8% |
+| 1,400 | 49.8% | 28.6% |
+| 1,430 | 53.0% | 31.4% |
+| 1,460 | 56.2% | 34.1% |
 
-## 9. Trading-plan inputs for John and Zac
-PENDING
+**Finding: the premium has NOT compressed. Under any plausible FX it is ~44–56% at the
+10 Nov close, versus ~41% in late September and ~24–34% in late August.** The late-Aug
+row reproduces the sourced "~30%" figure, which gives me some confidence the method is
+right. Therefore **premium compression does not explain the ADS drop from ~$162 to $127;
+the ordinary fell further (−31% from 24 Aug) and the ADS fell less (−20%).** The decline is
+Korea-side / sector-side, not an ADR-structure unwind. The corollary is the uncomfortable
+one: **the premium is a latent supply overhang of ~45–55% that the ADS has not yet paid**
+— if the KSD conversion quota reopens, or if Seoul rallies faster than New York, the ADS
+can underperform the ordinary by that margin without any change in fundamentals. That is a
+structural risk John should price, and it is the strongest argument against treating the
+ADS as a clean proxy for the business.
+
+### Does the ADS lead or follow Seoul?
+Evidence is mixed and I will not over-read it:
+- 10 Jul debut pop (+12.8%) **led** Seoul's 13 Jul record one-day fall (the "ADR event"
+  unwind) — the ADS led on that occasion.
+- 10 Nov: Seoul +6.69% in its session; SKHY closed only $129.66 (vs $127.34 on 6 Nov; 9 Nov
+  close NOT OBTAINED). 11 Nov: Seoul +7.2%, then SKHY +10% — Seoul **led** on this pair.
+- With ADS volume at ~16–20M/day (~$2–3bn notional) versus the ordinary's position as >20%
+  of KOSPI, the Korean session is the price-setter for value and the ADS adds a US-tech-
+  session overlay (CoreWeave, MU, NVDA). Practical rule: **check 000660's close before the
+  US open; the ADS rarely fights it, but it adds a sector beta on top.**
+
+## 8. Lock-up expiry — a dated supply event that is BEHIND us, not ahead
+
+**Correction to the brief:** sources consistently describe a **90-day** lock-up (company,
+affiliates, management; subject to exceptions) from the **9 Jul 2026 prospectus date**,
+expiring **Wed 7 Oct / Thu 8 Oct 2026** (Briefs.co 7 Oct: "expires Wednesday"; Barchart via
+Webull: 8 Oct). I found no source supporting 180 days / 9 Jan 2027. The exact day should be
+confirmed against the 424(b)(4) — flagged to 修大哥 — but the quarter is not in doubt.
+
+**What the tape did into and through it (dated points only):**
+| Date | ADS | Note |
+|---|---|---|
+| 4 Sep | ~$177 | post-Aug high |
+| two weeks to 30 Sep | ~$175 avg (implied from $3.5bn/20M) | still elevated, premium ~41% |
+| 7–8 Oct | expiry | price on the day NOT OBTAINED |
+| 20 Oct | $139.79, vol 15.8M "below average" | **−20% from late Sep** in ~3 weeks |
+| 26 Oct | $142.62 | |
+
+Reading: the ADS lost roughly a fifth of its value across the expiry window, on *declining*
+volume. That pattern (price down, volume not expanding) is more consistent with **buyers
+stepping back ahead of expected supply** than with heavy insider selling actually hitting
+the tape — but I cannot distinguish the two without daily volume for 1–15 Oct, and the
+Korean ordinary was also weak in the period (24 Aug ₩1.76m → 28 Oct ₩1.49m pre-earnings
+bounce). I do not attribute the Oct decline to the lock-up alone.
+
+**Is there a later tranche?** NOT OBTAINED. No source mentions a second lock-up date. Two
+*other* dated supply/demand items are relevant instead:
+1. **ADS conversion quota (KSD):** reported exhausted. If re-opened or enlarged, arbitrage
+   supply hits the ADS and the ~45–55% premium compresses. **No date; the single largest
+   structural risk to the ADS specifically.**
+2. **₩20tn treasury-share buyback, 29 Oct 2026 – 28 Jan 2027:** dated demand on the
+   *ordinary*. Supports the proxy; does not touch the ADS premium.
+
+**Positioning rule now that expiry is behind us:** there is no calendar supply cliff to
+trade around in Q4; the risk is event-driven (quota) rather than dated. Treat any sudden
+*narrowing* of the premium without a Seoul rally as the signal that the conversion valve
+has opened — that is a reduce trigger for the ADS specifically, regardless of chart level.
+
+## 9. Trading-plan inputs for John (CRO) and Zac (sizing)
+
+**These are inputs, not a recommendation. Whether to add, reduce or hold is a committee
+and Owner decision; sizing is Zac's; limit compliance is John's.** The $129.00 cost basis
+does not appear in any level below by design.
+
+### (a) Where an add (average-down) has a technical justification — and where it does not
+- **Justified zone: $127.3–$130.0**, i.e. a pullback to the launch zone of the 11 Nov impulse
+  (6 Nov close $127.34, 10 Nov close $129.66), **provided the pullback holds above $122.20
+  intraday**. Risk to the invalidation close ($120.35) from $128.50 is ~6.3% — a defined,
+  modest stop distance for a name with 5–13% daily ranges. This is where risk/reward is
+  asymmetric: ~6% to invalidation vs ~15% to the first serious resistance ($147–150).
+- **Not justified: chasing at $140–145** after a +10% session into the $146.8–$149.9
+  supply zone; stop distance to $120.35 is ~16%, reward to the same resistance is ~4%.
+- **Not justified: below $120.35.** That is the invalidation, not a bargain. An add there
+  is averaging into a failed base — the classic averaging-down error.
+- Confidence that the $127–130 zone holds on a re-test: **moderate-low** (one prior test).
+
+### (b) Where to reduce
+- **First reduce zone: $146.8–$149.9** (61.8% of the Oct–Nov swing + IPO price + 38.2% of
+  the full range + the 30 Oct failure point). Highest-confidence level on the chart. Unless
+  and until there is a **daily close above $152.35**, this zone is where a tactical trim of a
+  position bought near the lows has the best evidence behind it.
+- **Second reduce zone: $158.5–$162.0** (50% of full range + 29 Oct last lower high). A
+  close above $162 is the trend-reversal line; *below* it, this zone is still a sell-the-rip
+  level in a downtrend.
+- **Event trigger (level-independent):** ADR premium narrowing sharply while Seoul is flat
+  or up — see §8 item 1 — is a reduce signal for the ADS leg specifically.
+
+### (c) The stop
+- **Hard: daily close below $120.35.** Warning: intraday below $122.20.
+- Logged here on 2026-11-11/12 and will not be moved lower. If hit, I record the stop-out in
+  this file and the base thesis is dead until a new low is established and re-tested.
+
+### (d) What a re-test of $149 would and would not prove
+- **Would prove:** the ADS has retraced ~62% of the Oct–Nov decline; the Nov low has, for
+  now, functioned as a floor; the IPO cohort's break-even is being tested from below.
+  A **daily close above $152.35** on that attempt would prove the 30 Oct failure is repaired
+  and would flip my read from downtrend to range ($122–$162).
+- **Would NOT prove:** that the primary downtrend has reversed (needs close >$162 *and* a
+  higher low above $129.66); that the premium overhang has gone (§7); that Seoul agrees
+  (check 000660 vs its own 28 Oct level ₩1,487,000 — if the ADS re-tests $149 while the
+  ordinary is still well below ₩1.49m, the move is premium expansion, which is fragile).
+- A re-test that **fails** at $147–150 for a second time, after the 30 Oct failure, would
+  establish a confirmed lower-high sequence and raise the odds of a re-test of $120–122.
+
+### Summary table for Zac
+| Input | Level | Basis |
+|---|---|---|
+| Add zone (if committee wants to add at all) | $127.3–$130.0, holding >$122.20 | Impulse launch zone |
+| Do-not-chase line | above ~$140 | <4% to resistance, >16% to stop |
+| Reduce 1 | $146.8–$149.9 | IPO price + fib confluence + Oct failure |
+| Reduce 2 | $158.5–$162.0 | 50% fib + last lower high |
+| Hard stop | daily close < $120.35 | ATL cluster floor |
+| Trend-reversal confirmation | daily close > $162.0 | Last lower high |
+| Range-read confirmation | daily close > $152.35 | 13 Jul floor reclaimed |
 
 ## 10. Technical score (0–100) input to committee
-PENDING
+
+**Score: 35 / 100. Confidence in the score: LOW-TO-MODERATE.**
+
+| Component | Read | Contribution |
+|---|---|---|
+| Primary trend | Down (lower highs 194.8→177→162; lower lows 152→140→121) | strongly negative |
+| Position vs MAs | Below estimated 20d and 50d; no 200d exists | negative |
+| Structure | Failed breakout of IPO price on best news of the quarter (29–30 Oct) | negative |
+| Setup | ATL held at first test; +10% impulse off $129.66; ~50% retrace of Oct–Nov leg | positive, one session only |
+| Proxy | Ordinary −31% from 24 Aug; ₩20tn buyback live to 28 Jan | mixed; buyback mildly positive |
+| ADR structure | Premium ~45–55%, not compressing; quota shut | negative overhang |
+| Volume | Decaying; Nov volume unknown | cannot confirm either way |
+| Data quality | Dated closes, no series, vendor-sourced low | discount applied |
+
+Score of 35 means: the chart does not support initiating here on technicals alone (which
+this firm does not do anyway); it supports *holding an existing fundamentally-justified
+position with a hard stop at the ATL floor and trimming into $147–150*. A close above
+$152.35 would move the score to ~50; above $162 to ~60; a close below $120.35 to ≤20 and
+the view is logged as stopped out.
 
 ## 11. NOT OBTAINED register
-PENDING
+
+| Item | Status |
+|---|---|
+| Daily OHLCV series for SKHY (any window) | NOT OBTAINED — no feed; fetch blocked |
+| Confirmed **11 Nov close** | NOT OBTAINED at time of writing (intraday $142.68–$143.42 only) |
+| **9 Nov close** | NOT OBTAINED |
+| Exact **date and intraday value of the all-time low** ($120.35 / $122.20 / $124.80 / $126.80 / $128.29 vendor conflict) | NOT OBTAINED |
+| Independent confirmation of **$127.34 (6 Nov)** | NOT OBTAINED — brief-supplied only |
+| Source for **$199.86** high | NOT OBTAINED — unsupported; $194.80 (14 Jul) used |
+| **USD/KRW** on 10–11 Nov 2026 | NOT OBTAINED — premium shown as FX sensitivity |
+| SKHY price and volume on **7–8 Oct** (lock-up expiry) and daily volume 1–15 Oct | NOT OBTAINED |
+| **Any later lock-up tranche** | NOT OBTAINED — none mentioned in any source |
+| Exact lock-up day (7 vs 8 Oct) per 424(b)(4) | NOT OBTAINED — 修大哥 confirming |
+| **Nov daily volume** (5 Nov, 11 Nov especially) | NOT OBTAINED |
+| **Computed RSI(14), MACD**, 20d/50d MA values | NOT OBTAINED — MA levels given are estimates from dated closes |
+| RSI divergence 20 Oct vs 6 Nov | NOT OBTAINED |
+| 000660.KS ATH date/level, 200-day MA, multi-year ₩ supports | NOT OBTAINED — conflicting undated quotes rejected |
+| Date the ADS first closed below $149 (stockhub.kr headline exists; date not captured) | NOT OBTAINED |
+| KSD conversion-quota size (2.5% vs 25% figures conflict) and any re-opening date | NOT OBTAINED |
+| TIKR "down 57% from high" (8 Nov) — does not reconcile with either ADS or ordinary path | UNRECONCILED; not used |
+| Order-flow / short interest / options skew | NOT OBTAINED — 王老吉 / C朗 scope |
+
+### Blocked / unusable hosts this session
+Direct page fetch unavailable for all hosts (environment constraint; not attempted around).
+`tradingkey.com` — blacklisted, not cited. Price pages that surfaced but returned only
+undated or mutually-contradictory snapshots and were **not relied on**: valueresearchonline,
+chartmill, upstox, eulerpool (except the dated 24 Aug quote), stockopedia, tradersunion,
+halo-technologies, stock-screener.org, wallstreetnumbers, metirai.
 
 ## 12. Sources
-PENDING
+IPO pricing / first day: iposcoop.com (The IPO Buzz, 10 Jul 2026); morningstar.com "SK Hynix stock surges in US IPO"; koreaherald.com/article/10804704; en.fnnews.com 202607121534305943; aljazeera.com 10 Jul 2026; en.edaily.co.kr eda202607095506 (lock-up 90 days, prospectus 9 Jul). ·
+ATH / Jul path: historicaloptiondata.com (SKHY price table, 14–15 Jul, 4 Aug); kr.benzinga.com/quote/SKHY/report (year range $128.29–$194.80); webull.com news (after-hours $190.50); newsable.asianetnews.com (−9.32% 13 Jul); advisorperspectives.com 13 Jul 2026 (Seoul record plunge). ·
+Aug–Oct: hdfcsky.com (27 Aug $161.61; 52w $124.80–$194.80); asiatimes.com Oct 2026 ("41% more", 20M/day); schwab.wallst.com SKHY (20 Oct $139.79, 15.77M); marketchameleon.com/Overview/SKHY (26 Oct $142.62); debelegger.nl SKHY.US (30 Oct $149.21 −7.9%); briefs.co/?p=24801 (7 Oct lock-up); webull.com/news/15702155852596224 (Barchart, 8 Oct). ·
+Earnings / Seoul: mt.co.kr 28 Oct 2026 (₩1,487,000 +10.89%); koreatimes.co.kr 28 Oct 2026 (KOSPI 6,012; ₩20tn buyback dates); eulerpool.com 000660 (24 Aug ₩1,759,000). ·
+Nov: fool.com 5 Nov 2026 ("Why SK hynix plunged today", −13.4%); Yonhap via communicationstoday (5 Nov); finance.yahoo.com article (10 Nov, ₩1,212,000 +6.69%); benzinga.com movers 11 Nov 2026 (+10.1% to $142.68); finance.yahoo.com/quote/SKHY (day range, prev close $129.66); investing.com/equities/sk-hynix-adr and "Why is SK hynix stock surging today" (11 Nov); boerse-express.com 11 Nov (Seoul +7.2%; MS target ₩1.6m); tikr.com blog (8 Nov, unreconciled). ·
+ADR structure: koreatimes.co.kr 14 Jul 2026 (premium narrowing; 1/10 ratio); itiger.com/news/2654305994 (premium mechanics); webull.com/news/15275858794718208 (conversion quota exhausted); biz.heraldcorp.com/article/10817183 (30% premium, custody limit).
