@@ -441,3 +441,27 @@ Aug–Oct: hdfcsky.com (27 Aug $161.61; 52w $124.80–$194.80); asiatimes.com Oc
 Earnings / Seoul: mt.co.kr 28 Oct 2026 (₩1,487,000 +10.89%); koreatimes.co.kr 28 Oct 2026 (KOSPI 6,012; ₩20tn buyback dates); eulerpool.com 000660 (24 Aug ₩1,759,000). ·
 Nov: fool.com 5 Nov 2026 ("Why SK hynix plunged today", −13.4%); Yonhap via communicationstoday (5 Nov); finance.yahoo.com article (10 Nov, ₩1,212,000 +6.69%); benzinga.com movers 11 Nov 2026 (+10.1% to $142.68); finance.yahoo.com/quote/SKHY (day range, prev close $129.66); investing.com/equities/sk-hynix-adr and "Why is SK hynix stock surging today" (11 Nov); boerse-express.com 11 Nov (Seoul +7.2%; MS target ₩1.6m); tikr.com blog (8 Nov, unreconciled). ·
 ADR structure: koreatimes.co.kr 14 Jul 2026 (premium narrowing; 1/10 ratio); itiger.com/news/2654305994 (premium mechanics); webull.com/news/15275858794718208 (conversion quota exhausted); biz.heraldcorp.com/article/10817183 (30% premium, custody limit).
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

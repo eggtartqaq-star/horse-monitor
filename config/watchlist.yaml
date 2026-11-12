@@ -44,6 +44,28 @@ research:
   - INTC  # reduced-core pipeline 2026-07-28; reports/*/2026-07-28-intc*; CRO VETO 28/100;
           # BINDING price gate: no initiation at or above $45. Triggers: two committed 14A
           # customers by mid-2027, and DCAI margins >=35% sustained after the CPU shortage
+  - SKHY  # SK hynix ADS, Nasdaq (0.1 × 000660.KS). OWNER HOLDS at US$129 (disclosed
+          # 2026-11-11). Pipeline 2026-11-11/12: industry, financials, regulatory,
+          # technicals COMPLETE; news partial; VALUATION, CRO, SIZING, TICKETS, AUDIT
+          # NOT RUN. CEO synthesis: reports/committee/2026-11-12-skhy-ceo-synthesis.md
+          # Financials B+ 72 (~60% of grade is cycle position). Memory sector NEUTRAL
+          # 6/10; 8 of 12 cycle-turn indicators flashing. Peak-to-trough OP survival
+          # in prior cycles: 13% and <0%.
+          # ★ STRUCTURAL: ADS trades 44-56% ABOVE the Korean ordinary because a KSD
+          #   cap on ADR issuance (2.5%) was exhausted 23 Jul 2026 and conversion is
+          #   one-way. Four desks converged independently. Company buys back the
+          #   ordinary at ~US$98/ADS-equivalent. If the cap lifts, ADS can fall 30%+
+          #   with no business change. No date. Reduce ADS on any sharp premium
+          #   narrowing while Seoul is flat/up, regardless of chart level.
+          # Lock-up was 90 days, expired 8 Oct 2026 — NOT January. IPO 100% primary.
+          # Levels (老詹): stop daily close <$120.35; add zone $127.3-130.0 only;
+          #   do-not-chase >$140; reduce $146.8-149.9 then $158.5-162.0.
+          # Dated: Wuxi fab US tool licence expires 31 Dec 2026, no 2027 licence
+          #   reported; 4Q26 results late Jan 2027; ₩20tn buyback to 28 Jan 2027.
+          # Owner action: confirm US-Korea treaty certification with broker — dividend
+          #   withholding is 22% at source vs 15% certified.
+          # Firm's 21 Aug "HBM margins 2-3x DDR5" line is STALE — TrendForce has HBM
+          #   per-wafer below DDR5 RDIMM as of 1Q26. Do not reuse.
   - 2359.HK  # WuXi AppTec H shares (also 603259.SS). PIPELINE INCOMPLETE 2026-08-10 —
              # news, regulatory and industry filed; FINANCIALS, MOAT, MANAGEMENT, VALUATION,
              # QUANT, TECHNICALS, RISK and AUDIT ALL NOT RUN. No verdict, no committee.
