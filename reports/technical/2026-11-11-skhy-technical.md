@@ -90,22 +90,174 @@ All prices USD per ADS (1 ADS = 1/10 ordinary share). Closes unless stated.
 | 11 Nov (Wed) | Intraday **$137.49–$144.77**; last seen **$142.68–$143.42 (+10.1% to +10.99%)**. Session not confirmed closed at time of writing | Benzinga; Yahoo; Investing.com |
 
 ### Arithmetic on the path (computed)
-PENDING-ARITHMETIC
+
+| Computation | Result |
+|---|---|
+| 13 Jul close (168.01 × (1−0.0932)) | ≈ $152.35 |
+| 29 Oct close (149.21 ÷ 0.921) | ≈ $162.0 |
+| ATH close $193.92 → 10 Nov close $129.66 | **−33.4%** |
+| ATH → 11 Nov ~$143.42 | −26.4% |
+| IPO $149 → 10 Nov / 11 Nov | −13.0% / −3.7% |
+| First-day close $168.01 → 11 Nov | −14.6% |
+| Owner entry $129.00 vs ATL $122.20 / $120.35 | entry is **+5.6% / +7.2%** above the low |
+| Owner entry vs 11 Nov ~$143.42 | position +11.2% (intraday, unconfirmed) |
+
+**What "within ~6% of the all-time low" means:** the Owner bought near the bottom of a
+17-week range, *after* a −33% drawdown from the ATH. **What it does not mean:** that the
+low is a floor. A four-month-old listing has no history below $120; there is nothing on the
+ADS chart that "should" hold there. The Korean ordinary (§6) is the only place to look for
+older support, and that is a proxy.
 
 ## 3. Trend verdict and structure
-PENDING
+
+**Primary (weekly, 17 weeks of data — too short for a weekly read of any confidence): DOWNTREND.**
+**Intermediate (daily): DOWNTREND with a one-session reversal off the all-time low. Not yet a base.**
+
+Evidence (all from §2):
+- **Lower highs:** $194.80 (14 Jul) → ~$177 (4 Sep) → ~$162 (29 Oct).
+- **Lower lows:** ~$152 (13 Jul) → ~$140 (20 Oct) → $120–122 (5–10 Nov).
+- **Failed breakout at the IPO price:** on 28–29 Oct, record Q3 results and a ₩20tn buyback
+  lifted the ADS to ~$162, *above* the $149 IPO price. It was back at $149.21 the next
+  session (30 Oct) and lost $149 within days, then printed the ATL on 5–10 Nov. A level
+  reclaimed on the best news of the quarter and surrendered inside a week is a **failed
+  breakout**, and it marks $149 as supply, not support.
+- **11 Nov:** +10% from $129.66 to ~$143, sector-driven (CoreWeave guidance, Seoul +7.2%).
+  One session. It has retraced roughly half of the 29 Oct→ATL decline (50% = $142.1,
+  computed). It does **not** by itself create a higher low; the first higher low would be a
+  pullback that holds above $129.66 and then exceeds the 11 Nov high ($144.77).
+
+**Is it a post-IPO base?** Not yet. A base requires (i) a low that has been re-tested and
+held, and (ii) a higher low. We have a low tested once (the 5–10 Nov cluster) and a bounce.
+That is the *first condition for* a base, not a base.
+
+**Moving averages:** no 200-day exists. A 50-day (sessions ~1 Sep–11 Nov) would sit roughly
+in the $150s given the Sep ~$175 → Oct ~$140–162 → Nov ~$120–143 path — i.e. **price is
+below the 50-day and the 20-day** (which spans ~14 Oct–11 Nov, roughly $140–150 average).
+Both are **estimates from the dated points in §2, not computed from a full series** — I do
+not have one. Direction of travel on both is down.
+
+**What changes the read:**
+- **Bearish read invalidated (turns neutral/constructive):** a daily close above **$152.35**
+  (13 Jul close; first post-IPO support) — that would mean price is back above the IPO
+  price *and* the first-week floor, and the 29 Oct failure is being repaired. Trend reversal
+  proper requires a close above **$162** (last lower high).
+- **Constructive read (low is in) invalidated:** daily close below **$120.35** — see §4.
 
 ## 4. Key levels — support / resistance / invalidation
-PENDING
+
+Fibonacci grids (computed, §2 arithmetic): full range $122.20→$194.80: 23.6% $139.33 ·
+38.2% $149.93 · 50% $158.50 · 61.8% $167.07 · 78.6% $179.26. Oct–Nov swing $162.0→$122.20:
+38.2% $137.4 · 50% $142.1 · 61.8% $146.8.
+
+### Resistance (nearest first)
+| Zone | Why it matters | Tested? |
+|---|---|---|
+| **$144.77** | 11 Nov intraday high | Current session; unconfirmed |
+| **$146.8–$149.9** | 61.8% of the Oct–Nov swing + **IPO price $149.00** + 38.2% of the full range + 30 Oct close $149.21 | **Yes — failed from above 30 Oct–early Nov.** Supply: every IPO allottee is flat here. Highest-conviction level on the chart |
+| $152.35 | 13 Jul close, first post-IPO low | Was support in Jul; became resistance after it broke (date NOT OBTAINED, between Aug and Oct) |
+| $158.5–$162.0 | 50% of full range + 29 Oct post-earnings high close (last lower high) | Rejected 29–30 Oct |
+| $167–$168.5 | 61.8% of full range + first-day close ($168.01/$168.49) + 14 Jul open $168.11 | Held as support 15 Jul–Aug (closes $176, $154 — i.e. broke by 4 Aug) |
+| $176–$177 | 15 Jul close $176.46; 10 Jul intraday high $177; 4 Sep $177 | Rejected 4 Sep (lower high) |
+| $194.80 / $193.92 | ATH intraday / close, 14 Jul | Once |
+
+### Support (nearest first)
+| Zone | Why it matters | Tested? |
+|---|---|---|
+| **$137.4–$139.8** | 38.2% of Oct–Nov swing; 23.6% full range; 20 Oct close $139.79 (prior low that broke); 11 Nov day low $137.49 | Broke as support early Nov; reclaimed 11 Nov intraday. Needs to hold on a close to matter |
+| **$127.3–$129.7** | 6 Nov close $127.34 and 10 Nov close $129.66 — the **launch zone of the 11 Nov impulse** | Held once (10 Nov → 11 Nov) |
+| **$120.35–$122.20** | All-time low cluster, 5–10 Nov (vendor figures; exact date NOT OBTAINED) | Tested once, held once |
+| below $120 | **No ADS history.** Only proxy levels (§6) | — |
+
+### INVALIDATION — pre-committed, not to be revised after the fact
+**Level: a daily close below $120.35 (the lowest vendor print of the Nov low cluster).
+Early warning: any intraday trade below $122.20.**
+
+**Rationale (same discipline as prior calls — the launch point of the impulse):** the
+constructive read is "the ATL zone has held at first test and the 11 Nov impulse launched
+from $129.66 off that floor." The impulse's launch area is $127–$130; its floor is the ATL
+cluster. If price closes below the lowest print of that cluster, the floor did not hold,
+the impulse has been fully retraced, and the ADS is in **price discovery below any level
+it has ever traded** — there is no technical argument left to hold against. At that point
+I log the view as stopped out in this file and the committee should treat the ADS as
+trendless-down with only Korean-proxy levels beneath.
+
+Why not $129.66 (tighter)? Because a 1-day-old close on a +10% gap day is noise-prone; the
+11 Nov range alone was $7.28 wide (5.6%). A stop inside normal daily range is a coin flip,
+not a level. Why not lower (e.g. a round $115)? Because nothing on the ADS chart exists
+there; a stop must sit at a level price has actually respected.
+
+**Confidence in these levels: LOW-TO-MODERATE.** 85 sessions, dated closes only, no full
+series, and a vendor-sourced low. $146.8–$149.9 is the one level with high confidence
+(three independent reasons plus observed rejection).
 
 ## 5. Indicator readings & divergences
-PENDING
+
+**RSI (14-day), MACD: NOT OBTAINED as computed values.** I have no daily series to compute
+them and found no dated third-party reading in search results. What the dated closes
+support qualitatively:
+- A −13.4% day (5 Nov) into a new ATL after a −33% drawdown would have pushed a 14-day RSI
+  into oversold territory (<30) on 5–6 Nov; the +10% session of 11 Nov will have snapped it
+  back toward the 40s. This is inference from the price path, **not a reading**.
+- **Divergence check:** price made a lower low in Nov vs the 20 Oct low ($139.79). Whether
+  RSI made a higher low (bullish divergence) is NOT OBTAINED — it would require the series.
+  If 修大哥/賭馬狗 can pull a 14-day RSI for 20 Oct vs 6 Nov, a higher RSI low at the lower
+  price low would materially strengthen the base case; a lower RSI low would not.
+- MACD will be below zero and below signal at the 10 Nov close given a month of lower
+  closes; 11 Nov is at most the first up-tick in the histogram. Again inference, not reading.
+- A broker-sourced "Soars 5.00% … oversold rebound" headline (iTiger, undated) corroborates
+  that at least one vendor's oversold flag was triggered in early Nov; date NOT OBTAINED.
+
+Nothing here contradicts the price read in §3; nothing confirms a reversal either.
 
 ## 6. Korean ordinary (000660.KS) as proxy for the history the ADS lacks
-PENDING
+
+Ratio: **1 ADS = 1/10 ordinary share** (prospectus; Korea Times; iTiger). Implied ADS
+value = (000660 price ÷ 10) ÷ USD/KRW.
+
+Dated proxy points found (closes, ₩):
+| Date | 000660.KS | Note |
+|---|---|---|
+| 24 Aug 2026 | 1,759,000 (prev 1,730,000) | Eulerpool |
+| 28 Oct 2026 | 1,487,000 (+10.89%) | Q3 record results; mt.co.kr |
+| 9 Nov 2026 | ≈ 1,136,000 (computed: 1,212,000 ÷ 1.0669) | — |
+| 10 Nov 2026 | 1,212,000 (+6.69%) | Yahoo Finance article |
+| 11 Nov 2026 | +7.2% intraday/close ⇒ ≈ 1,299,000 (computed) | boerse-express |
+
+Proxy drawdown 24 Aug → 10 Nov: **−31.1%** (computed). The ordinary fell *more* than the
+ADS over the same window (ADS 27 Aug $161.61 → 10 Nov $129.66 = −19.8%). **The ADS has
+been the stronger leg, not the weaker one** — see §7 on premium.
+
+Longer-dated 000660 structure (ATH date/level, 200-day MA, multi-year supports in ₩):
+**NOT OBTAINED** in this session — search snippets returned conflicting undated quotes
+(₩331k to ₩1.85m) which I will not use. Morgan Stanley cut its target to ₩1.6m (11 Nov);
+that is a broker target, not a technical level. The ₩20tn buyback (29 Oct 2026 – 28 Jan
+2027) is a **dated demand programme** on the ordinary; it supports the proxy's downside
+mechanically but says nothing about the ADS premium.
 
 ## 7. Volume and the ADR–ordinary relationship
-PENDING
+
+### Volume (ADS, dated)
+| Date | Volume | Source |
+|---|---|---|
+| 10 Jul | ~107.7M | Edaily |
+| 13 / 14 / 15 Jul | 57.3M / 72.65M / 76.3M | Edaily; price table |
+| two weeks to 30 Sep | ~20M/day average (>$3.5bn notional/day) | Asia Times |
+| 20 Oct | 15.77M, "below average" | Schwab |
+| Nov (incl. 5 Nov −13.4% and 11 Nov +10%) | **NOT OBTAINED** | — |
+
+Volume decayed from ~100M to ~20M to ~16M/day over three months — normal post-IPO decay,
+but it means the Nov moves happened on a thinner book than the Jul moves. Whether 5 Nov
+and 11 Nov were high-volume (climactic/confirming) days is exactly the datum I most want and
+do not have.
+
+### ADR premium to the ordinary (the question the coordinator asked)
+Premium = SKHY × USDKRW ÷ (000660 ÷ 10) − 1. Dated figures from sources: **52.5%** (14 Jul,
+peak); ~30% (23 Jul); ~33% (undated, Jul/Aug); **~41%** (late Sep, Asia Times "Americans pay
+41% more"). ADS conversion quota reported exhausted (Webull/KSD), which is why the premium
+does not arbitrage away.
+
+**Computed premium at the 10 Nov close under a USD/KRW sensitivity (FX NOT OBTAINED):**
+PENDING-PREMIUM
 
 ## 8. Lock-up expiry as a dated supply event
 PENDING
