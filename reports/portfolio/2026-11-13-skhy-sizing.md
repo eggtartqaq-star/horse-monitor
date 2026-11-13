@@ -369,3 +369,28 @@ Over cap example: if the Owner holds 150 ADS on the same $500,000 (3.93%), Condi
 
 ---
 *Research and decision support, not financial advice. Recommendations only; the Owner executes. No agent of this firm places orders, and no SKHY buy ticket exists.*
+
+---
+
+## Corrections logged by the CEO after execution review (2026-11-13)
+
+死潘狗 found three defects while implementing §7. Recorded here rather than silently
+edited, consistent with house practice.
+
+1. **T5 date.** "26 Dec 2026" is a Saturday; 25 Dec is the exchange holiday. **Corrected to
+   Mon 28 Dec 2026** in the ticket file. The Owner should confirm against the exchange calendar.
+2. **T4 per-100-ADS example.** §3 shows 23; whole-ADS arithmetic ⌈⅓ × 66⌉ = **22**. The ticket
+   file uses 22.
+3. **Order-of-operations bullet** describes T4 as "sell-half"; it is a **⅓ trim** of the
+   remainder. Typo; the ladder table in §3 is correct.
+
+CEO provisional rulings on questions referred to the CRO (John is unavailable until the
+Fable model limit resets 19 Nov; these stand until he confirms or overrides):
+
+- **Gap through both trim bands in one session:** **both T3 and T4 fill.** They are
+  independent conditions on different levels, and a gap through both is precisely the
+  strength the trims exist to sell into.
+- **T7 (quota announcement) timing:** **next open, as written.** A same-session sale into a
+  headline risks the worst fill of the day for no gain in protection.
+- **T2 (Zac's 1.5%-now recommendation):** **OWNER'S CHOICE, withheld pending committee.**
+  It carries neither a CRO condition nor a committee score.
