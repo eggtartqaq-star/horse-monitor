@@ -66,6 +66,15 @@ research:
           #   withholding is 22% at source vs 15% certified.
           # Firm's 21 Aug "HBM margins 2-3x DDR5" line is STALE — TrendForce has HBM
           #   per-wafer below DDR5 RDIMM as of 1Q26. Do not reuse.
+          # WAVE TWO (2026-11-13): valuation ADS FV $102 central (parity $80, premium-
+          #   persists $112), MoS 40% required, FAILS at $129. CRO: hold APPROVED WITH
+          #   CONDITIONS at <=3% of liquid net worth, ADD VETOED, risk 32/100. Sizing:
+          #   22 ADS per $100k LNW; Zac recommends 1.5% now. Tickets T0-T9 cut, sell-only,
+          #   none placeable until Owner discloses LNW / ADS count / cash-vs-margin.
+          #   Audit: hold, veto and 1.5% all SURVIVE; CEO synthesis failed C8 (inference
+          #   as fact) and was corrected. Live 13 Nov: $131.07 (Webull, read-only).
+          # ★ Webull account (read 13 Nov) holds NO SKHY — 2 AVGO on MARGIN, USD cash
+          #   negative. SKHY broker NOT CONFIRMED (presumed Futu).
   - 2359.HK  # WuXi AppTec H shares (also 603259.SS). PIPELINE INCOMPLETE 2026-08-10 —
              # news, regulatory and industry filed; FINANCIALS, MOAT, MANAGEMENT, VALUATION,
              # QUANT, TECHNICALS, RISK and AUDIT ALL NOT RUN. No verdict, no committee.

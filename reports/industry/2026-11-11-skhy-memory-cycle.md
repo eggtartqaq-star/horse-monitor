@@ -14,6 +14,7 @@
 **Baseline from `reports/industry/2026-08-21-msft-industry.md` (21 Aug 2026), not re-derived:**
 - DRAM pricing tracking **+275–300% 2025→2027** (TrendForce / Introl / tech-insider, as cited there).
 - HBM margins **2–3x DDR5**.
+> ⚠️ **RETRACTION (CEO, 2026-11-13, per audit C5).** The line above carries the 21 Aug baseline "HBM margins 2–3x DDR5" as live. It is retired: 巴爺爺's financials report cites TrendForce (22 Jul 2026) placing HBM *per-wafer profitability* **below** 64GB DDR5 RDIMM as of 1Q26. The audit notes per-wafer profitability and a margin multiple are different metrics and the retirement rests on one estimate — so the correct status is **UNRESOLVED, do not reuse the 2–3x figure**, not "reversed."
 - Memory ranked **second on pricing power** behind power/grid equipment.
 - Microsoft (29 Apr 2026) and Amazon (30 Jul 2026) both cited memory costs in raising capex guidance.
 - Big-four hyperscaler capex **~$732.5bn CY2026E, +78%**, growth rate plateauing near 80%.
