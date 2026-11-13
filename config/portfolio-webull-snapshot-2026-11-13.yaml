@@ -1,0 +1,52 @@
+# ============================================================
+# PARTIAL PORTFOLIO SNAPSHOT — Webull account only — 2026-11-13 19:50 UTC
+# ============================================================
+# Source: live read-only pull via the Webull MCP connector (rule 1, amended
+# 2026-09-20, permits read-only broker access). First broker data this firm
+# has ever obtained directly.
+#
+# ★ THIS IS NOT config/portfolio.yaml AND MUST NOT BE USED AS THE DENOMINATOR
+#   FOR ANY LIMIT. It is one account. The Owner has disclosed positions that
+#   are NOT in this account (SKHY at US$129; 3416.HK ~HK$8,000; 6160.HK at
+#   HK$219.60) — they sit at another broker (Futu, per the Owner). Until the
+#   other accounts are read or disclosed, liquid net worth is NOT KNOWN and
+#   portfolio.yaml stays as the Owner left it. Rule 2: Owner is final authority.
+#
+# ★ NOT PREVIOUSLY DISCLOSED TO THE FIRM: the AVGO position below. No decision
+#   record exists for it. Bought outside the firm's process.
+#
+# ★ MARGIN: this is an individual MARGIN account with NEGATIVE USD cash. The
+#   standing advice from the 3416 review (2026-08-10) — "switch to a cash
+#   account, margin disabled" — was never acted on.
+
+snapshot_at: "2026-11-13T19:50:00Z"
+broker: webull
+account_class: INDIVIDUAL_MRGN           # margin, not cash
+base_currency: HKD
+
+holdings:
+  - ticker: AVGO
+    quantity: 2
+    cost_price_usd: 353.16
+    last_price_usd: 344.87
+    unrealized_pnl_usd: -16.57
+    decision_record: NONE                 # ★ not in memory/decisions/
+    note: "2 shares; init_margin US$344.87 — position is partly margin-funded"
+
+cash:
+  usd: -12.06                             # negative = borrowed
+  hkd: 0.01
+  krw: 0.00
+
+totals_hkd:
+  market_value: 5396.44
+  cash_balance: -94.35
+  unrealized_pnl: -129.64
+  init_margin: 2698.22
+
+approx_total_usd: 690                     # my conversion, HKD/USD ~7.82; indicative only
+
+not_in_this_account:                      # disclosed by the Owner; location unknown
+  - SKHY      # cost US$129/ADS, size NOT DISCLOSED
+  - 3416.HK   # ~HK$8,000
+  - 6160.HK   # cost HK$219.60, size NOT DISCLOSED
