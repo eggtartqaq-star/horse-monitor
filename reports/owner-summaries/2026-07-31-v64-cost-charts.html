@@ -1,0 +1,345 @@
+<title>V6.4 — The two numbers that decide it</title>
+<style>
+  .viz-root{
+    color-scheme:light;
+    --surface-1:#fcfcfb; --surface-2:#f4f3ef;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7;
+    --series-1:#2a78d6;
+    --critical:#d03b3b; --good:#0ca30c; --warning:#fab219;
+    --page:#f0efe9; --card:#fcfcfb; --line:#dedcd3;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:where(:not([data-theme="light"])) .viz-root{
+      color-scheme:dark;
+      --surface-1:#1a1a19; --surface-2:#232321;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835;
+      --series-1:#3987e5;
+      --critical:#d03b3b; --good:#0ca30c; --warning:#fab219;
+      --page:#111110; --card:#1a1a19; --line:#2c2c2a;
+    }
+  }
+  :root[data-theme="dark"] .viz-root{
+    color-scheme:dark;
+    --surface-1:#1a1a19; --surface-2:#232321;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835;
+    --series-1:#3987e5;
+    --critical:#d03b3b; --good:#0ca30c; --warning:#fab219;
+    --page:#111110; --card:#1a1a19; --line:#2c2c2a;
+  }
+
+  /* page ground must live outside .viz-root — body/html cannot see its scope */
+  :root{ --page-bg:#f0efe9; }
+  @media (prefers-color-scheme:dark){
+    :root:where(:not([data-theme="light"])){ --page-bg:#111110; }
+  }
+  :root[data-theme="dark"]{ --page-bg:#111110; }
+  :root[data-theme="light"]{ --page-bg:#f0efe9; }
+
+  *{ box-sizing:border-box; }
+  html,body{ background:var(--page-bg); }
+  body{ margin:0; overflow-x:hidden; min-height:100%; }
+  .viz-root{
+    background:var(--page); color:var(--text-primary);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans CJK TC','PingFang TC',sans-serif;
+    font-size:16px; line-height:1.58;
+  }
+  .wrap{ max-width:960px; margin:0 auto; padding:44px 20px 80px; }
+  @media (max-width:600px){ .wrap{ padding:30px 14px 56px; } }
+  .mono{ font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+    font-variant-numeric:tabular-nums; }
+
+  .kick{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px;
+    letter-spacing:.17em; text-transform:uppercase; color:var(--text-muted); margin:0 0 14px; }
+  h1{ font-size:clamp(26px,4.6vw,40px); line-height:1.13; margin:0; letter-spacing:-.02em;
+    text-wrap:balance; font-weight:650; }
+  .dek{ margin:15px 0 0; max-width:62ch; color:var(--text-secondary); font-size:16.5px; }
+
+  .hero{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px 40px; margin:34px 0 0;
+    padding:22px 24px; background:var(--card); border:1px solid var(--line); }
+  @media (max-width:660px){ .hero{ grid-template-columns:1fr; gap:20px; } }
+  .hero .lab{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px;
+    letter-spacing:.13em; text-transform:uppercase; color:var(--text-muted); }
+  .hero .val{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:31px;
+    letter-spacing:-.02em; margin-top:5px; font-variant-numeric:tabular-nums; }
+  .hero .note{ font-size:13px; color:var(--text-secondary); margin-top:4px; }
+
+  figure{ margin:44px 0 0; background:var(--surface-1); border:1px solid var(--line); padding:22px 24px 18px; }
+  @media (max-width:600px){ figure{ padding:18px 14px 14px; } }
+  figcaption{ margin:0 0 4px; }
+  .ftitle{ font-size:17.5px; font-weight:620; letter-spacing:-.01em; text-wrap:balance; }
+  .fsub{ font-size:14px; color:var(--text-secondary); margin-top:5px; max-width:64ch; }
+
+  .smalls{ display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:22px; }
+  @media (max-width:680px){ .smalls{ grid-template-columns:1fr; gap:28px; } }
+  .sm-h{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px;
+    letter-spacing:.06em; color:var(--text-secondary); padding-bottom:7px;
+    border-bottom:1px solid var(--grid); margin-bottom:14px; }
+  .sm-h b{ color:var(--text-primary); font-weight:600; }
+
+  .rows{ display:flex; flex-direction:column; gap:13px; }
+  .row{ display:grid; grid-template-columns:96px 1fr; gap:11px; align-items:center; }
+  @media (max-width:420px){ .row{ grid-template-columns:74px 1fr; gap:8px; } }
+  .rlab{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px;
+    color:var(--text-secondary); text-align:right; }
+  .track{ position:relative; height:26px; }
+  .bar{ position:absolute; left:0; top:3px; height:20px; border-radius:0 4px 4px 0;
+    background:var(--series-1); transition:filter .12s; }
+  .bar.over{ background:var(--critical); }
+  .bar:hover{ filter:brightness(1.12); }
+  .bval{ position:absolute; top:4px; z-index:2; font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:11.5px; color:var(--text-primary); white-space:nowrap; padding-left:7px;
+    /* surface halo so the value stays readable where it meets the threshold rule */
+    text-shadow:0 0 3px var(--surface-1), 0 0 3px var(--surface-1), 0 0 2px var(--surface-1); }
+  /* long bars carry the label inside so it never runs off the panel */
+  .bval.inside{ padding-left:0; padding-right:8px; transform:translateX(-100%);
+    color:#fff; text-shadow:none; }
+  .thresh{ position:absolute; top:-4px; bottom:-4px; width:2px; z-index:1;
+    background:var(--text-primary); }
+
+  .axis{ margin-top:9px; border-top:1px solid var(--baseline); padding-top:5px;
+    display:flex; justify-content:space-between;
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10.5px; color:var(--text-muted); }
+  .legend{ display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:15px;
+    font-size:12.5px; color:var(--text-secondary); align-items:center; }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .sw{ width:12px; height:12px; flex:0 0 auto; border-radius:2px; }
+  .sw.line{ width:2px; height:14px; border-radius:0; background:var(--text-primary); }
+
+  .tip{ position:fixed; z-index:50; pointer-events:none; opacity:0;
+    background:var(--surface-1); border:1px solid var(--baseline);
+    padding:9px 12px; font-size:12.5px; max-width:270px;
+    box-shadow:0 4px 18px -6px rgba(0,0,0,.34); transition:opacity .1s; }
+  .tip.on{ opacity:1; }
+  .tip b{ display:block; margin-bottom:3px; color:var(--text-primary); }
+  .tip i{ font-style:normal; color:var(--text-secondary); }
+
+  details{ margin-top:20px; border-top:1px solid var(--grid); padding-top:13px; }
+  summary{ cursor:pointer; font-size:13px; color:var(--text-secondary);
+    font-family:ui-monospace,Menlo,Consolas,monospace; }
+  summary:focus-visible{ outline:2px solid var(--series-1); outline-offset:3px; }
+  .scroll{ overflow-x:auto; margin-top:13px; }
+  table{ border-collapse:collapse; width:100%; min-width:460px; font-size:13.5px; }
+  th,td{ text-align:right; padding:8px 12px; border-bottom:1px solid var(--grid);
+    font-variant-numeric:tabular-nums; }
+  th:first-child,td:first-child{ text-align:left; }
+  th{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); font-weight:400; }
+  td.bad{ color:var(--critical); }
+  td.ok{ color:var(--good); }
+
+  .callout{ margin-top:26px; padding:18px 22px; background:var(--card);
+    border:1px solid var(--line); border-left:3px solid var(--critical); }
+  .callout.neutral{ border-left-color:var(--series-1); }
+  .callout p{ margin:0; color:var(--text-secondary); font-size:15px; }
+  .callout p + p{ margin-top:9px; }
+  .callout strong{ color:var(--text-primary); font-weight:620; }
+
+  footer{ margin-top:48px; padding-top:18px; border-top:1px solid var(--line);
+    font-size:13px; color:var(--text-muted); max-width:70ch; }
+  footer p{ margin:0 0 8px; }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none!important; } }
+</style>
+
+<div class="viz-root">
+<div class="wrap">
+
+  <p class="kick">皮褸黃 Capital · V6.4 swing system</p>
+  <h1>The trade is expected to make US$1.70. The ticket costs up to US$4.32.</h1>
+  <p class="dek">Two charts. Both computed from your own code and your own account size — no backtest required, and no market data needed to reach them. This is the part of the review that decides whether the system can trade at all.</p>
+
+  <div class="hero">
+    <div>
+      <div class="lab">Expected gross profit / trade</div>
+      <div class="val" style="color:var(--good)">US$1.70</div>
+      <div class="note">Engine 2, at the +1.325% EV your own backtest reports</div>
+    </div>
+    <div>
+      <div class="lab">Position it funds</div>
+      <div class="val">US$128</div>
+      <div class="note">HK$10,000 · 1% risk · 10% stop</div>
+    </div>
+    <div>
+      <div class="lab">Round-trip cost</div>
+      <div class="val" style="color:var(--critical)">$0.94–4.32</div>
+      <div class="note">Two of three brokers cost more than the trade earns</div>
+    </div>
+  </div>
+
+  <!-- ================= FIGURE 1 ================= -->
+  <figure>
+    <figcaption>
+      <div class="ftitle">Cost per round trip vs the profit the trade is expected to make</div>
+      <p class="fsub">Each bar is what one complete trade costs you. The vertical line is what that trade is expected to earn. <strong>Any bar crossing the line is a trade you place to lose money.</strong></p>
+    </figcaption>
+
+    <div class="smalls">
+      <div>
+        <div class="sm-h"><b>Engine 2</b> — trend · US$128 position · line = US$1.70 earned</div>
+        <div class="rows" id="f1a"></div>
+        <div class="axis"><span>$0</span><span>$2.50</span><span>$5.00</span></div>
+      </div>
+      <div>
+        <div class="sm-h"><b>Engine 1</b> — mean reversion · US$183 · line = US$2.02 earned</div>
+        <div class="rows" id="f1b"></div>
+        <div class="axis"><span>$0</span><span>$2.50</span><span>$5.00</span></div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i class="sw" style="background:var(--series-1)"></i> Cost below the edge — survivable</span>
+      <span><i class="sw" style="background:var(--critical)"></i> ✕ Cost exceeds the edge — the trade loses by design</span>
+      <span><i class="sw line"></i> Expected gross profit</span>
+    </div>
+
+    <details>
+      <summary>Show the numbers</summary>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Broker</th><th>Round trip</th><th>% of position</th><th>Net EV</th><th>Edge consumed</th></tr></thead>
+          <tbody id="t1"></tbody>
+        </table>
+      </div>
+    </details>
+  </figure>
+
+  <div class="callout">
+    <p><strong>At the cheapest broker you keep 44% of your edge. At the other two you have none.</strong> This is not a rounding adjustment — it is the difference between a strategy and a subscription to your broker.</p>
+    <p>The commission schedules are illustrative and must be replaced with your real rates. <strong>The conclusion is not sensitive to getting them exactly right</strong> — the gap is too large.</p>
+  </div>
+
+  <!-- ================= FIGURE 2 ================= -->
+  <figure>
+    <figcaption>
+      <div class="ftitle">Your "can't afford it" guardrail fires 43% too late</div>
+      <p class="fsub">Bars show the highest share price V6.4 will let you buy at 1% risk. The line is the point where a <em>single share</em> already exceeds 10% of your account. Everything right of the line is a concentration breach that V6.4 cannot see.</p>
+    </figcaption>
+
+    <div style="margin-top:20px">
+      <div class="sm-h">Maximum affordable share price, by stop width &nbsp;·&nbsp; HK$10,000 at 1% risk</div>
+      <div class="rows" id="f2"></div>
+      <div class="axis"><span>$0</span><span>$140</span><span>$280</span></div>
+    </div>
+
+    <div class="legend">
+      <span><i class="sw" style="background:var(--series-1)"></i> Within the 10% concentration limit</span>
+      <span><i class="sw" style="background:var(--critical)"></i> ✕ Breaches it — one share is over 10% of the account</span>
+      <span><i class="sw line"></i> Concentration cap · US$128.21</span>
+    </div>
+
+    <details>
+      <summary>Show the numbers</summary>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Stop width</th><th>Max affordable price</th><th>Cap</th><th>Over by</th></tr></thead>
+          <tbody id="t2"></tbody>
+        </table>
+      </div>
+    </details>
+  </figure>
+
+  <div class="callout neutral">
+    <p><strong>These are different problems and they need different answers.</strong> The cost problem says the account is too small to trade this way at all. The concentration problem says the guardrail was built to test affordability when it should have been testing exposure.</p>
+    <p>V6.5 fixes the second one — <code>plan_position()</code> now blocks at US$128.21 instead of US$183. <strong>Only your real diagnostic run can settle the first.</strong></p>
+  </div>
+
+  <footer>
+    <p><strong>Sources.</strong> Position sizes, gross profit and the price ceilings are computed from your account parameters and the EVs your own backtests report. Costs come from the V6.5 cost model, which reproduced the Quant department's independent figures to within 0.06pp.</p>
+    <p><strong>Not shown:</strong> anything from the synthetic-data simulation. Those prices are a random walk with no edge by construction and would be misleading here.</p>
+    <p>The +1.325% and +1.10% EVs are V6.4's own output and carry its survivorship bias — they are almost certainly optimistic, which makes this comparison generous to the strategy, not harsh.</p>
+    <p>Research and decision support. Not financial advice.</p>
+  </footer>
+</div>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const MAX1 = 5.00, MAX2 = 280;
+const f1 = {
+  a: { thresh:1.699, gross:1.699, note:"Engine 2 · US$128.21 position",
+       bars:[ {k:"IBKR tiered", v:0.944, pct:0.736, net:0.589, eat:55.5},
+              {k:"IBKR fixed",  v:2.244, pct:1.750, net:-0.425, eat:132.1},
+              {k:"HK retail",   v:4.321, pct:3.370, net:-2.045, eat:254.3} ] },
+  b: { thresh:2.015, gross:2.015, note:"Engine 1 · US$183.15 position",
+       bars:[ {k:"IBKR tiered", v:1.048, pct:0.572, net:0.528, eat:52.0},
+              {k:"IBKR fixed",  v:2.348, pct:1.282, net:-0.182, eat:116.5},
+              {k:"HK retail",   v:4.458, pct:2.434, net:-1.334, eat:221.3} ] }
+};
+const CAP = 128.21;
+const f2 = [ {k:"5% stop", v:256.41}, {k:"7% stop", v:183.15},
+             {k:"8% stop", v:160.26}, {k:"10% stop", v:128.21},
+             {k:"12% stop", v:106.84} ];
+
+const tip = document.getElementById('tip');
+function wire(el, html){
+  el.addEventListener('mouseenter', ()=>{ tip.innerHTML = html; tip.classList.add('on'); });
+  el.addEventListener('mousemove', e=>{
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - w - 10) + 'px';
+    tip.style.top  = Math.max(e.clientY - h - 12, 8) + 'px';
+  });
+  el.addEventListener('mouseleave', ()=> tip.classList.remove('on'));
+}
+
+function drawCost(id, cfg){
+  const host = document.getElementById(id);
+  cfg.bars.forEach(b=>{
+    const over = b.v > cfg.thresh;
+    const row = document.createElement('div'); row.className = 'row';
+    row.innerHTML =
+      `<div class="rlab">${b.k}</div>
+       <div class="track">
+         <div class="bar${over?' over':''}" style="width:${b.v/MAX1*100}%"></div>
+         <div class="bval${b.v/MAX1>0.68?' inside':''}" style="left:${b.v/MAX1*100}%">$${b.v.toFixed(2)}${over?' ✕':''}</div>
+         <div class="thresh" style="left:${cfg.thresh/MAX1*100}%"></div>
+       </div>`;
+    host.appendChild(row);
+    wire(row.querySelector('.bar'),
+      `<b>${b.k}</b><i>${cfg.note}<br>Round trip $${b.v.toFixed(2)} · ${b.pct.toFixed(2)}% of position<br>`+
+      `Trade earns $${cfg.gross.toFixed(2)} gross<br>`+
+      `<strong>Net EV ${b.net>0?'+':''}${b.net.toFixed(3)}%</strong> · consumes ${b.eat.toFixed(0)}% of the edge</i>`);
+  });
+}
+drawCost('f1a', f1.a); drawCost('f1b', f1.b);
+
+const t1 = document.getElementById('t1');
+[['Engine 2', f1.a],['Engine 1', f1.b]].forEach(([eng,cfg])=>{
+  const hdr = document.createElement('tr');
+  hdr.innerHTML = `<td colspan="5" style="text-align:left;font-weight:620;padding-top:13px">${eng} — earns $${cfg.gross.toFixed(2)} gross per trade</td>`;
+  t1.appendChild(hdr);
+  cfg.bars.forEach(b=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${b.k}</td><td>$${b.v.toFixed(2)}</td><td>${b.pct.toFixed(2)}%</td>
+      <td class="${b.net>0?'ok':'bad'}">${b.net>0?'+':''}${b.net.toFixed(3)}%</td>
+      <td class="${b.eat>=100?'bad':''}">${b.eat.toFixed(0)}%</td>`;
+    t1.appendChild(tr);
+  });
+});
+
+const host2 = document.getElementById('f2'), t2 = document.getElementById('t2');
+f2.forEach(d=>{
+  const over = d.v > CAP + 0.01;
+  const row = document.createElement('div'); row.className = 'row';
+  row.innerHTML =
+    `<div class="rlab">${d.k}</div>
+     <div class="track">
+       <div class="bar${over?' over':''}" style="width:${d.v/MAX2*100}%"></div>
+       <div class="bval${d.v/MAX2>0.68?' inside':''}" style="left:${d.v/MAX2*100}%">$${d.v.toFixed(0)}${over?' ✕':''}</div>
+       <div class="thresh" style="left:${CAP/MAX2*100}%"></div>
+     </div>`;
+  host2.appendChild(row);
+  const over_by = d.v - CAP;
+  wire(row.querySelector('.bar'),
+    `<b>${d.k}</b><i>V6.4 allows up to <strong>$${d.v.toFixed(2)}</strong> per share<br>`+
+    `Concentration cap is $${CAP.toFixed(2)}<br>`+
+    (over ? `<strong>Over by $${over_by.toFixed(2)} (${(over_by/CAP*100).toFixed(0)}%)</strong>`
+          : `Within the limit`)+`</i>`);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${d.k}</td><td>$${d.v.toFixed(2)}</td><td>$${CAP.toFixed(2)}</td>
+    <td class="${over?'bad':'ok'}">${over? '+'+(over_by/CAP*100).toFixed(0)+'%' : '—'}</td>`;
+  t2.appendChild(tr);
+});
+</script>
