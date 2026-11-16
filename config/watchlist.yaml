@@ -9,7 +9,9 @@ ai:
   - PLTR
 
 technology:
-  - AAPL
+  - AAPL    # OWNER HOLDS (disclosed 2026-11-16) — NOT in the Webull account; size, cost,
+            # broker NOT DISCLOSED; no decision record; never analysed by the firm. At an
+            # all-time high 13 Nov ($356.27). Daily-return correlation with SKHY −0.21.
   - AMZN
   - META
   - TSM

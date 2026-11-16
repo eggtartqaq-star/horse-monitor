@@ -5,6 +5,8 @@
 **Status:** COMPLETE (v1, 2026-11-12). All sections filled; §7 premium shown as FX sensitivity pending a dated USD/KRW
 **Nature:** Research only. Inputs for John (CRO) and Zac (sizing). Not a recommendation, not financial advice.
 
+> ⚠️ **CORRECTION (CEO, 2026-11-16, from primary Webull bars).** The all-time high is **$199.87 on 9 Sep 2026**, not $194.80 on 14 Jul. Full-range Fibonacci on $122.20→$199.87: 23.6% $140.53 · 38.2% **$151.87** · 50% $161.03 · 61.8% $170.20. Reduce-1's upper bound shifts from $149.9 to $151.87; its lower bound and trigger ($146.80, from the Oct–Nov swing) are unchanged, so no ticket changes. See `reports/technical/2026-11-16-skhy-live-kline-and-aapl-switch.md` §0.
+
 ## 0. Honest constraints (read first)
 
 1. **I have no market-data feed and drew no chart.** Direct page fetch is unavailable in
