@@ -115,6 +115,28 @@ Plus whole-share residue: $1,000 buys **7 SKHY ($922.53), leaving $77.47 idle.**
 
 A behavioural note, offered once: this is a rotation **out of a stock at its all-time high into one 34% below its peak**. That can be good mean-reversion investing. It can also be paying for a winner's strength with a position the firm values below its price. The arithmetic above is how to tell which.
 
+### 4.5 Addendum — Owner's AAPL cost basis disclosed: **$357.60**
+
+| | Cost | 13 Nov close | P&L | After hours |
+|---|---|---|---|---|
+| AAPL | $357.60 | $356.27 | **−0.37%** (−$1.33/sh) | $355.33, −0.63% |
+| SKHY | $129.00 | $131.79 | **+2.16%** (+$2.79/sh) | $130.21, +0.94% |
+
+**Both positions are at break-even, so the switch is a purely forward-looking decision.** Selling
+AAPL here realises a loss of about **$3.72 per $1,000 of cost**; a realised loss cannot create a
+capital-gains liability, so the tax caveat in §4.1 falls away for the sale itself. No gain is locked
+in either way.
+
+**The entries are mirror images.** AAPL was bought **0.9% below its all-time high**, at 97% of its
+52-week range and 18.9% above its 200-day average. SKHY was bought **5.6% above its all-time low**,
+at 9% of its life range. The switch would sell the one bought at the top to add to the one bought
+at the bottom. The entry prices are sunk and should not drive the decision; they explain why it
+feels attractive.
+
+**Nothing in §4.2–4.4 changes.** The risk added (3.9× volatility, loss of a −0.21-correlated hedge,
+$300–340 per $1,000 of premium risk) and the CRO add veto stand. The cost basis removes a tax
+reason to hesitate; it does not supply a reason to switch.
+
 ## 5. Intrinsic value — SK hynix only
 
 From `reports/equity/2026-11-12-skhy-valuation.md` (𢦀鳩仔), audited 13 Nov (C3: PASS WITH FLAGS):
