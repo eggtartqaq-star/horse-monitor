@@ -10,8 +10,13 @@ ai:
 
 technology:
   - AAPL    # OWNER HOLDS (disclosed 2026-11-16), COST US$357.60/sh — NOT in the Webull account;
-            # size and broker NOT DISCLOSED; bought within 0.9% of the all-time high; no decision record; never analysed by the firm. At an
-            # all-time high 13 Nov ($356.27). Daily-return correlation with SKHY −0.21.
+            # size and broker NOT DISCLOSED; bought within 0.9% of the all-time high; no decision record.
+            # FULL PIPELINE 2026-11-16 (audited): reports/committee/2026-11-16-aapl-ceo-summary.md
+            # Fin A- 78 · Moat Wide 76 (narrowing at toll) · Mgmt B 72 · Industry NEUTRAL 6/10.
+            # Valuation FV $185-245, central $210; MoS -70%; TRIM; ADD <=~$158 (inputs ERP/10y unverified).
+            # CRO: HOLD <=6.4% of LNW, risk 57/100; HARD STOP daily close <$325.08 -> exit next open
+            #   (老詹 to confirm by 21 Nov); no adds >$245; 2.4% cap if no stop; no margin.
+            # Committee RECOMMENDED. Dated: Epic SCOTUS argument 11 Jan 2027; results late Jan.
   - AMZN
   - META
   - TSM
@@ -49,6 +54,8 @@ research:
   - SKHY  # SK hynix ADS, Nasdaq (0.1 × 000660.KS). ★ OWNER EXITED IN FULL at US$137.00
           # (disclosed 2026-11-16; +6.2% on US$129 cost; date NOT DISCLOSED, consistent with 12 Nov).
           # POSITION ZERO. Tickets T0-T9 VOID. Re-entry: reports/technical/2026-11-16-skhy-reentry.md
+          # RE-ENTRY VETOED at today's price (CRO 16 Nov: ADS 26/100, ordinary 40/100). Conditional ladder
+          #   in KRW: R1 <=W1,070,000 · R2 <=W856,000 · R3 <=W642,000, each + cycle/trend confirmation; ADS premium is a gate.
           # History below is the pre-exit record. Pipeline 2026-11-11/12: industry, financials, regulatory,
           # technicals COMPLETE; news partial; VALUATION, CRO, SIZING, TICKETS, AUDIT
           # NOT RUN. CEO synthesis: reports/committee/2026-11-12-skhy-ceo-synthesis.md
