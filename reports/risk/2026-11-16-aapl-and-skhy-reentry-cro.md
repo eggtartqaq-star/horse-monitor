@@ -1,4 +1,11 @@
 # CRO Rulings — AAPL (existing position) and SKHY re-entry
+
+> **CEO NOTE AFTER AUDIT (2026-11-16)** — not an amendment of the ruling. Audit R2/S4: the R2 trigger
+> "₩850,000" had no derivation. The CEO's re-entry report now derives it as **₩856,000 = 20% margin of
+> safety on the ₩1,070,000 fair value**. The CRO's B-4 ladder should be read with ₩856,000 until John
+> confirms or re-rules. Audit R9: the 0.38 beta cited here is a 90-session estimate (R² ≈ 4%). Audit 6c:
+> the 6.4% cap is the CRO's stricter reading; the limits file's literal single-name ceiling is 10%.
+
 **John, Chief Risk Officer (Dept 6) · 2026-11-16 · binding reference: config/risk-limits.yaml**
 
 ## 0. Sources and data status
@@ -400,3 +407,27 @@ Each condition is binding on Zac and 死潘狗, and each is verifiable by the Ow
 ---
 
 *John, Chief Risk Officer. This is research and decision support, not financial advice. Markets cannot be reliably predicted. No agent of this firm places orders; every trim or entry above is a recommendation for the Owner to execute himself.*
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

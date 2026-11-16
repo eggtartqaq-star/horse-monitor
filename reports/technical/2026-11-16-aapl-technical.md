@@ -1,5 +1,10 @@
 # AAPL — technicals and statistics for an existing position
 
+> **CORRECTED 2026-11-16 after audit** (`reports/committee/2026-11-16-aapl-skhy-reentry-audit.md` §2).
+> T1: the 3–4 Nov gap is partly filled. T2: "no technical sign of a top" contradicted §3. T3: volume
+> claim now uses averages. T4: "seven monthly rises" was wrong — June was a down month. T6, T7 reworded.
+> T8: the CRO has turned the $325.08 review into a binding exit; 老詹 to confirm by 21 Nov.
+
 **皮褸黃 (CEO), standing in for 老詹 · 2026-11-16 · Webull read-only daily bars, 3 Nov 2025 → 13 Nov 2026 (260 sessions)**
 
 > **Why the CEO wrote this.** The technical desk's job here is mechanical: compute levels from the
@@ -32,7 +37,7 @@ a reason to sell — cost basis is irrelevant to what the stock does next (L-003
 | Skew | −0.36 (down moves bigger than up) | +1.06 |
 | ATR(14) | $8.21 (2.3%) | $10.10 (7.7%) |
 
-**AAPL is a low-volatility core holding with a mild downside skew.** Its single worst day in a
+**AAPL is a low-volatility large-cap with a mild downside skew.** Its single worst day in a
 year was an earnings reaction (31 Jul, −7.4% on a weak guide). The next earnings report (late
 January, date NOT OBTAINED) is the most likely source of a gap.
 
@@ -47,22 +52,26 @@ January, date NOT OBTAINED) is the most likely source of a gap.
 | RSI(14) | 60.9 | firm, not overbought |
 | Bollinger %b | **0.93** (upper band $357.92) | at the top of its range |
 
-**Monthly closes rose for seven months straight**, from $253.15 (Mar) to $356.27 (13 Nov).
-Primary trend is up, with no technical sign of a top.
+**Month-end closes (Webull bars, dividend-adjusted):** Mar $253.15 · Apr $270.66 · May $311.55 ·
+**Jun $288.89 (down)** · Jul $308.41 · Aug $316.61 · Sep $332.77 · Oct $344.37 · Nov $356.27
+(month to date, 13 Nov). Five consecutive higher closes since June. *(The first version said
+"seven months straight"; June broke the run.)*
+Primary trend is up; the only caution signs are the volume divergence and the extension in §3.
 
 ## 3. The two things the chart warns about
 
-1. **The new high came on falling volume.** 13 Nov's all-time high traded 40.0m shares. 4 Nov,
-   the midterm-rally day, traded 89.6m. Over the last 20 sessions, **volume on down days exceeded
-   volume on up days** (up/down ratio 0.67). Rising price on thinning participation is a caution,
-   not a sell signal: it often precedes a pause.
+1. **The new high came on below-average volume.** 13 Nov's all-time high traded 40.0m shares,
+   against a 20-day average of 47.2m and a 50-day average of 43.5m (4 Nov, the midterm-rally day,
+   traded 89.6m). Over the last 20 sessions volume on down days exceeded volume on up days (ratio
+   0.67; 0.75 excluding the 3 Nov post-earnings session, an event day). A mild caution, not a sell
+   signal.
 2. **The stock is 18.5% above its 200-day average** with %b at 0.93. Extensions like this are
    usually worked off by time or a pullback. Neither has started.
 
 **And one structural feature:** 3 Nov gapped down to $325.08–334.25; 4 Nov gapped up above it,
-leaving an **unfilled gap between $334.25 and $340.73**. Unfilled gaps tend to act as magnets
-on a pullback, which places a plausible retest zone at **$334–341**, with the 50-day average
-($338.79) inside it.
+leaving a gap between $334.25 and $340.73. **The 6 Nov low of $338.04 partly filled it; the unfilled
+remainder is $334.25–338.04.** Unfilled gaps tend to act as magnets on a pullback, which places a
+plausible retest zone at **$334–339**, with the 50-day average ($338.79) at its top.
 
 ## 4. Levels
 
@@ -70,9 +79,9 @@ on a pullback, which places a plausible retest zone at **$334–341**, with the 
 |---|---|---|---|
 | Resistance | **$360.83** | +0.9% | All-time high; no overhead supply above it |
 | First support | **$338.04** | −5.5% | 6 Nov swing low, ≈ MA50 |
-| Gap zone | **$334.25–340.73** | −4.7% to −6.5% | Unfilled 3–4 Nov gap |
+| Gap zone | **$334.25–338.04** | −5.5% to −6.5% | Unfilled remainder of the 3–4 Nov gap |
 | **Structure** | **$325.08** | **−9.1%** | 3 Nov low. A daily close below it breaks the higher-low sequence since September |
-| Deeper | $308.91 | −13.6% | 31 Jul close (post-guide low) |
+| Deeper | $308.91 | −13.6% | 31 Jul close as reported by 修大哥, unadjusted (Webull adjusted: $308.41) |
 | Trend floor | ≈$300.77 (rising) | −15.9% | MA200 |
 
 ## 5. How likely is a pullback? (model, not forecast)
@@ -85,22 +94,26 @@ mean reversion and earnings gaps.
 |---|---|---|---|
 | $340 | 56% | 67% | 79% |
 | $330 | 34% | 49% | 66% |
-| **$325 structure** | ≈26% | ≈41% | ≈60% |
+| **$325 structure** | 25% | 41% | 60% |
 | $308.91 | 8% | 20% | 41% |
 | $290 | 1% | 6% | 24% |
 
-($325 interpolated between the $330 and $320 rows; the 6-month column includes a January earnings report.)
+($325 computed directly: 25% / 41% / 60%. The 6-month column includes a January earnings report. At
+AAPL's volatility the drift assumption barely matters: a zero-expected-change model adds 1–3 points per cell.)
 
 **Read:** a return to the $334–341 gap within three months is more likely than not on this model.
 That is ordinary noise for a 25%-vol stock, not a thesis event.
 
+**Beta note.** The 0.38 beta to SPY in the 16 Nov switch report is a 90-session estimate with
+R² ≈ 4% — a short-window statistic, not a long-run beta. The valuation uses the 5-year 1.09.
+
 ## 6. Technical guidance for the holder (for the CRO, not an order)
 
 - **Hold signal intact** while daily closes stay above **$325.08**.
-- **Review trigger:** a daily close below $325.08 (−9.1% from cost). This is a *review*, not an
-  automatic sale. The decision then belongs to John against the valuation report.
+- **Superseded by the CRO:** a daily close below $325.08 is now a **full exit at the next open**
+  (`reports/risk/2026-11-16-aapl-and-skhy-reentry-cro.md`), pending 老詹's confirmation by 21 Nov.
 - **Do not add on strength into $360.** At %b 0.93 and +18.5% over the 200-day, an add here is
-  chasing. If valuation supports an add, the chart's preferred zone is the **$334–341** gap.
+  chasing. Valuation does not support an add (ADD only ≤ ~$158); the CRO bars adds above $245.
 - **Earnings:** late-January report. The last two reactions were −7.4% (31 Jul) and about
   −4% during the 2 Nov call before a recovery.
 

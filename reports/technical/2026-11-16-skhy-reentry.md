@@ -1,5 +1,13 @@
 # SKHY — re-entry analysis after a full exit at $137
 
+> **CORRECTED 2026-11-16 after audit** (`reports/committee/2026-11-16-aapl-skhy-reentry-audit.md` §3).
+> S1: the probability model's drift assumption was undisclosed and made low prices look more remote
+> than a zero-expected-return model does; both are now shown. S2: an unsupported "never own it
+> again" claim is withdrawn. S3: the ADR quota's *current* status was stated as fact; it is not
+> known. S4: the ₩850,000 trigger is now derived. S5–S9 reworded. **All of these leaned against
+> re-entry — the second SKHY document from the CEO with one-directional hardening.** The verdict
+> at today's price is unchanged; the conditional plan's triggers are *more* reachable than first shown.
+
 **皮褸黃 (CEO) · 2026-11-16 · primary bars to the 13 Nov close · audited valuation of 12–13 Nov**
 
 ## 0. Where the Owner stands
@@ -38,12 +46,16 @@ firm values below the market.
 | Committee | `committee_approval_required: true` | **Not convened** |
 | Instrument | Premium risk sized and accepted | 43–52% premium; current level NOT OBTAINED (no 13 Nov Korean close) |
 
+*The valuation gate's 40% margin of safety is a desk requirement; the CRO and committee gates are firm rules.*
+
 All four must clear. Today none does.
 
 ## 4. The instrument question — the most useful re-entry finding
 
-**The dominant risk in the ADS is not SK hynix. It's the 43–52% premium**, which exists only because
-a Korea Securities Depository quota on ADR issuance is exhausted. John capped the old position at
+**The risk in the ADS that no stop can protect against is the 43–52% premium.** (It is not the
+largest risk: a cycle halving of the ordinary is −49% to −51% at parity, per the 13 Nov audit.)
+The premium exists because a Korea Securities Depository quota on ADR issuance was **reported
+exhausted as of 23 Jul 2026; its current status is NOT OBTAINED.** John capped the old position at
 3% precisely because no stop protects against that premium vanishing.
 
 **Buying the Korean ordinary share (000660.KS) instead removes that risk entirely.** You'd own the
@@ -63,7 +75,7 @@ multi-currency account, **not evidence of Korea Exchange access**. Whether any o
 trade KRX is NOT OBTAINED. **Check that before anything else** — it decides which instrument a
 re-entry should use.
 
-Even on the ordinary, price is above fair value today. The ordinary removes the premium risk; it
+Even on the ordinary, price was above fair value at the last Korean print (10–11 Nov). The ordinary removes the premium risk; it
 does not make the stock cheap.
 
 ## 5. Re-entry triggers — value, plus at least one confirmation
@@ -78,7 +90,7 @@ does not make the stock cheap.
 | Family | Confirmation | Source |
 |---|---|---|
 | **Premium** | ADS premium below ~20% on a dated Korean close and FX, **or** re-entry via the ordinary | regulatory / news desks |
-| **Cycle** (any two of 老詹's falsifier list, per Elon Musk §11.3) | TrendForce 1Q27 DRAM contract ≥ +15% with consumer re-accelerating; LTAs shown to carry price floors; Jan–Feb 2027 hyperscaler capex guidance ≥ +40%; Q4 DRAM bits ≥ +10% YoY; SK hynix HBM4 share ≥ 60% confirmed | industry desk |
+| **Cycle** (any two of Elon Musk's falsifier list, memory-cycle report §11.3) | TrendForce 1Q27 conventional DRAM contract ≥ +15% QoQ with consumer re-accelerating; LTAs shown to carry price floors; Jan–Feb 2027 hyperscaler capex guidance ≥ +40%; Q4 DRAM bits ≥ +10% YoY; SK hynix HBM4 share ≥ 60% confirmed | industry desk |
 | **Trend repair** | a higher low holds above $122.20, **then** a daily close above **$145.79** (the 11 Nov lower high); a close above $162 confirms reversal | primary bars |
 
 **What does NOT qualify:** price below your $137 exit; a single gap-up day like 11 Nov (+9.7%,
@@ -87,22 +99,35 @@ premium analysis).
 
 ## 6. Statistics — how often does SKHY reach these levels?
 
-Probability of the ADS **touching** a level at least once, under a driftless random walk at
-constant realised volatility. **This is a model, not a forecast.** It ignores drift, mean
-reversion and regime change, and volatility itself may fall.
+Probability of the ADS **touching** a level at least once, from $131.79, under a random walk at
+constant realised volatility. **This is a model, not a forecast.** It ignores mean reversion and
+regime change, and volatility itself may fall.
+
+**Two versions, because at ~100% volatility the drift assumption matters:**
+- **Zero drift in log price** (the version first published). At 101% volatility this quietly
+  implies an expected *price* gain of about **+29% over six months** — it makes low prices look
+  more remote than they are.
+- **Zero expected price change** (a fair-game price; log drift −σ²/2). The more neutral choice.
 
 Realised volatility: **101%** over the last 20 sessions; 76% over 60; 99% over its life.
 
 | From $131.79 | $122.20 (ATL) | **$102.40 (fair value)** | $80 (parity) | **$61.44 (40% MoS)** |
 |---|---|---|---|---|
-| 1 month | 73–80% | **25–39%** | 2–9% | 0–1% |
-| 3 months | 84–88% | **51–62%** | 19–32% | **4–13%** |
-| 6 months | 89–92% | **64–72%** | 35–48% | **15–29%** |
+| 1 month — log-driftless | 73–80% | 25–39% | 2–9% | 0–1% |
+| 1 month — zero expected change | 76–82% | 28–44% | 3–11% | 0–1% |
+| 3 months — log-driftless | 84–88% | 51–62% | 19–32% | 4–13% |
+| **3 months — zero expected change** | 87–91% | **57–69%** | 24–41% | **6–19%** |
+| 6 months — log-driftless | 89–92% | 64–72% | 35–48% | 15–29% |
+| **6 months — zero expected change** | 92–95% | **72–81%** | 44–61% | **22–40%** |
 
-**Two things follow.** Waiting for fair value isn't waiting for a fantasy: at this volatility,
-$102 is roughly a coin flip within a quarter. And the $61 margin-of-safety level is genuinely
-remote — a one-in-four-to-seven chance over six months on this model. **If you only ever buy at
-$61, you will most likely never own SKHY again.** That's an acceptable outcome, not a failure.
+Ranges span the 60-day, 20-day and life volatilities (1 month: 60-day and 20-day).
+
+**What follows.** Waiting for fair value isn't waiting for a fantasy: at this volatility, $102 is
+more likely than not within a quarter on either model. The $61 margin-of-safety level is the long
+shot — **roughly 15–40% within six months** depending on the model — and on a longer horizon the
+model's touch probability keeps rising. *(The first version said "you will most likely never own
+SKHY again". That was a claim about an unbounded horizon drawn from a six-month model, and is
+withdrawn.)*
 
 ## 7. The re-entry plan, if the gates clear
 
@@ -110,8 +135,14 @@ $61, you will most likely never own SKHY again.** That's an acceptable outcome, 
 |---|---|---|---|
 | **R0** | Confirm KRX access; disclose liquid net worth | — | Decides the instrument and the cap |
 | **R1** | ≤ $102.40 / ₩1,070,000 **and** one confirmation | **⅓** | Convene committee first; John re-runs the risk score |
-| **R2** | ≤ $80 / ≈₩850,000 **and** the confirmation still holding | **⅓** | Re-check the premium. At $80 the move may be the premium collapsing, not the business falling — **they mean different things** |
+| **R2** | ≤ $80 / ≤ ₩856,000 **and** the confirmation still holding | **⅓** | Re-check the premium. At $80 the move may be the premium collapsing, not the business falling — **they mean different things** |
 | **R3** | ≤ $61.44 / ₩642,000 | **⅓** | Full margin of safety |
+
+**Deriving the KRW triggers.** For the ordinary, each stage is set on the ordinary's own fair value
+(₩1,070,000), not translated from the ADS: R1 = fair value; **R2 = 20% margin of safety =
+₩856,000** (1,070,000 × 0.8; the first version said "≈₩850,000" with no derivation); R3 = 40% =
+₩642,000. The ADS and KRW columns are therefore *not* the same price in two currencies: ADS $80 is
+parity fair value, which in the ordinary is ₩1,070,000 — R1, not R2.
 
 **The cap:** John's 3% of liquid net worth came from the ADS premium, not the price. It applies to
 an ADS re-entry at any price until he re-rules. On the ordinary, the premium component falls away;
@@ -130,7 +161,7 @@ the value zone. A memory stock reporting near a cycle peak can gap 10–15% eith
 
 | Date | Event | Why it matters for re-entry |
 |---|---|---|
-| ~24–28 Dec 2026 | Watch for the 2027 US tool licence for the Wuxi fab | Absence is a negative catalyst; a grant removes one bear point |
+| By ~24 Dec 2026 (per the 13 Nov tickets) | Watch for the 2027 US tool licence for the Wuxi fab | Absence is a negative catalyst; a grant removes one bear point |
 | 31 Dec 2026 | Wuxi licence expiry (derived, not stated in any source) | ~⅓ of DRAM wafer output |
 | Late Jan 2027 | 4Q26 results | First quarter that may show the cycle turn |
 | 28 Jan 2027 | ₩20tn buyback ends | Support for the ordinary is gone |

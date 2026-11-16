@@ -1,5 +1,12 @@
 # AAPL — Apple Inc. — Management Quality Review
 
+> **CEO NOTE AFTER AUDIT (2026-11-16)** — audit §4.1. Three on-disk lines (Apple support doc 9 Sep,
+> MacRumors 9 Nov, the CFO's 2 Nov "Siri AI ramp" cost) show a Gemini-based Siri reached users by
+> November in limited form (English, non-EU, metered). The "slip #3 if not GA by 31 Dec" test is
+> **re-specified as a scope test:** by 31 Dec 2026, do the 2024-announced capabilities (personal
+> context, on-screen awareness, in-app actions) work in shipped US-English builds? Grade impact +0 to +3.
+
+
 - **Analyst:** Peter (Management Quality, Dept 2 Equity Research)
 - **Date:** 2026-11-16
 - **Context:** Owner holds at $357.60 (per tasking). First coverage in this firm.

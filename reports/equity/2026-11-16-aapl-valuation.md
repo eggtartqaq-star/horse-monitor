@@ -1,5 +1,26 @@
 # AAPL — Valuation (𢦀鳩仔, Valuation Analyst)
 
+> **CEO NOTE AFTER AUDIT (2026-11-16)** — `reports/committee/2026-11-16-aapl-skhy-reentry-audit.md` §1.
+> Arithmetic reproduced by the audit and independently by the CEO (implied 10-yr growth 15.1% at
+> 9.5%, 11.2% at 8.0%). The body is left as the analyst wrote it; read it with these corrections:
+> - **V1/V2 — inputs UNVERIFIED.** ERP 4.41% (from a garbled snippet; a search shows Damodaran 4.14%)
+>   and the 10y Treasury 5.15% for 13 Nov (FRED search shows 4.86–4.88% on 6–9 Nov; 5.15% matches a
+>   19 Oct print). Either correction *lowers* the CAPM rate by ~0.3–0.6pt → value roughly +4% to +9%.
+>   Does not reach the price.
+> - **V3 — two betas.** This file uses 1.09 (5-year). The CEO's switch report shows 0.38 (90 sessions,
+>   R² ≈ 4%) — a short-window statistic, not a substitute.
+> - **V4 — the headline needs its condition.** Read "no defensible DCF reaches the price" as: *the price
+>   is reached only by bull fundamentals (7.8% NI CAGR for ten years) at a cost of equity ≤ ~7.5%, or
+>   base fundamentals at ~6.1%; the analyst regards neither as defensible against a ~1.1 beta and a
+>   ~4.1–4.4% ERP.*
+> - **V5 — expected return from $356: +3% to +6% a year** (4% if the P/E compresses to 30×; 6.1% if it
+>   holds), not a single 4%.
+> - **V6 — "growth it has never sustained" is withdrawn as worded.** Read: "well above its five-year
+>   record (6.9% NI, 9.9% EPS)".
+> - **No adds above ~$158; TRIM signal survives the audit.** The CRO's binding position is in
+>   `reports/risk/2026-11-16-aapl-and-skhy-reentry-cro.md`.
+
+
 Date: 2026-11-16 · Price reference: $356.27 (Webull close 13 Nov 2026, read-only, via CEO)
 
 > STATUS: **COMPLETE** (2026-11-16). Tier-2 inputs throughout; no primary filing opened. First Apple valuation in firm history. Position context: Owner **holds**; the question is HOLD / TRIM / ADD.
