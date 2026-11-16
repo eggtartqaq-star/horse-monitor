@@ -266,3 +266,27 @@ Research only. The committee and the Owner decide.
 ## Sources
 
 [Omdia 3Q26 global](https://omdia.tech.informa.com/pr/2026/oct/global-smartphone-shipments-fell-20percent-in-3q26-the-lowest-third-quarter-total-since-2013) · [Omdia memory crisis](https://omdia.tech.informa.com/pr/2026/oct/global-smartphone-market-shrinks-20percent-in-3q26-as-memory-crisis-reshapes-competition) · [Omdia China](https://omdia.tech.informa.com/pr/2026/oct/mainland-china-smartphone-shipments-drop-to-lowest-q3-level-since-2013) · [Light Reading](https://www.lightreading.com/smartphones-devices/global-smartphone-shipments-fell-20-in-3q26-the-lowest-third-quarter-total-since-2013-omdia) · [mactech](https://www.mactech.com/2026/10/16/samsung-and-apple-together-accounted-for-45-of-global-shipments/) · [9to5Mac Counterpoint](https://9to5mac.com/2026/10/12/iphone-hits-record-q3-shipment-share-as-global-smartphone-market-plunges-20-per-report/) · [9to5Mac IDC](https://9to5mac.com/2026/10/15/idc-apple-closes-in-on-samsung-as-global-smartphone-shipments-see-record-decline-in-q3/) · [appleworld.today](https://appleworld.today/2026/10/counterpoint-the-iphone-crosses-20-of-the-global-smartphone-market-share-for-the-first-time/) · [Counterpoint China Q3](https://counterpointresearch.com/de/insights/china-smartphone-shipments-hit-14-year-low-in-q3-2026) · [technode](https://technode.com/2026/10/13/huawei-grows-as-chinas-smartphone-shipments-fall-15-4-in-third-quarter/) · [ithinkdiff IDC China](https://www.ithinkdiff.com/apple-china-smartphone-share-q3-2026-idc/) · [telecomlead China](https://telecomlead.com/?p=128351) · [telecomlead China IDC](https://telecomlead.com/?p=128170) · [Counterpoint 2026 outlook](https://counterpointresearch.com/en/insights/Smartphone-Shipments-in-2026-to-See-Sharpest-Decline-on-Record-as-Memory-Crisis-deepens) · [Counterpoint replacement cycles](https://counterpointresearch.com/en/reports/memory-crisis-pushes-global-smartphone%20replacement-cycles-toward-4-years) · [telecomlead replacement](https://telecomlead.com/?p=127956) · [telecomlead installed base](https://telecomlead.com/smart-phone/global-smartphone-installed-base-grows-2-in-2025-as-apple-and-samsung-extend-lead-124551) · [MacRumors installed base](https://www.macrumors.com/2026/02/11/one-in-four-smartphones-iphones/) · [Counterpoint chipflation](https://counterpointresearch.com/cn/insights/chipflation-apples-iphone-18-choice-protect-margins-or-go-for-the-kill) · [MacRumors BOM](https://macrumors.com/2026/07/10/iphone-18-pro-max-costs-could-rise) · [9to5Mac BOM](https://9to5mac.com/2026/07/09/iphone-18-pro-max-component-costs-could-jump-by-nearly-300-per-report/) · [wccftech NAND](https://wccftech.com/nand-becomes-the-biggest-cost-component-for-apples-iphone-18-pro-max-1tb-at-over-250-per-unit/amp/) · [phonearena](https://www.phonearena.com/news/apple-nand-2026-dram-prices-iphones-higher_id177119) · [longport](https://longportapp.cn/news/295633128) · [stockanalysis FQ4](https://stockanalysis.com/news/apple-fiscal-q4-2026-earnings/) · [iphonewired guide](https://iphonewired.com/industry/1200285/) · [iphonewired call](https://iphonewired.com/news/1200281/) · [kaohoon](https://www.kaohooninternational.com/?p=593747) · [lapaasvoice](https://lapaasvoice.com/apple-q4-results-beat-estimates-as-iphone-18-pro-demand-and-price-hikes-offset-rising-chip-costs/) · [TechCrunch Gemini](https://techcrunch.com/2026/01/12/googles-gemini-to-power-apples-ai-features-like-siri/) · [AppleInsider](https://appleinsider.com/articles/26/01/12/google-confirms-that-it-wont-get-apple-user-data-in-new-siri-deal) · [MacRumors Gemini](https://www.macrumors.com/2026/01/12/apple-enhanced-siri-google-gemini-in-disguise/) · [eMarketer](https://www.emarketer.com/content/apple-1-billion-google-gemini-power-next-siri) · [implicator remedy](https://www.implicator.ai/apple-surrenders-google-collects/) · [implicator Siri](https://www.implicator.ai/apple-lines-up-google-to-power-siris-ai-search-by-spring-2026/) · [techloy](https://www.techloy.com/apple-hands-the-keys-to-siri-to-google-in-1b-gemini-ai-deal/) · [webpronews](https://www.webpronews.com/smartphone-users-delay-upgrades-49-wait-3-years-to-2028)
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.
