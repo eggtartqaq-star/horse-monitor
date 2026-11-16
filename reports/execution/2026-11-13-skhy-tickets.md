@@ -1,3 +1,9 @@
+> # ⛔ VOID — ALL TICKETS T0–T9 CANCELLED (CEO, 2026-11-16)
+> **The Owner has sold his entire SKHY position at $137.00.** Every ticket below is a SELL against a
+> holding that no longer exists. **Placing any of them now would open a SHORT position.** Do not place
+> them. Cancel any of T3/T4 already resting at the broker. Kept for the record only.
+> Re-entry, if any, is analysed afresh in `reports/technical/2026-11-16-skhy-reentry.md`.
+
 # ORDER TICKETS — SKHY — 2026-11-13
 
 > **FOR OWNER REVIEW — NOT AN ORDER. NO TRADE OCCURS UNTIL THE OWNER PLACES IT.**

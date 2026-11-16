@@ -46,8 +46,10 @@ research:
   - INTC  # reduced-core pipeline 2026-07-28; reports/*/2026-07-28-intc*; CRO VETO 28/100;
           # BINDING price gate: no initiation at or above $45. Triggers: two committed 14A
           # customers by mid-2027, and DCAI margins >=35% sustained after the CPU shortage
-  - SKHY  # SK hynix ADS, Nasdaq (0.1 × 000660.KS). OWNER HOLDS at US$129 (disclosed
-          # 2026-11-11). Pipeline 2026-11-11/12: industry, financials, regulatory,
+  - SKHY  # SK hynix ADS, Nasdaq (0.1 × 000660.KS). ★ OWNER EXITED IN FULL at US$137.00
+          # (disclosed 2026-11-16; +6.2% on US$129 cost; date NOT DISCLOSED, consistent with 12 Nov).
+          # POSITION ZERO. Tickets T0-T9 VOID. Re-entry: reports/technical/2026-11-16-skhy-reentry.md
+          # History below is the pre-exit record. Pipeline 2026-11-11/12: industry, financials, regulatory,
           # technicals COMPLETE; news partial; VALUATION, CRO, SIZING, TICKETS, AUDIT
           # NOT RUN. CEO synthesis: reports/committee/2026-11-12-skhy-ceo-synthesis.md
           # Financials B+ 72 (~60% of grade is cycle position). Memory sector NEUTRAL

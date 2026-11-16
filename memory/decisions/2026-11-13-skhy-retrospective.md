@@ -258,6 +258,13 @@ AI-capex cluster holdings. 5. Did you know of the 40–56% premium at purchase. 
 
 ## Close-out
 
-- Exit date/price: · P&L: · Holding period (from purchase date — NOT DISCLOSED — to exit):
-- Which pre-registered exit criterion triggered (or why exit without one):
+- Exit date/price: **$137.00/ADS**, sold in full. Date **NOT DISCLOSED** — $137 lies inside the 12 Nov 2026 range
+  ($134.04–139.56) and outside 13 Nov's ($129.18–135.76), so 12 Nov is consistent; Owner to confirm.
+- P&L: **+$8.00/ADS, +6.20%** on the $129.00 cost, before commissions. Size NOT DISCLOSED, so no dollar figure.
+- Holding period: purchase date NOT DISCLOSED → exit as above.
+- Which pre-registered exit criterion triggered: **none.** The exit was discretionary. No firm trigger had fired:
+  Reduce-1 ($146.80) was never reached (11 Nov high $145.79); the stop (daily close <$120.35) was never hit.
+- Outcome vs the firm's plan, marked at the 13 Nov close $131.79: the exit **beat holding by $5.21/ADS (+3.95%)**.
+  One data point, five sessions old; not evidence of skill or luck yet. If the sale was on 12 Nov, it preceded
+  the CRO review, sizing and tickets of 13 Nov — the firm sized a position that was already closed.
 - Attribution report: `reports/attribution/YYYY-MM-DD-2026-11-13-skhy-retrospective.md`
