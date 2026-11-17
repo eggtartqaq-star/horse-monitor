@@ -46,13 +46,95 @@ _pending_
 
 ### 2.2 What actually changed in the fundamentals (not in the price)
 
-_pending_
+**Anti-anchoring disclosure (L-003, both directions).** In July I valued MU at a weighted ~$320 with the stock at ~$850. It's now ~$700, down 42% from the $1,213 ATH close. That fall does **not** vindicate July. From $850 to $700 is −18%, and fundamentals moved *up*, not down, over the same window. On FY27 my July base case was **wrong in the bullish direction for the company**: it had FY27 at $185bn revenue and 72% GM. The company has now guided FQ1 FY27 alone to $61.5bn at ~86% GM, and called 86% the *floor* for FY27. Every July scenario, the bull included ($210bn / 76%), sits below the run-rate the company has guided. The other direction applies too. A consensus of $1,550 with 45 of 49 analysts at buy is not evidence. The same consensus stood at ~$1,486 in July, at $850.
+
+| Item | July 2026 | Now | Direction for value |
+|---|---|---|---|
+| FY26 | FQ4 guide $50bn / ~86% GM / ~$31 EPS | **Actual $54.23bn / 87% / $33.42 non-GAAP**; FY26 $133.19bn, EPS $75.52 non-GAAP | up (beat) |
+| FY27 near-term | base $185bn / 72% GM | **FQ1 guide $61.5bn / ~86% (floor for FY27)**; street FY27 EPS $176.5–178.9 (up from ~$112 in Jun) | **up, strongly**: the harvest is far bigger than July modelled |
+| Own net cash | ~$6bn | **~$38bn** (net $68.3bn less ~$30bn refundable cash deposits) | up: +$28/share |
+| Customer deposits / SCA | $22bn commitments ($18bn cash) | **$32bn**, mostly cash | up for trough protection; they're also a liability returned ~2028–30 |
+| Capex | FY26 ~$27bn | FY26 ~$27.4bn; **FY27 ~$25bn 1H, 2H higher** (≥$50bn est.) | down: the capex wave that ends cycles, and D&A lands in the trough |
+| DRAM share | 22–26% | **21% (−5pp YoY)** | down: share lost at peak margin |
+| HBM share | ~20%+ | **~18%** (Q2, Counterpoint); Samsung expected to lead 2027 | down / flat |
+| Cycle position | "profit peak not before Q4-2027" | 8 of 12 turn indicators flashing or partial; DRAM contract decelerating three quarters running; NAND flat in Oct (memory-cycle report §6) | down for terminal / timing |
+| Risk-free rate | 10Y 4.55% | **10Y 5.13–5.16%** | down: discount rate 11% → 12% |
+
+**Is mid-cycle (normalised) EPS structurally higher now?** Partly, yes. I raise it, but not to anything near what the price needs.
+- *For a higher mid-cycle:* (i) the bit base is larger. Micron guides industry DRAM bits up in the low 20s% in both CY27 and CY28, and its HBM wafers reportedly go to ~100k/month by end-2026. (ii) HBM's wafer drain (30% of wafers for 13% of bits in 2027, TrendForce) holds commodity supply tighter through the cycle. (iii) SCA commitments rose from $22bn to $32bn, which makes the trough shallower. (iv) Self-audit: July's normalised opex ($13.5bn) was ~2.2× the derived FQ3-26 run-rate (~$1.5bn/qtr, i.e. 84.9% × $41.46bn GP less $33.7bn operating income). That was a bearish lean, and I correct it to $12.5bn.
+- *Against:* (i) HBM per-wafer profitability versus DDR5 is **UNRESOLVED**: TrendForce (Jul 2026) put HBM below DDR5 RDIMM in 1Q26, and the "2–3x" claim is retired. (ii) Three qualified HBM4 suppliers, annual pricing and price ceilings in post-2Q26 LTAs. (iii) Micron is losing DRAM share at the peak. (iv) None of the SCA floors has been tested in a downturn. That was my July tripwire for raising the *margin* band, and it has not fired.
+- **Net:** normalised **revenue** goes from $85bn to $100bn (FY25 $37.4bn compounded ~18%/yr for six years, versus 15% in July). Normalised **GM** goes from 41% to 42% (+1pp for SCA/HBM mix; still inside 菲比斯's 35–47% band). **Opex** is corrected from $13.5bn to $12.5bn. Base normalised EPS moves **$15.8 → $22.1 (+40%)**. That implies ROIC of ~15% on ~$165bn of post-buildout invested capital (estimate), the top of 菲比斯's 10–15% band. I won't go above the band without a downturn test.
+- **Firm-consistency check:** the 12 Nov SK hynix valuation set mid-cycle OP at **24%** of the peak-year (CY2026E) OP. Applied to MU, the same ratio gives normalised EPS of **$18.3** on FY26 EBIT (~$102bn, derived) or **$26.4** on CY2026-equivalent EBIT (FQ2-26 to FQ1-27, ~$147bn, derived). My $22.1 sits in the middle, so the two names are normalised on the same basis.
+
+**Base fair-value bridge, July $266 → now $314** (script `mu_val_nov.py`, re-run step by step):
+
+| Step | Base $/share | Δ |
+|---|---|---|
+| July inputs re-run on today's timing and the new capex path (FY27 capex ~$55bn) | 222 | −44 vs July's 266: capex wave plus re-timing |
+| + FY27–30 harvest updated to guidance (FY27 $240bn / 85%; FY28 $150bn / 55%) | 309 | **+87** |
+| + own net cash $6bn → $38bn | 337 | +28 |
+| + normalisation $85bn/41%/$13.5bn → $100bn/42%/$12.5bn | 396 | +59 |
+| + terminal reinvestment correction (FCF = NOPAT × (1 − g/RONIC), RONIC 15%). July set terminal FCF = NOPAT with 4% growth and no reinvestment, which flattered the July TV | 339 | **−57** |
+| + discount rate 11% → 12% (10Y +60bp) | **314** | −25 |
+
+Upward fundamental revisions add +$174/share. The method correction and the rate rise take off −$82. The base rises 18%, while the price fell 18% over the same window. The gap between price and value has narrowed from ~3.2× base to ~2.2× base. It has not closed.
 
 ## 3. Assumptions table
-_pending_
+
+**Common to all scenarios** (every line is an input or a labelled assumption; script `/tmp/claude-0/-home-user-horse-monitor/54e44e17-7784-559b-835e-2acd5a9d7af1/scratchpad/mu_val_nov.py`)
+
+| Assumption | Value | Type / source |
+|---|---|---|
+| Valuation date / price | 17 Nov 2026; $697.83 intraday (≈$700), $719.02 16 Nov close | Webull |
+| Shares | **1.13bn**, held flat (the $35bn buyback is cash-neutral to value at fair value; at today's price it would be value-*destructive* by this model, so no accretion credited) | derived: $789.5bn ÷ $697.83 |
+| Tax | 15.5% | FQ1 FY27 guide |
+| Discount rate | **12%** (sensitivity 10–14%) | assumption: rf 5.15% (10Y, 13 Nov) + β ~1.4 × ERP ~4.75% = 11.8%, rounded up. Same β and ERP as July |
+| Own net cash | **$38bn** | derived: $68.3bn reported net cash − ~$30.3bn refundable cash deposits (treated as debt) |
+| Timing | FY27 cash flows at t = 0.40; FY28–31 at t = 1.3 … 4.3; TV at t = 4.8 | FY ends early Sep |
+| Explicit FCF | NOPAT + D&A − capex (no working-capital line; no tax shield on loss years) | assumption |
+| Terminal | FCF = NOPAT × (1 − g/RONIC); TV = FCF × (1+g)/(r − g) | **corrected vs July** (§2.2) |
+| FY27 capex | **$55bn** in all scenarios | estimate: "~$25bn 1H FY27, 2H higher" (30 Sep call) |
+| D&A path | FY27 $14bn rising to $23–30bn by FY30–31 | **assumption**; FY26 D&A not obtained |
+
+**Scenario-specific** (probabilities fixed at 25/50/25 *before* the model was run; unchanged from July)
+
+| Assumption | Bear (25%) | Base (50%) | Bull (25%) |
+|---|---|---|---|
+| FY27 revenue / GM | $200bn / 80%: prices roll in 2H FY27 despite the FQ1 guide | **$240bn / 85%**: FQ1 $61.5bn, peak around FQ2–FQ3, ~15% below street EPS | $275bn / 87%: street-plus; GM rises as the CFO guided |
+| FY28 revenue / GM | $90bn / 30%: capacity wave plus CXMT; a 2019/2023-style collapse | $150bn / 55%: BI "balance 4Q27, oversupply 2028" | $230bn / 75%: tight through 2028 as Micron claims |
+| FY29 (trough) | $55bn / 12% (NOPAT negative) | $85bn / 36% (SCAs cushion it) | $160bn / 55% |
+| FY30 | $62bn / 28% | $92bn / 40% | $155bn / 49% |
+| **Normalised (FY31) revenue / GM / opex** | $75bn / 35% / $11bn | **$100bn / 42% / $12.5bn** | $160bn / 47% / $16bn |
+| Capex FY28 / FY29 / FY30 | $35 / 20 / 22bn | $50 / 30 / 27bn | $60 / 45 / 35bn |
+| **Normalised NOPAT / EPS** | $12.9bn / **$11.4** | $24.9bn / **$22.1** | $50.0bn / **$44.3** |
+| Normalised ROIC (on ~$140–180bn IC, est.) | ~8–9% | ~15% (top of 菲比斯 band) | ~25–30% (above band; that's what makes it the bull case) |
+| Terminal g / RONIC | 3.5% / 10% | 4.0% / 15% | 5.0% / 20% |
+| July comparison (normalised EPS) | $7.6 | $15.8 | ~$40 |
 
 ## 4. Bear / base / bull with probabilities
-_pending_
+
+Model output, verbatim (r = 12%):
+
+```
+BEAR  FY27 $200bn 80% NOPAT $129.3bn FCF $88.3bn | FY28 $90bn 30% FCF -$0.8bn | FY29 $55bn 12% FCF -$1.4bn
+      normalised EPS $11.4; PV explicit $92bn + PV(TV) $59bn + net cash $38bn = $190bn  -> $168/share
+BASE  FY27 $240bn 85% NOPAT $166.5bn FCF $125.5bn | FY28 $150bn 55% FCF $31.1bn | FY29 $85bn 36% FCF $10.0bn
+      normalised EPS $22.1; PV explicit $179bn + PV(TV) $138bn (44% of EV) + $38bn = $355bn -> $314/share
+BULL  FY27 $275bn 87% NOPAT $195.8bn FCF $154.8bn | FY28 $230bn 75% FCF $97.3bn | FY29 $160bn 55% FCF $44.2bn
+      normalised EPS $44.3; PV explicit $320bn + PV(TV) $327bn + $38bn = $685bn -> $606/share
+PROBABILITY-WEIGHTED: 0.25*168 + 0.50*314 + 0.25*606 = $351
+```
+
+| Scenario | Prob. | Fair value | Narrative | Changed since July |
+|---|---|---|---|---|
+| **Bear** | 25% | **$168** (July $134) | The demand side stopped raising in October. DDR5 spot breaks below contract in 1H CY27. All three majors' 2027–28 capacity lands together. CXMT goes 350k → 500k wspm. The SCAs get renegotiated in the glut. FY28–29 replay FY23 on a bigger base. | Higher because the cash banked in FY26 and the FQ1 quarter can't be un-earned |
+| **Base** | 50% | **$314** (July $266) | FY27 is the earnings peak (FQ1 guide plus three quarters of contract deceleration). FY28 falls ~38% in revenue as the wave lands. The SCAs hold the trough at ~36% GM. Mid-cycle settles at FY25-like margins on a business ~2.7× FY25's size. | Bigger harvest, more cash, higher normalisation; offset by the method correction and a 12% rate |
+| **Bull** | 25% | **$606** (July $620) | Tight through 2028 as Micron, SK hynix and Samsung all claim. HBM repricing +70–140% in 2027 sticks. SCA floors enforced. Mid-cycle at the top of the band, $160bn at 47%. | Roughly flat: bigger harvest offset by the higher rate and reinvestment |
+| **Probability-weighted** | | **$351** (July ~$321) | | +9% |
+
+**Even the bull case ($606) is below today's ~$700**, as it was below $850 in July. In July the price was 1.4× the bull case; today it's 1.15×.
+
+**Sensitivity of the weights** (where honest disagreement lives): moving 15pp from bear to bull gives $416. If the base is replaced by the late-peak variant in §5 ($424), the weighted value is **$405**. Every reasonable weighting lands at $330–420.
 
 ## 5. Peak-earnings view and the "is it the peak?" test
 _pending_
