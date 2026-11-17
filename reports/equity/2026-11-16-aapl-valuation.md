@@ -17,7 +17,7 @@
 >   holds), not a single 4%.
 > - **V6 — "growth it has never sustained" is withdrawn as worded.** Read: "well above its five-year
 >   record (6.9% NI, 9.9% EPS)".
-> - **No adds above ~$158; TRIM signal survives the audit.** The CRO's binding position is in
+> - **TRIM signal survives the audit.** Valuation's add level is at or below ~$158 (25% MoS on $210); separately, the CRO bars any add above $245. The CRO's binding position is in
 >   `reports/risk/2026-11-16-aapl-and-skhy-reentry-cro.md`.
 
 
