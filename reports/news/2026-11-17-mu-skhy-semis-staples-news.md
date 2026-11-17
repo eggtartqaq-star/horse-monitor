@@ -1,6 +1,6 @@
 # MU / SKHY / Semis vs Staples: News & Intelligence Brief
 
-**Analyst:** 修大哥, Global News (Dept 4) · **Date:** 2026-11-17 (Tue) · **Status:** IN PROGRESS (sections 1–6 filled; bottom line, routing, score, register pending)
+**Analyst:** 修大哥, Global News (Dept 4) · **Date:** 2026-11-17 (Tue, written before the US close) · **Status:** FINAL
 **Requested by:** CEO, for the Owner's question: buy MU or SKHY now? Tech or defensives (KO)?
 **Builds on, does not repeat:** `reports/industry/2026-11-11-skhy-memory-cycle.md` (Elon Musk; the 28 Oct–6 Nov memory drawdown is dated there, §6.1), `reports/news/2026-07-18-mu.md`, `reports/technical/2026-11-16-skhy-reentry.md`, `reports/news/2026-11-16-aapl-news.md`.
 
@@ -14,7 +14,27 @@
 
 ## Bottom line
 
-_pending_
+1. **Why semis fell (§1).** [FACT] Three dated shocks hit in sequence:
+   - **5 Nov: a post-midterm AI-capex and political crash.** The SOX fell 12.25% per 247wallst, but other outlets give −7.1% and −3.1%, so the size is **contradictory**. UBS put ~30% of 2028 US data-centre additions at risk.
+   - **Week to 13 Nov: a rates shock.** October CPI came in hot, the 10-year moved to ~5.0–5.14%, and FedWatch priced a **December hike** at ~90%.
+   - **NVDA only: a governance shock.** The board opened a probe on 8 Nov, and **Huang resigned on 11–12 Nov**, with Kress as interim CEO. Bernstein cut its target to $200.
+   - [READ] NVDA's underperformance against SMH is plausibly this CEO crisis. Export controls are **not** a sourced driver this month.
+   - **NVDA reports tonight (17 Nov, 5 p.m. ET).** That is the single largest catalyst for every name here.
+2. **MU (§2).** [FACT] I found **no Micron-specific negative news since 30 Sep**: no guide change, no dated November downgrade, no Form 4.
+   - The stock is falling with the sector and with the "peak in Q2 2027" thesis (Citi, Aug).
+   - Next hard data: the **9 Dec capital-return step-up** and **FQ1 results around 16 Dec** (date estimated, not company-confirmed).
+3. **SKHY (§3).** There is no SK hynix-specific trigger for the new low.
+   - [FACT] The main pressures are Nvidia (its largest customer, buying ₩17.61tn in 1H26) and a **3 Nov Reuters report that US tool approvals for Dalian are held up**.
+   - [READ] The ordinary was ₩1.25m on 12 Nov, about 10% above its 6 Nov low, while the ADS made a new low. That points to **premium compression**, but the 16–17 Nov Korean close was NOT OBTAINED.
+   - The KSD quota is **recycling (two-way conversion since 29 Jul), not expanded**.
+4. **Memory pricing (§4).** **Spot is not below contract** as of the last weekly I found (3 Nov). But:
+   - [FACT] **PC OEM DRAM inventory rose to 7–10 weeks** (TrendForce, 11 Nov).
+   - [FACT] **NAND wafer spot fell ~13% in two weeks.**
+   - DRAM is decelerating and NAND is rolling over.
+5. **Defensives (§5).** [FACT] October was the biggest tech-to-staples rotation since 2001. XLP had its best month since 1998, and P&G rose 14.6% in the month.
+   - [READ] The rise is **driven by fund flows and a higher multiple, not by earnings**: KO fell on a 7%-organic beat.
+   - Staples are now **crowded and rate-exposed**. **No GLP-1 link was found.**
+6. **For the Owner's question [READ]:** the news flow does not support buying MU or SKHY before two binary events: **tonight's NVDA print** and the **9 Dec FOMC**. Nor does it support chasing KO at highs into a possible rate hike. Research only: the committee and the Owner decide.
 
 ## 1. Why semis/AI fell over the last month (market-wide vs NVDA-specific)
 
@@ -233,7 +253,7 @@ _pending_
 | ~Fri 4 Dec | US November jobs report | rates | Single secondary source — verify |
 | **Tue–Wed 8–9 Dec** | **FOMC; decision Wed 9 Dec 2 p.m. ET, with SEP/dot plot**; market priced ~90% for a **hike** as of ~13 Nov | rates, TLT, GLD, staples, growth | **Confirmed** — federalreserve.gov calendar; hike odds from Equiti relay |
 | **Wed 9 Dec** | **Micron capital-return step-up begins** (2nd anniversary of CHIPS agreements); possible new buyback authorization | MU | Management statement, 30 Sep call |
-| **Wed 9 Dec, after close** | **Broadcom FQ4 FY26 results** (guide ~$34.8bn) | AI capex read-through; SMH | **Confirmed** — Broadcom release 9 Nov |
+| **Wed 9 Dec, after close** | **Broadcom FQ4 FY26 results** (guide ~$34.8bn) | AI capex read-through; SMH; **AVGO held in the Owner's Webull account** | **Confirmed** — Broadcom release 9 Nov |
 | ~Thu 10 Dec | US November CPI | rates | Single secondary source citing BLS — verify |
 | **~Wed 16 Dec (est.)** | **Micron FQ1 FY27 results** (quarter ends ~3 Dec; guide $61.5bn ± $1.5bn, EPS $38.15 ± $1) | MU, SKHY, memory cycle | **NOT company-confirmed** — days.to estimate |
 | By ~24–31 Dec | US annual 2027 tool licence for SK hynix China fabs (Wuxi DRAM, Dalian NAND); Samsung equivalent | SKHY; Samsung | Reuters relay: not yet issued; Dalian approvals held up (3 Nov) |
@@ -244,19 +264,180 @@ _pending_
 
 ## 7. Affected holdings and routing
 
-_pending_
+**Holdings / watchlist (from `config/watchlist.yaml`, `config/portfolio-webull-snapshot-2026-11-13.yaml`):**
+- **AVGO (Owner holds, Webull, on margin):** Broadcom −15% in one session in the early-November selloff (channelchek; date not pinned); FQ4 results **9 Dec**, same day as the FOMC decision. **Most directly exposed live holding in this brief.**
+- **AAPL (Owner holds, off-Webull):** memory-cost read-across (firm's 16 Nov AAPL brief: GM guide 45–46% on memory costs). §4's rising PC OEM inventory and plans to cut PC DRAM supply in 2027 are relevant to that margin line. Also a beneficiary of the 4 Nov rally that §1 shows reversing for semis.
+- **SKHY (exited at $137; re-entry plan open):** new ADS low below $122.20 trips the "higher low above $122.20" trend-repair condition in the re-entry note §5 (that condition is now void until a new base forms) — **老詹 to restate**. Value triggers ($102.40 / ₩1,070,000) not reached on data I have.
+- **MU (watchlist):** no position; first company-specific datum is 9 Dec.
+- **NVDA, SMH, TSM, QQQ (watchlist):** §1. NVDA tonight drives all of them.
+- **KO, PG, XLP, XLV, GLD, TLT:** not found on the watchlist in my grep — confirm with CIO whether to add for the defensives question.
+
+**Routing:**
+- **Peterson (macro):** October CPI print; 10-year level (4.88% vs 5.14% conflict); FedWatch December *hike* odds; what a hike does to staples-as-bond-proxies and to GLD/TLT.
+- **LeBron James (geopolitics):** Huang probe (US intelligence / China angle) and what it means for Nvidia–China; Dalian/Wuxi licences; post-midterm data-centre politics.
+- **The dictator (regulatory):** state-level data-centre moratoria (Texas); SK hynix 2027 China licence; any November export-control action (none found); KSD ADR quota changes.
+- **Dept 2:** 巴爺爺 — verify MU FQ1 guide EPS $38.15 and the $35.16bn buyback claim against the 8-K; Peter — Nvidia governance and interim-CEO risk to supplier pricing; 𢦀鳩仔 — identify the $361 low MU target.
+- **Dept 5 (老詹 / Tim Cook):** settle the 5 Nov SOX magnitude from primary bars; dated SKHY premium on 16–17 Nov; NVDA 12 Nov close.
+- **Elon Musk (industry):** checklist update in §4 (indicator 3 now has numbers; NAND wafer spot −13% in two weeks).
 
 ## 8. News & sentiment score input
 
-_pending_
+Scores reflect **news flow and sentiment only** (0 = uniformly negative, 100 = uniformly positive), not valuation. Not a recommendation.
+
+| Proposal | Score | vs prior | Rationale |
+|---|---|---|---|
+| **Prospective LONG MU** | **42 / 100** | 68 on 18 Jul (`reports/news/2026-07-18-mu.md`) | (+) No company-specific negative since 30 Sep; record guide; 9 Dec capital-return catalyst; sell-side median ~2x spot. (−) Sector crash, rates shock, Nvidia governance shock; cycle-peak framing now mainstream (Citi Q2 2027 peak); NAND rolling; PC OEM inventory rising; HBM de-spec reports; capex punished on 30 Sep. Earnings ~16 Dec are within the window. |
+| **SKHY re-entry (ADS)** | **33 / 100** | — (firm 16 Nov verdict: no re-entry at today's price) | (−) All MU negatives plus: largest customer in a leadership crisis; Dalian approvals held up and 2027 China licence not yet issued; buyback support finished in October; ADS at a new low with **premium direction unknown** — the risk no stop protects against. (+) Ordinary not at a new low on 12 Nov; KOSPI rebounds show buyers exist. |
+| **Rotation into staples (KO) now** | **50 / 100** | — | (+) Earnings solid, KO raised guidance; momentum strong; defensive bid persists while AI is under pressure. (−) Move flow-driven and record-extended; KO mean target ~at/below price; 10-year ~5% and priced hike are a direct headwind to bond proxies; reversal risk if NVDA beats tonight. |
+
+**What moves these scores:** NVDA tonight (beat/raise and stable HBM commentary → MU/SKHY +10–15; miss or memory de-spec confirmation → −10); a TrendForce weekly showing DDR5 spot below contract (−10 for both); a SK hynix 2027 China licence grant (+5 SKHY); December FOMC hike (negative for staples score and growth alike).
 
 ## NOT OBTAINED
 
-_pending_
+1. **Korean ordinary close for 16 and 17 Nov 2026**, and therefore **any dated ADS premium** in November. Last ordinary print found: ₩1,250,000 on 12 Nov.
+2. **Current KSD quota status beyond July 2026** (no expansion found; conversion recycling since 29 Jul).
+3. **NVDA consensus for FQ3 FY27**; the $108bn guide is single-source. NVDA 12 Nov close (intraday figures conflict).
+4. **Reason for Huang's resignation** (sources conflict); the Bernstein $200 downgrade is single-relay.
+5. **5 Nov SOX magnitude** (−12.25% / −7.1% / −3.1% conflict).
+6. **10-year Treasury level and the October CPI figures** from a primary source; FedWatch odds are relayed.
+7. **TrendForce weekly spot reports for 10 and 17 Nov**; any November contract print (not yet published).
+8. **November Samsung price or capacity news**: none found.
+9. **Micron October–November Form 4s**; identity and date of the $361 low target; the $35.16bn buyback figure (unverified); company confirmation of the ~16 Dec earnings date.
+10. **Micron HBM4 share at Nvidia** on any November-dated estimate.
+11. **The date of the SemiAnalysis Rubin Ultra HBM de-spec report**, and Nvidia confirmation of it.
+12. **Pace of the SK hynix ₩20tn buyback**; formal cancellation of the ₩40tn shares.
+13. **Any GLP-1 link to the staples rally**: none found in Oct–Nov 2026 coverage.
+14. **KO, PG and XLP prices after 13 Nov**; XLP all-time-high confirmation from outlets (Webull is the only source).
+15. **P&G Investor Day date** (single source); **November jobs and CPI release dates** (secondary sources).
+16. **Direct reads of Reuters, Bloomberg, WSJ and FT**: reached only through relays. All WebFetch attempts failed DNS (247wallst.com, fourweekmba.com, trefis.com). These hosts would have to be allowed in the session's network settings.
+
+**Contradictions reported, not resolved:** 5 Nov SOX size; 10-year level; NVDA 12 Nov move; Huang resignation reason; MU analyst count (49 vs 55); MU buyback size; Samsung/Apple Q1 2027 price (+30–40% vs +80–90%); XLP October gain (+11.3% vs +10.9%); KO YTD (Webull +45% vs outlets 34–37%, different dates).
+
+**Blacklist compliance:** tradingkey.com was not searched for or cited.
 
 ## Sources
 
-_pending_
+All sources were reached via WebSearch on 2026-11-17. Outlet dates are given where known.
+
+**§1 Semis, rates and NVDA**
+- 247wallst, 6 Nov: https://247wallst.com/investing/2026/11/06/chip-stocks-just-had-their-second-worst-day-on-record/
+- cryptobriefing: https://cryptobriefing.com/chip-sector-worst-day-six-years/
+- Finimize: https://finimize.com/content/nasdaq-sank-as-chip-and-data-center-trades-unwound · https://finimize.com/content/markets-look-past-nvidias-ceo-shake-up
+- Stocktwits (SOXX worst week): https://stocktwits.com/news-articles/markets/equity/soxx-etf-semiconductor-is-set-for-its-worst-week-in-over-18-months/cNG1sEhR94Z
+- Trefis, 6 and 11 Nov: https://www.trefis.com/stock/nvda/articles/623357/what-sent-nvidia-stock-lower/2026-11-06 · https://www.trefis.com/stock/nvda/articles/624393/what-just-happened-to-nvidia-stock/2026-11-11
+- FourWeekMBA: https://fourweekmba.com/ai-nvidia-erases-its-2026-gains-down-29-and-1-7t-from-peak/ · https://fourweekmba.com/ai-nvidia-falls-6-straight-weeks-first-since-2012-1-7t/
+- indmoney: https://www.indmoney.com/blog/us-stocks/why-nvidia-intel-amd-broadcom-micron-stocks-falling
+- channelchek: https://dashboard.channelchek.com/broadcoms-15-single-day-plunge-took-300-billion-off-the-table/
+- Fox (Huang probe): https://www.fox9.com/news/nvidia-investigating-ceo-jensen-huang-over-reported-links-accused-chinese-spy
+- Spectrum News, 9 Nov: https://mynews13.com/fl/orlando/business/2026/11/09/nvidia-investigates-ceo-jensen-huang
+- letsdatascience: https://letsdatascience.com/news/nvidia-board-opens-investigation-into-reported-foreign-intel-c5b93236
+- Data Center Dynamics: https://datacenterdynamics.com/en/news/nvidia-ceo-jensen-huang-resigns-after-multiple-affairs
+- wccftech: https://wccftech.com/jensen-huang-resigns-nvidia-ceo-colette-kress-interim/
+- iconnect007: https://iconnect007.com/article/152377/nvidia-announces-ceo-transition-as-jensen-huang-resigns-colette-kress-named-interim-ceo/152374/aep
+- Fox Business: https://foxbusiness.com/markets/nvidia-loses-its-godfather-ai-now-faces-first-big-test-without-him
+- Motley Fool, 12 Nov: https://fool.com/investing/2026/11/12/why-nvidia-stock-crashed-today
+- SF Standard, 12 Nov: https://sfstandard.com/2026/11/12/nvidia-shares-tumble-as-wall-street-reacts-huang-s-exit/
+- TheWrap: https://www.thewrap.com/industry-news/business/nvidia-ceo-jensen-huang-resignation-stock-reaction/
+- Gray TV / atlantanewsfirst, 12 Nov: https://www.atlantanewsfirst.com/2026/11/12/nvidia-ceo-jensen-huang-resigns-after-his-affair-raises-national-security-concerns/
+- finviz: https://finviz.com/news/421844/nvidia-shares-fall-10-as-jensen-huang-resigns-after-33-years-colette-kress-named-interim-ceo
+- political.org, 13 Nov: https://political.org/2026/11/13/nvidia-stock-posts-longest-weekly-losing-streak-since-2012-as-market-value-falls-by-roughly-1-7-trillion-after-jensen-huangs-resignation/
+- NewsBytes: https://www.newsbytesapp.com/news/business/nvidia-loses-1-6t-as-stock-heads-for-sixth-weekly-decline/story
+- Keengamer: https://www.keengamer.com/articles/news/nvidia-ceo-jensen-huang-resigns-after-33-years-colette-kress-named-interim-ceo/
+- TimesBull: https://www.timesbull.com/jensen-huang-resigns-nvidia-ceo-colette-kress-interim/
+- Unite.ai: https://www.unite.ai/?p=515159
+- Nvidia 8-K (via quantisnow): https://www.quantisnow.com/insight/nvidia-corporation-filed-sec-form-8-k-leadership-update-6147851
+- NVIDIA IR (earnings date): https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Sets-Conference-Call-for-Third-Quarter-Financial-Results/
+- Trading Economics: https://tradingeconomics.com/united-states/government-bond-yield/news/505912
+- Equiti: https://www.equiti.com/uae-en/news/trade-reviews/treasury-yields-reclaim-5-threshold-as-inflation-pressures-mount/
+- Stocktwits (weekly spread): https://stocktwits.com/news-articles/markets/equity/what-shaped-us-treasury-yields-and-the-dollar-in-week-ended-november-13/cNb2sojR9Qd
+- The Edge Malaysia, 10 Nov: https://theedgemalaysia.com/node/825218
+- Dow Jones via Morningstar, 9 Nov: https://www.morningstar.com/news/dow-jones/202611098973/us-eurozone-bond-yields-rise-ahead-of-inflation-rates-outlook-2nd-update
+- Export-control background (Jan 2026): https://www.clickorlando.com/news/politics/2026/01/14/sales-of-a-powerful-nvidia-ai-chip-to-china-gets-the-greenlight-with-conditions/
+
+**§2 Micron**
+- days.to: https://days.to/micron-earnings
+- beinsure: https://beinsure.com/news/mu-stock-micron-forecasts
+- Earnings Whispers: https://earningswhispers.com/article/MU/r53
+- Stocktwits, 30 Sep: https://stocktwits.com/news-articles/markets/equity/mu-stock-drops-after-hours-micron-s-heightened-capex-forecast-overpowers-q4-beat-expectation-beating-q1-guidance/cZMFVZfRBLS
+- MarketBeat transcript, 30 Sep: https://www.marketbeat.com/instant-alerts/transcript-micron-technology-q4-earnings-call-highlights-2026-09-30/
+- storagenewsletter: https://www.storagenewsletter.com/?p=305727
+- alpha-sense: https://www.alpha-sense.com/earnings/mu/
+- indmoney (buybacks): https://www.indmoney.com/blog/us-stocks/micron-stock-bigger-buybacks-free-cash-flow
+- 247wallst, 14 Oct: https://247wallst.com/investing/2026/10/14/microns-buybacks-should-be-opening-your-eyes-right-now/
+- Seeking Alpha (Dec. 9): https://seekingalpha.com/article/4935979-micron-buried-one-sentence-about-dec-9-it-could-begin-retiring-12-percent-of-its-shares
+- Webull ($35.16bn claim): https://www.webull.com/news/15738075945903104
+- 247wallst, 9 Nov: https://247wallst.com/investing/2026/11/09/micron-has-lost-over-40-since-june-where-does-its-price-target-stand-now/
+- 247wallst, 13 Nov: https://247wallst.com/investing/2026/11/13/micron-is-down-20-in-a-month-what-will-it-take-to-get-mu-stock-back-to-1000/
+- Motley Fool, 15 Nov: https://fool.com/investing/2026/11/15/this-will-be-microns-stock-price-late-2027
+- Motley Fool, 5 Nov: https://www.fool.com/investing/2026/11/05/why-micron-stock-keeps-going-down/
+- Motley Fool, 9 Nov: https://fool.com/investing/2026/11/09/why-micron-stock-fell-17-last-month
+- TIKR (Needham): https://www.tikr.com/blog/micron-technology-has-lost-25-from-its-june-high-heres-why-needham-sees-81-upside
+- TIKR (Bernstein): https://www.tikr.com/blog/micron-stock-fell-30-in-a-week-bernstein-says-it-could-nearly-double
+- cmelitegroup (KeyBanc): https://www.cmelitegroup.com/trends-and-insights/keybanc-sees-micron-shares-gaining-nearly-140-as-cloud-data-signals-strong-server-demand/
+- TipRanks (Citi): https://www.tipranks.com/news/memory-prices-will-peak-next-year-warns-citi-as-it-cuts-micron-mu-price-target-by-18
+- Benzinga, Aug: https://www.benzinga.com/markets/tech/26/08/61067109/microns-memory-boom-is-heading-for-a-peak-analyst-warns
+- SemiMedia: https://www.semimedia.cc/semianalysis-micron-loses-nvidia-rubin-hbm4-first-year-supply-over-pin-rate-issues/
+- TrendForce (Hankyung allocation): https://www.trendforce.com/news/?p=53247
+- storagenewsletter, 17 Mar: https://www.storagenewsletter.com/2026/03/17/nvidia-gtc-2026-micron-in-high-volume-production-of-hbm4-designed-for-nvidia-vera-rubin-pcie-gen6-ssd-and-socamm2/
+- stock3 (Mizuho / de-spec): https://stock3.com/news/hbm-de-spec-warnung-fuer-nvidia-google-und-den-memory-markt-17257155
+- aiweekly: https://aiweekly.co/alerts/nvidia-tests-lower-memory-rubin-ultra-variants-amid-hbm-squeeze
+- siliconanalysts, 27 Aug: https://siliconanalysts.com/market/nvidia-flags-extreme-memory-costs-compressing-margins-supply-meets-only-70-of-de-2026-08-27
+- Motley Fool, 7 Jun (insider sales): https://www.fool.com/investing/2026/06/07/shares-surge-84-month-micron-ceo-sold-stock/
+
+**§3 SK hynix**
+- Korea Times, 4 Nov (Reuters): https://www.koreatimes.co.kr/world/20261104/sk-hynixs-new-york-chip-plans-hit-snag-over-us-restrictions-on-china-sources-say
+- The Standard HK: https://www.thestandard.com.hk/innovation/article/347435/SK-Hynixs-New-York-chip-plans-hit-snag-over-US-restrictions-on-China-sources-say
+- techspot: https://techspot.com/news/114443-us-export-restrictions-china-threaten-sk-hynix-plans.html
+- Finimize: https://finimize.com/content/us-export-license-delays-put-sk-hynixs-us-chip-plans-in-question
+- Korea Times, 10 Nov: https://www.koreatimes.co.kr/economy/20261110/korean-stocks-surge-over-4-as-risk-appetite-returns
+- Korea Times, 12 Nov: https://www.koreatimes.co.kr/economy/20261112/seoul-shares-snap-2-day-rally-amid-escalating-nvidia-risks
+- Korea JoongAng Daily: https://www.koreajoongangdaily.com/business/kospi-ends-twoday-rally-as-nvidia-leadership-uncertainty-rattles-tech-stocks/12970370 · https://www.koreajoongangdaily.com/business/jensen-huangs-exit-hits-ai-infrastructure-firms-that-grew-on-nvidia-cash/12972190
+- Bloomingbit: https://en.bloomingbit.io/feed/news/124280
+- TIKR (Nvidia–SK hynix): https://www.tikr.com/blog/nvidia-is-sk-hynixs-biggest-customer-its-boardroom-crisis-is-sk-hynixs-problem-too
+- TIKR (down 57%): https://www.tikr.com/blog/sk-hynix-is-down-57-from-its-high-with-half-of-2027-and-2028-capacity-already-contracted
+- gurufocus (KSD): https://www.gurufocus.com/news/8974007/sk-hynixs-adr-conversion-limitations-impact-arbitrage-opportunities
+- edaily: https://en.edaily.co.kr/news/eda202607295321/
+- mt.co.kr, 28 Jul: https://www.mt.co.kr/en/stock/2026/07/28/2026072817304086600
+- invezz, 23 Jul: https://invezz.com/news/2026/07/23/sk-hynix-stock-gains-adr-conversion-cap-could-keep-us-shares-trading-at-a-premium/
+- Asia Times, Oct: https://asiatimes.com/2026/10/why-americans-pay-41-more-for-sk-hynix-shares-than-koreans/
+- stockti (46% premium): https://stockti.com/sk-hynix-ads-soars-8-yet-trades-at-46-premium-to-seoul-shares
+- Asiae, 30 Dec 2025 (2026 licence): https://www.asiae.co.kr/en/article/2025123010271039721
+- SiliconANGLE: https://siliconangle.com/2025/12/30/report-samsung-sk-hynix-receive-us-approval-ship-american-chipmaking-gear-china/
+- Asiae, 20 Aug (buyback): https://view.asiae.co.kr/en/article/2026082010191159282
+- Axios, 20 Aug: https://axios.com/2026/08/20/hynix-stock-buyback-korea
+- mt.co.kr, 22 Oct: https://www.mt.co.kr/en/stock/2026/10/22/2026102216413624974
+- mt.co.kr, 28 Oct: https://www.mt.co.kr/en/stock/2026/10/28/2026102815571867484
+
+**§4 Memory pricing**
+- TrendForce News, 4 Nov: https://www.trendforce.com/news/?p=66203
+- TrendForce News, 28 Oct: https://www.trendforce.com/news/2026-10-28/insights-memory-spot-price-update-nand-spot-price-cuts-accelerate-amid-china-phone-discounts-512gb-tlc-sink-9-19
+- TrendForce press release, 11 Nov: https://www.trendforce.com/presscenter/news/20261111-13303.html
+- iconnect007: https://iconnect007.com/article/152347/pc-oems-adjust-2027-memory-procurement-amid-rising-inventories/152344/aep
+- cryptobriefing: https://cryptobriefing.com/trendforce-pc-dram-prices-rise-4q26/
+- tech-insider: https://tech-insider.org/dram-record-high-nand-flat-21-months-october-2026/
+- xenospectrum: https://xenospectrum.com/en/ddr4-spot-premium-buyer-hesitation/
+- sammobile, 20 Oct: https://sammobile.com/news/samsung-secures-5-year-revenue-dram-memory-chips-supply
+
+**§5 Defensives**
+- European Business Magazine, 10 Nov (FT relay): https://europeanbusinessmagazine.com/consumer-staples-post-best-month/
+- Benzinga: https://www.benzinga.com/node/62546738 · https://www.benzinga.com/quote/XLP?nid=50770898
+- Webull (rotation): https://www.webull.com/news/15855038038055936
+- Morningstar: https://www.morningstar.com/markets/chip-selloff-deepens-investors-rotate-away-tech-stocks
+- P&G release, 22 Oct: https://us.pg.com/newsroom/news-releases/PG-Announces-Fiscal-Year-2027-First-Quarter-Results/
+- Benzinga (P&G): https://www.benzinga.com/node/62520617
+- MarketBeat (P&G transcript): https://www.marketbeat.com/instant-alerts/transcript-procter-gamble-q1-earnings-call-highlights-2026-10-22/
+- Coca-Cola IR, Q3 2026: https://investors.coca-colacompany.com/news-events/press-releases/detail/1176/coca-cola-reports-third-quarter-2026-results-and-raises-full-year-guidance
+- finviz (KO): https://finviz.com/news/408889/coca-cola-raises-2026-earnings-outlook-after-q3-revenue-and-profit-exceed-estimates
+- cmelitegroup (KO): https://www.cmelitegroup.com/?p=11470
+- TIKR (KO): https://www.tikr.com/blog/coca-cola-soars-12-in-a-month-to-a-52-week-high-affordability-is-working · https://www.tikr.com/blog/coca-cola-hit-a-record-high-is-the-safety-really-worth-it
+
+**§6 Events**
+- Federal Reserve calendar: https://www.federalreserve.gov/newsevents/2026-december.htm
+- ifyouspent (CPI and jobs dates): https://news.ifyouspent.com/en/news/fed-december-2026-meeting-jobs-cpi-what-to-watch
+- Broadcom IR: https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announce-fourth-quarter-and-fiscal-year-2026
+- finviz (Broadcom date): https://finviz.com/news/418980/broadcom-inc-to-announce-fourth-quarter-and-fiscal-year-2026-financial-results-on-wednesday-december-9-2026
+
+*Research only. The committee and the Owner decide. No figure above is invented. Every item carries an outlet and a date where one was available, and fetch failures are disclosed.*
 
 ---
 

@@ -137,19 +137,129 @@ PROBABILITY-WEIGHTED: 0.25*168 + 0.50*314 + 0.25*606 = $351
 **Sensitivity of the weights** (where honest disagreement lives): moving 15pp from bear to bull gives $416. If the base is replaced by the late-peak variant in §5 ($424), the weighted value is **$405**. Every reasonable weighting lands at $330–420.
 
 ## 5. Peak-earnings view and the "is it the peak?" test
-_pending_
+
+### 5.1 Why P/E 9.4 is not "cheap"
+
+| Earnings base | EPS | P/E at $697.83 | Comment |
+|---|---|---|---|
+| TTM GAAP (Webull) | $74.34 | **9.39x** | FY26 only. It **understates** near-term earnings: FY27 is guided far higher |
+| FY27 consensus | $176.50–178.93 | **3.9–4.0x** | the multiple the market is actually paying |
+| My base FY27 | $147 (NOPAT $166.5bn ÷ 1.13bn) | 4.7x | ~17% below street, deliberately |
+| **My base normalised (mid-cycle)** | **$22.1** | **31.6x** | the multiple that matters for a 5-year holder |
+| My bull normalised | $44.3 | 15.8x | |
+
+**Peak earnings × peak multiple.** Memory equities are priced at 3–6x *peak* earnings because the market knows the E won't last. Dated evidence on disk: SK hynix 2.3–2.9x 2027 broker OP; Samsung 3.7–4.0x 2027 (SKHY valuation §5, Oct–Nov 2026); MU 5–6.3x forward (9 Nov) and "under 5x" at $833.59 (3 Nov); in June, before the de-rating, SK hynix 9.2x / Samsung 8.1x on 2026E (July valuation §5).
+
+| FY27E $176.5 × | 3x | **4x** | 5x | 6x | 8.8x |
+|---|---|---|---|---|---|
+| Price | $530 | **$706** | $882 | $1,059 | $1,550 (= consensus target) |
+
+**Reading:** $700 is the market applying almost exactly **4x to peak-year earnings**, its standard convention for memory at a peak. That's a *trading* level, not a value. On the market's own peak-pricing convention MU isn't cheap or expensive. It looks cheap only if you read the 9x TTM (or 4x forward) against the S&P's ~20x. **4x peak EPS is 32x mid-cycle EPS.** This is the classic memory trap: the P/E is lowest at the most expensive moment.
+
+### 5.2 Test: what if this is NOT the peak?
+
+**Evidence the earnings peak is still ahead (dated):**
+- FQ1 FY27 revenue guided **+13% QoQ** ($54.2bn → $61.5bn).
+- The CFO called ~86% GM the FY27 **floor**.
+- FY27 consensus revisions ran 28 up / 2 down in 30 days.
+- TrendForce: DRAM contract **+10–15% in 4Q26**, "gradual increases" in 2027. DDR4 and DDR5 spot still sit above contract (3 Nov).
+- Micron says supply is tight through 2028 (30 Sep).
+
+**Evidence the price peak is past or near:**
+- The DRAM contract *rate* peaked in 1Q26, and growth has decelerated for three quarters.
+- NAND was flat in October after 21 months of rises.
+- The hyperscaler raise cadence stopped (28–30 Oct).
+- All three majors raised capex in the same six weeks.
+- Micron lost 5pp of DRAM share.
+- The stock is −42% from its ATH close. Memory equities lead earnings.
+
+**Verdict:** the **earnings** peak is probably *not* in. FY27 EPS is very likely ~2× FY26. But my base already models FY27 at $240bn / 85%. The live question is whether the peak runs on into **FY28**. **Late-peak variant:** FY27 $255bn / 86%, FY28 $260bn / 80%, FY29 $150bn / 50%, then base normalisation:
+
+```
+LATE-PEAK  FY27 FCF $138.4bn | FY28 $260bn 80% NOPAT $167.7bn FCF $127.7bn | FY29 $150bn 50% FCF $43.1bn
+           PV explicit $304bn + PV(TV) $138bn + $38bn = $480bn -> $424/share  (vs base $314)
+```
+
+**A whole extra peak year adds ~$110/share.** One year of ~$128bn FCF is worth ~$100/share in PV, and it doesn't change the terminal. Even with the peak extended into FY28, $700 still needs **normalised EPS of ~$68** (§7), 3× my base. "Not the peak" moves value up by about a third. It doesn't bridge to $700.
 
 ## 6. Steel-manning the bull / consensus ($1,550)
-_pending_
+
+**First, what the consensus number is.** The mean is $1,561.91 and the median $1,550 (49 analysts, 13 Nov). The median is **8.8x FY27 consensus EPS**. A sell-side target is a 12-month forecast of *multiple × next-year EPS*. It isn't a DCF. Comparing it with my intrinsic value compares two different questions. For the record, my weighted $351 sits at the **street low ($361)**.
+
+**The strongest version of the bull case:**
+1. **The regime is secular in bits.** Server is ~40% of DRAM bits (Gartner). HBM takes ~30% of wafers for ~13% of bits in 2027, a structural tax on supply that greenfield can't fully offset. Micron sees HBM TAM at ~$100bn by 2028.
+2. **Contracts dampen the cycle.** SCAs carry ~$100bn of minimum revenue through CY2030, and deposits rose from $22bn to $32bn in one quarter. Customers are pre-paying for supply, which they don't do in a commodity glut. Micron reportedly contracted most of its 2027 HBM early, at higher prices (memory-cycle report §3.4).
+3. **Supply arrives late.** ID1 lands mid-2027, ID2 late 2028, and Samsung P5 in 2028. Clean rooms open in phases. Micron guides industry bits up in the low 20s% in both CY27 and CY28, roughly matched to demand.
+4. **The earnings keep beating.** FY27 EPS went from ~$112 (Jun) to ~$177 (Nov). Every quarter of 2026 beat.
+5. **The multiple is a choice.** MU closed at $1,213 in June at ~11x the then-FY27 estimate. If FY28 ≥ FY27, a re-rating to 8–9x peak EPS is ordinary market behaviour, and it gives $1,400–1,600.
+
+**What must be true for $1,550, testable:**
+
+| Lens | Requirement | My read |
+|---|---|---|
+| Multiple (12-month) | FY28 EPS ≥ FY27 (~$177), **and** the market pays ~9x in late 2027 | Possible as a *trading* outcome; it's how memory peaks look (June 2026 was one). It's a forecast of other investors' behaviour, not of value |
+| DCF (intrinsic) | With the base harvest, $1,550 needs **normalised EPS ~$229** (NOPAT ~$259bn) **forever**. With the late-peak harvest, ~$210 | That's **above FY27 consensus as the permanent mid-cycle**: ~$375bn of revenue at 85% GM every year, or ~$760bn at the 42% anchor. No memory company has ever held peak margins through a capacity wave |
+| Industry | DDR5 spot never falls below contract through 2027; 2027 HBM +70–140% realised; hyperscaler 2027 guides ≥ +40%; SCA floors disclosed and binding | Two of the five overweight falsifiers in the memory-cycle report (§11.3) would need to fire. None has |
+
+**Conclusion:** the bull case is a credible *path for the share price* over 12 months. It's not a credible *intrinsic value*. My bull scenario credits the strongest honest version, $606 with mid-cycle at 47% GM and ~25–30% ROIC (above 菲比斯's band), at 25% weight. I won't build the $1,550 world into fair value. It needs the moat report's central conclusion rejected, which the audit identified in July as the real premise question. Nothing since July resolves that premise: the SCAs still haven't been through a downturn.
 
 ## 7. Reverse valuation: what does ~$700 imply?
-_pending_
+
+Same model; solve for the normalised (FY31+) NOPAT that returns the price, holding each harvest path:
+
+| Price | r | Harvest path | **Implied normalised NOPAT / EPS** | × my base ($22.1) | × my bull ($44.3) |
+|---|---|---|---|---|---|
+| $656.39 (5 Nov low close) | 12% | base | $90bn / **$79** | 3.6× | 1.8× |
+| **$700** | **12%** | **base** | **$98bn / $87** | **3.9×** | **2.0×** |
+| $700 | 11% | base | $83bn / $73 | 3.3× | 1.6× |
+| $700 | 12% | late-peak (FY28 peak) | $77bn / $68 | 3.1× | 1.5× |
+| $719.02 (16 Nov close) | 12% | base | $101bn / $90 | 4.1× | 2.0× |
+| $1,550 (consensus) | 12% | base / late-peak | $259bn / $229 / $210 | 10× | 5× |
+
+**In P&L terms:** $98bn of mid-cycle NOPAT means ~$306bn of revenue at the 42% anchor GM (3× my base normalised, 2.3× FY26), or ~$214bn at a 60% GM, permanently. Equivalent multiples: $700 = **31.6x** base normalised EPS, 15.8x bull normalised EPS, 3.95x FY27 consensus.
+
+**Compared with July:** at $850 the market needed ~$84 of normalised EPS (11%, July method). At $700 it needs **$68–90**. The price fell 18%, but the long-run economics it embeds barely moved. The fall came from a higher discount rate and a nearer, more visible cycle turn, not from the market giving up on permanently elevated margins. **$700 still prices roughly half of today's peak economics as the permanent state.**
 
 ## 8. Method cross-check
-_pending_
+
+| Method | Result | Agreement |
+|---|---|---|
+| **Scenario DCF (base / weighted)** | $314 / **$351** | reference |
+| **P/E on normalised EPS:** 12–15x × $22.1 at FY31 (PV factor 0.614), + PV of FY27–30 harvest ($148/share) + net cash ($34/share) | **$345–386** | ✓ (within ~10%) |
+| **EV/EBITDA on normalised:** 5–6x × $55.5bn (EBIT $29.5bn + D&A $26bn), PV'd, + harvest + cash | **$333–364** | ✓ |
+| **SK hynix-consistent normalisation** (mid-cycle = 24% of peak-year OP, as in the 12 Nov SKHY valuation) → normalised EPS $18.3–26.4 → base-case value (from the revenue sensitivity, §9) | **~$290–345** | ✓ the two names are normalised on the same basis |
+| **Peak-multiple comps:** 3–6x FY27E | $530–1,059 | ✗ disagree, explained below |
+| **Street targets:** median $1,550 = 8.8x FY27E | $361–3,000 | ✗ disagree, explained in §6 |
+
+**Why I don't average them (mandate rule 3).** Normalised-earnings methods agree within ~10–15% once they share the premise. Methods that **don't normalise** (peer P/E on peak E, street targets) disagree by 2–4×, and for one reason: they capitalise a peak year. The peer set is circular. All three memory names sit at 2–6x the *same* peak E, which is the market's own statement that the E isn't durable, so the comp validates the sector's cycle view rather than testing it. Same finding and same treatment as July and the 12 Nov SKHY valuation. **The DCF governs. The comps are reported, not blended.**
 
 ## 9. Sensitivity table
-_pending_
+
+The two most influential assumptions are **discount rate** and **normalised earnings power** (revenue level and GM, shown separately). TV is 44% of base EV, and the FY27 harvest is the next-largest item, but FY27 is now largely guided.
+
+**(a) Base case: normalised GM × discount rate ($/share)**
+
+| Norm. GM ↓ / r → | 10% | 11% | **12%** | 13% | 14% |
+|---|---|---|---|---|---|
+| 35% | 328 | 302 | 283 | 268 | 255 |
+| 38% | 347 | 318 | 296 | 279 | 265 |
+| **42% (base)** | 373 | 339 | **314** | 295 | 279 |
+| 44% | 385 | 350 | 323 | 302 | 285 |
+| 47% | 405 | 366 | 336 | 314 | 296 |
+
+**(b) Base case: normalised revenue × discount rate ($/share)**
+
+| Norm. revenue ↓ / r → | 10% | 11% | **12%** | 13% | 14% |
+|---|---|---|---|---|---|
+| $75bn | 306 | 284 | 267 | 254 | 244 |
+| $85bn (July) | 332 | 306 | 286 | 270 | 258 |
+| **$100bn (base)** | 373 | 339 | **314** | 295 | 279 |
+| $120bn | 426 | 384 | 352 | 327 | 307 |
+| $140bn | 480 | 428 | 389 | 359 | 335 |
+
+**(c) Probability-weighted value × discount rate:** 10% **$426** · 11% $382 · **12% $351** · 13% $326 · 14% $307.
+
+**Reading:** across the whole honest assumption space (GM 35–47% × r 10–14%, revenue $75–140bn), the base case spans **$244–480**. No cell reaches $700. Getting there takes a change of *premise*, not of parameters: §7 shows the price needs ~$300bn of revenue at the anchor margin. The 10Y moved 60bp in four months, which is why the rate axis runs to 14%.
 
 ## 10. Margin of safety, entry levels, expected return
 _pending_
