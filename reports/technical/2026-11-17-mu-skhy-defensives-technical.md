@@ -103,6 +103,21 @@ that is the ordinary range of this stock, not a crash scenario.
 3. **The usual hedges failed.** Gold and long bonds are both falling. In this tape, staples and
    healthcare are what has hedged tech.
 
+## 5. Addendum — 17 Nov close and the NVDA after-hours reaction (Webull snapshot ~22:45 UTC)
+
+| | Close 17 Nov | After hours | Note |
+|---|---|---|---|
+| NVDA | $155.46 (−0.4%) | $161.71 (+4.0%) | results after the close |
+| MU | $712.42 (−0.9%) | $737.00 (+3.5%) | intraday low $666.88 held above the $650 support |
+| SKHY | $122.61 (+0.4%) | $127.91 (+4.3%) | intraday new low **$117.40**, closed back above $122.20 |
+| SMH / SOXX | $460.10 / $141.46 | +3.6% / +3.3% | |
+| QQQ / SPY | $656.95 / $732.44 | +1.2% / +0.6% | |
+| KO / XLP | $98.79 / $91.46 | −0.5% / −0.5% | staples fell on the day (XLP −1.2%) |
+
+**Read:** thin after-hours prints, not closes. Nothing in §2's structure changes unless MU closes
+above **$827.58** (lower high) and SKHY above **$145.79**. A one-day gap on results is exactly the
+"single gap-up day" the SKHY re-entry plan says does **not** qualify (cf. 11 Nov, +9.7%, rejected).
+
 ## NOT OBTAINED
 
 1. Bars after 16 Nov (17 Nov is a snapshot).
