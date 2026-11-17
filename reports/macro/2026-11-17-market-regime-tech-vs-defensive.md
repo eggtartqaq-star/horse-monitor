@@ -1,5 +1,10 @@
 # Market Regime: Tech/Growth vs Defensive Staples — 2026-11-17
 
+> **CEO NOTE AFTER AUDIT (2026-11-17)** — `reports/committee/2026-11-17-mu-market-audit.md`. The curve is **flattening**, not bear-steepening, on this
+> report's own numbers (2y +35bp vs 10y +28–30bp). That weakens the financials overweight; treat
+> financials as neutral-to-modest. The 10y at 5.13–5.16% on 13 Nov is now confirmed by three secondary
+> outlets. The rest of the style tilt survives.
+
 **Author:** Peterson, Chief Economist (Dept 1, Macro Research)
 **Status:** FINAL (written before NVDA's FQ3 FY27 results, due after the close today)
 **Request:** Owner — "analyse the current market atmosphere and suggest which type of stocks to invest in under the market trend — tech companies, or companies like Coca-Cola?"

@@ -31,6 +31,10 @@ etf:
 # Names under research but not yet in any sleeve
 research:
   - MU    # full pipeline 2026-07-18; reports/*/2026-07-18-mu*; CEO: watch, wrong price
+          # REFRESH 2026-11-17 (audited): FV $351-405 (bull-adjusted $400-470) vs $712 close; CRO VETO 42/100.
+          # Downtrend: lower high $827.58, supports $650/$598. Memory = one cluster with SKHY/000660 (<=5% LNW).
+          # Path A: committee <=$350-400, buy $280/$210. Path B (trade): close >$827.58 + stop + committee, <=3-4% LNW.
+          # Results ~16 Dec (unconfirmed). Plan: reports/committee/2026-11-17-trading-plan.md
   - MRVL  # full pipeline 2026-07-19; reports/*/2026-07-19-mrvl*; CRO veto, ~2.7x fair value
   - KLAC  # full pipeline 2026-07-19; reports/*/2026-07-19-klac*; CRO veto on valuation only;
           # STRONGEST candidate — wide moat, A/91 financials; re-entry alerts ~$130 / ~$95-105
@@ -63,8 +67,8 @@ research:
           # 6/10; 8 of 12 cycle-turn indicators flashing. Peak-to-trough OP survival
           # in prior cycles: 13% and <0%.
           # ★ STRUCTURAL: ADS trades 44-56% ABOVE the Korean ordinary because a KSD
-          #   cap on ADR issuance (2.5%) was exhausted 23 Jul 2026 and conversion is
-          #   one-way. Four desks converged independently. Company buys back the
+          #   cap on ADR issuance (2.5%) was exhausted 23 Jul 2026; conversion is two-way
+          #   only WITHIN the cap (corrected 17 Nov), so new ADSs cannot be created to arbitrage it. Four desks converged independently. Company buys back the
           #   ordinary at ~US$98/ADS-equivalent. If the cap lifts, ADS can fall 30%+
           #   with no business change. No date. Reduce ADS on any sharp premium
           #   narrowing while Seoul is flat/up, regardless of chart level.

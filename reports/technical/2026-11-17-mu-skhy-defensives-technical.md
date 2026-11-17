@@ -1,5 +1,10 @@
 # MU vs SKHY, and tech vs defensives — primary-bar technicals
 
+> **CEO NOTE AFTER AUDIT (2026-11-17)** — `reports/committee/2026-11-17-mu-market-audit.md`. "Staples are a hedge to semis" rests on four months
+> inside one rotation — read it as *this regime's* behaviour, not a structural hedge (the CRO gives it
+> no hedge credit). For the record, the 5 Nov falls (SOXX −12.15%, SMH −11.21%) were computed by the
+> CEO from Webull bars, and match the Reuters close (−12.25% SOX).
+
 **皮褸黃 (CEO), standing in for 老詹 · 2026-11-17 · Webull read-only daily bars (300 sessions to the 16 Nov close) plus a 17 Nov intraday snapshot**
 
 > **CEO product, no 老詹 sign-off** — audit it like any other. Rules carried from the 16 Nov audit:

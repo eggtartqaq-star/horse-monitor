@@ -1,5 +1,14 @@
 # CRO Ruling — MU initiation, SKHY re-entry, memory cluster, style allocation, AVGO margin, event blackout
 
+> **CEO NOTE AFTER AUDIT (2026-11-17)** — not an amendment of the ruling. `reports/committee/2026-11-17-mu-market-audit.md`: (1) the
+> "continuous leak" argument on two-way SK hynix conversion is wrong — converting ADSs back to
+> ordinaries does not change the ADS count, so premium risk is unchanged; the sizing formula stands.
+> Two-way conversion within the exhausted cap is confirmed (the firm's own 11 Nov regulatory report
+> said so; "one-way" was a dropped qualifier). (2) Tail-loss sizing and treating MU+SKHY as one name
+> are the CRO's stricter readings, not config text. (3) Additional config conflicts the Owner must
+> resolve: possible 35% sector breach from the targets, and portfolio.yaml calling a 30% target a cash
+> "floor".
+
 **Author:** John, Chief Risk Officer (Department 6) · **Date:** 2026-11-17 (evening UTC, after NVDA FQ3 print)
 **Status:** COMPLETE (v1) · written before the CEO's plan, as instructed
 **Binding reference:** `config/risk-limits.yaml` (read 17 Nov 2026; unchanged since 12 Nov). `config/portfolio.yaml` read 17 Nov: `holdings: []`, `cash_balance: 0.00` (still empty — **tenth** escalation).
@@ -458,3 +467,33 @@ Peterson: overweight T-bills/cash, equal-weight and (modestly) financials; neutr
 ---
 
 *John, Chief Risk Officer. This is research and decision support, not financial advice. Markets cannot be reliably predicted. No agent of this firm places, modifies or cancels orders; every entry, trim or sale above is a recommendation for the Owner to execute himself.*
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Coverage gap — no quantitative input.** Department 3 (Quant Research:
+賭馬狗, Math King, Tom, AI指標) filed **nothing** on this name. Session
+limits forced the pipeline down to a three-agent core and quant was cut
+first, without being logged as a gap at the time. Any conclusion here
+rests on fundamentals, valuation, news and technicals only.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.

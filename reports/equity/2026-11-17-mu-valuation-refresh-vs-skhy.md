@@ -1,5 +1,18 @@
 # MU Valuation Refresh vs SK hynix — 2026-11-17
 
+> **CEO NOTE AFTER AUDIT (2026-11-17)** — `reports/committee/2026-11-17-mu-market-audit.md`. Body left as written; read with these corrections:
+> - **Fair value: read $351–405**, not $351 alone. The 25/50/25 weights were carried from July and
+>   ignore Nvidia's $390bn supply commitments ("primarily multi-year memory"). With every judgement
+>   call moved bullish, fair value is about **$400–470** — still far below the $712 close.
+> - **Discount rate:** 12% is the top of a 10.7–11.8% CAPM range (rounded up; July rounded down) and
+>   uses a 4.75% ERP vs 4.41% in the AAPL file. **At 11%, the bull case is ~$673–692**, so "above even
+>   the bull case" holds only at 12%.
+> - **Head-to-head:** on SK hynix's 24%-of-peak basis MU trades at ~26.5× normalised, i.e. 1.5–1.7× the
+>   Korean ordinary, not 2×. The ranking (ordinary cheapest, MU dearest) is unchanged.
+> - **Entry: read as a $210–280 band.** WAIT survives every correction.
+> - **Bias flag:** fourth consecutive memory document whose judgement calls lean bearish (~15–30% of
+>   fair value). The committee should hear a late-peak bull case before it votes.
+
 **Analyst:** 𢦀鳩仔 (Valuation, Dept 2) · **Requested by:** CIO for the Owner · **Status:** COMPLETE (v1). Supersedes the fair value in `reports/equity/2026-07-18-mu-valuation.md`
 **Question:** "MU or SK hynix — which can I invest in now?"
 Research only. Not financial advice. No orders.

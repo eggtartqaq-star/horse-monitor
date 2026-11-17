@@ -1,5 +1,11 @@
 # NVDA FQ3 FY27 Earnings: Breaking News & Impact Assessment
 
+> **CEO NOTE AFTER AUDIT (2026-11-17)** — `reports/committee/2026-11-17-mu-market-audit.md`. The **SEC civil probe is downgraded from [FACT] to
+> [UNVERIFIED]**: it rests on a WSJ story relayed by Axios that the desk did not read, and the audit's
+> searches found no report of it. Revenue $115.8bn is corroborated via the 8-K; the $130bn guide and
+> $390bn commitments were not yet findable by the audit (results hours old) and are not contradicted.
+> Huang's resignation and Kress as interim CEO are corroborated by many outlets.
+
 **Analyst:** 修大哥, Global News (Dept 4) · **Date:** 2026-11-17, written ~22:50–23:40 UTC (5:50–6:40 p.m. ET), during or just after the call · **Status:** FINAL (first-wave; revisit when the transcript is out)
 **Builds on:** `reports/news/2026-11-17-mu-skhy-semis-staples-news.md` (same day, pre-close), `reports/industry/2026-11-11-skhy-memory-cycle.md`.
 
@@ -348,3 +354,27 @@ All sources were reached via WebSearch on 2026-11-17, ~22:50–23:40 UTC. Outlet
 **Pre-report memory-stock moves**
 - startupfortune: https://startupfortune.com/micron-stock-falls-about-7-as-nvidia-earnings-and-export-curbs-hit-chips/
 - StockStory: https://stockstory.org/us/stocks/nasdaq/mu/news/why-up-down/micron-sk-hynix-and-sandisk-shares-plummet-what-you-need-to-know
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.
