@@ -1,0 +1,200 @@
+// ============================================================
+// Swing V6.6.0 —— 雙引擎指標(引擎一 + 引擎二,兩條路徑)
+// ============================================================
+// 同 V6.4.2 Pine 嘅分別:
+//   1. 加入引擎二(趨勢):ADX≥25、DI+>DI−、評分≥0.65、3×ATR 止蝕 ≤12%
+//      「交易路徑」要再加:今日高 ≥ 20日高(手冊第三節條件3,回測驗證版)
+//      冇突破嘅引擎二 = 舊掃描器路徑 → 灰色標記,只記錄,唔交易
+//   2. 引擎一邏輯逐行保留(V6.4.1 F-02 止盈選法),每個級別倉位都係 1%(手冊),
+//      唔再寫「普通 0.5%」
+//   3. 面板顯示版本、路徑、兩個引擎嘅數字
+//   4. 選填:引擎二入場日 → 畫移動止損(每日 最高價 − 3×ATR,只升不降)
+// 財報:Pine 判斷唔到,一定要手動查 >5 日
+// ★ 數字同 Python(daily_scan_v66)應該一致;用 golden_v66.csv 對照(見 README)
+// ============================================================
+
+//@version=6
+indicator("Swing V6.6.0 雙引擎", overlay=true, max_labels_count=500, max_lines_count=200)
+
+MIN_R            = input.float(2.0, "最低R值")
+ACCOUNT_HKD      = input.float(10000, "短線資金(HKD)")
+RISK_PCT         = input.float(1.0, "每筆風險%")
+USD_HKD          = input.float(7.8, "美元兌港元")
+MAX_POSITION_PCT = input.float(10.0, "單一倉位上限(佔戶口%)")
+entryT           = input.time(timestamp("2000-01-01"), "引擎二入場日(選填,畫移動止損)")
+
+// 均線
+ma20  = ta.sma(close, 20)
+ma50  = ta.sma(close, 50)
+ma200 = ta.sma(close, 200)
+plot(ma20, "MA20", color.orange, 2)
+plot(ma50, "MA50", color.blue, 2)
+plot(ma200, "MA200", color.purple, 1)
+
+// 大市環境
+spy_close = request.security("AMEX:SPY", "D", close)
+spy_ma200 = request.security("AMEX:SPY", "D", ta.sma(close, 200))
+bull = spy_close > spy_ma200
+
+// 共用指標
+rsi14 = ta.rsi(close, 14)
+rsi2  = ta.rsi(close, 2)
+[diP, diM, adxVal] = ta.dmi(14, 14)
+isRange = adxVal < 25
+trendUp = adxVal >= 25 and diP > diM
+atrVal  = ta.atr(14)
+pv20  = (close - ma20) / ma20 * 100
+mt    = (ma20 - ma50) / ma50 * 100
+ret5  = (close - close[5]) / close[5] * 100
+ret10 = (close - close[10]) / close[10] * 100
+volR  = ta.sma(volume, 5) / ta.sma(volume, 20)
+obvV  = ta.obv
+obvDiv = (close < close[5]) and (obvV > obvV[5])
+low10  = ta.lowest(low, 10)
+high20 = ta.highest(high, 20)
+high60 = ta.highest(high, 60)
+riskUSD = ACCOUNT_HKD * RISK_PCT / 100 / USD_HKD
+acctUSD = ACCOUNT_HKD / USD_HKD
+hi126 = ta.highest(high, 126)
+lo126 = ta.lowest(low, 126)
+isSpec = lo126 > 0 and (hi126 / lo126) >= 2.0
+
+// ============================================================
+// 引擎一:均值回歸(V6.4.2 原樣)
+// ============================================================
+s1 = (rsi14>=35 and rsi14<=45)?1.0:(rsi14>45 and rsi14<=55)?0.8:(rsi14>=30 and rsi14<35)?0.6:(rsi14>55 and rsi14<=65)?0.4:(rsi14>65)?0.1:0.3
+s2 = (rsi2<5)?1.0:(rsi2<10)?0.85:(rsi2<20)?0.70:(rsi2<30)?0.50:0.20
+s3 = (pv20>=-5 and pv20<=0 and mt>0)?1.0:(pv20>=-10 and pv20<-5 and mt>0)?0.8:(pv20>0 and pv20<=3 and mt>0)?0.7:(pv20<-10 and mt>0)?0.4:0.2
+s4 = (ret10>=-15 and ret10<=-5)?1.0:(ret10>=-20 and ret10<-15)?0.7:(ret10>-5 and ret10<=-2)?0.5:(ret10>0)?0.1:0.3
+s5 = (ret5<0 and volR>1.3)?1.0:(ret5<0 and volR>1.1)?0.8:(ret5<0 and volR>0.9)?0.5:(ret5>=0 and volR>1.2)?0.6:0.2
+score = math.min(s1*0.20+s2*0.15+s3*0.20+s4*0.20+s5*0.15 + (obvDiv?0.10:0.0), 1.0)
+
+stopStruct = low10 * 0.995
+stopATR    = close - 2.0 * atrVal
+stopL      = math.min(stopStruct, stopATR)
+riskA      = close - stopL
+rToMA50    = riskA > 0 ? (ma50 - close) / riskA : 0.0
+rToH60     = riskA > 0 ? (high60 - close) / riskA : 0.0
+ma50Ok     = ma50 > close and rToMA50 >= MIN_R
+h60Ok      = high60 > close and rToH60 >= MIN_R
+hasTarget  = ma50Ok or h60Ok
+target     = hasTarget ? (ma50Ok and h60Ok ? math.min(ma50, high60) : (ma50Ok ? ma50 : high60)) : na
+rVal       = hasTarget and riskA > 0 ? (target - close) / riskA : 0.0
+riskPctVal = (close - stopL) / close * 100
+stopTooWide = riskPctVal > 15
+sharesE1   = math.min(riskA > 0 ? math.floor(riskUSD / riskA) : 0, close > 0 ? math.floor(acctUSD * MAX_POSITION_PCT / 100 / close) : 0)
+
+basic   = bull and isRange and score >= 0.55 and hasTarget and not stopTooWide and sharesE1 >= 1
+strong  = basic and rsi2 < 10 and rVal >= 3.0
+premium = strong and obvDiv
+tier    = premium ? 3 : strong ? 2 : basic ? 1 : 0
+
+// ============================================================
+// 引擎二:趨勢跟蹤(V6.4.2 trend_score / trend_plan)
+// ============================================================
+tsA   = adxVal >= 40 ? 1.0 : adxVal >= 30 ? 0.85 : adxVal >= 25 ? 0.6 : 0.0
+tsMA  = na(ma20) or na(ma50) ? 0.3 : (not na(ma200) and close > ma20 and ma20 > ma50 and ma50 > ma200) ? 1.0 : (close > ma20 and ma20 > ma50) ? 0.8 : close > ma20 ? 0.5 : 0.1
+dist60 = (high60 - close) / close * 100
+tsPH  = dist60 <= 1 ? 1.0 : dist60 <= 3 ? 0.85 : dist60 <= 5 ? 0.6 : dist60 <= 10 ? 0.35 : 0.1
+tsV   = volR > 1.2 ? 1.0 : volR > 1.0 ? 0.7 : 0.4
+breakout = high >= high20
+tScore = math.min(tsA*0.25 + tsMA*0.25 + tsPH*0.25 + tsV*0.15 + (breakout ? 0.10 : 0.0), 1.0)
+stopTR  = close - 3.0 * atrVal
+riskTR  = (close - stopTR) / close * 100
+sharesE2 = math.min(close - stopTR > 0 ? math.floor(riskUSD / (close - stopTR)) : 0, close > 0 ? math.floor(acctUSD * MAX_POSITION_PCT / 100 / close) : 0)
+e2Base  = bull and trendUp and tScore >= 0.65 and riskTR <= 12 and sharesE2 >= 1
+e2Trade = e2Base and breakout          // 交易路徑(回測驗證)
+e2Shadow = e2Base and not breakout     // 舊掃描器路徑(只記錄)
+
+// ============================================================
+// 背景 + 線
+// ============================================================
+bgcolor(not bull ? color.new(color.red, 92) : e2Trade ? color.new(color.fuchsia, 85) : premium ? color.new(color.yellow, 78) : strong ? color.new(color.green, 84) : basic ? color.new(color.blue, 88) : na)
+plot(tier > 0 ? stopL : na,  "引擎一止蝕", color.new(color.red, 20),   style=plot.style_linebr, linewidth=2)
+plot(tier > 0 ? target : na, "引擎一止盈", color.new(color.green, 20), style=plot.style_linebr, linewidth=2)
+plot(e2Trade ? stopTR : na, "引擎二初始止損", color.new(color.fuchsia, 10), style=plot.style_linebr, linewidth=2)
+
+riskPct = (close - stopL) / close * 100
+rewPct  = (target - close) / close * 100
+
+if premium and not premium[1]
+    label.new(bar_index, low, "⭐頂級(引擎一)\n評分:"+str.tostring(score,"#.##")+" R:"+str.tostring(rVal,"#.##")+"\n倉位1%(唔加大)", color=color.yellow, textcolor=color.black, style=label.style_label_up, size=size.large)
+if strong and not premium and not (strong[1] and not premium[1])
+    label.new(bar_index, low, "💪強(引擎一)\n評分:"+str.tostring(score,"#.##")+" R:"+str.tostring(rVal,"#.##")+"\n倉位1%", color=color.green, textcolor=color.white, style=label.style_label_up, size=size.normal)
+if basic and not strong and not (basic[1] and not strong[1])
+    label.new(bar_index, low, "🔵普通(引擎一)\n評分:"+str.tostring(score,"#.##")+" R:"+str.tostring(rVal,"#.##")+"\n倉位1%", color=color.blue, textcolor=color.white, style=label.style_label_up, size=size.small)
+if e2Trade and not e2Trade[1]
+    label.new(bar_index, low, "🚀引擎二(交易路徑)\n評分:"+str.tostring(tScore,"#.##")+" 突破20日高\n止損 $"+str.tostring(stopTR,"#.##")+" (-"+str.tostring(riskTR,"#.#")+"%)", color=color.fuchsia, textcolor=color.white, style=label.style_label_up, size=size.normal)
+if e2Shadow and not e2Shadow[1]
+    label.new(bar_index, low, "引擎二·冇突破\n只記錄,唔交易", color=color.new(color.gray, 30), textcolor=color.white, style=label.style_label_up, size=size.tiny)
+
+// 選填:引擎二移動止損(由入場日開始;先檢查後更新嘅次序喺圖表上只係顯示,唔會落單)
+var float trailStop = na
+var float trailHigh = na
+useTrail = entryT > timestamp("2001-01-01")
+if useTrail and time >= entryT
+    if na(trailStop)
+        trailStop := close - 3.0 * atrVal
+        trailHigh := high
+    else
+        trailHigh := math.max(trailHigh, high)
+        trailStop := math.max(trailStop, trailHigh - 3.0 * atrVal)
+plot(useTrail and time >= entryT ? trailStop : na, "引擎二移動止損", color.new(color.orange, 0), style=plot.style_linebr, linewidth=2)
+
+// Data Window(對照 golden_v66.csv 用:滑鼠指住任何一條 bar 就睇到)
+plot(score,               "G_E1評分",      display=display.data_window)
+plot(rVal,                "G_E1_R值",      display=display.data_window)
+plot(riskPctVal,          "G_E1止蝕%",     display=display.data_window)
+plot(tier,                "G_E1級別(0-3)", display=display.data_window)
+plot(tScore,              "G_E2評分",      display=display.data_window)
+plot(breakout ? 1 : 0,    "G_E2突破(1/0)", display=display.data_window)
+plot(riskTR,              "G_E2止損%",     display=display.data_window)
+plot(e2Trade ? 1 : 0,     "G_E2交易路徑",  display=display.data_window)
+plot(adxVal,              "G_ADX",         display=display.data_window)
+
+// ============================================================
+// 面板
+// ============================================================
+var table t = table.new(position.top_right, 2, 16, bgcolor=color.new(color.black, 15), border_width=1)
+if barstate.islast
+    e1Txt = tier==3 ? "⭐頂級" : tier==2 ? "💪強" : tier==1 ? "🔵普通" : "無"
+    e2Txt = e2Trade ? "🚀交易路徑" : e2Shadow ? "冇突破·只記錄" : "無"
+    pathTxt = not bull ? "熊市停手" : (tier > 0 or e2Trade) ? "交易路徑有訊號" : e2Shadow ? "只有舊掃描器訊號" : "無訊號"
+    t.cell(0, 0, "Swing V6.6.0", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
+    t.cell(1, 0, "倉位一律1%", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
+    t.cell(0, 1, "結論", text_color=color.white, text_size=size.small)
+    t.cell(1, 1, pathTxt, text_color=(tier > 0 or e2Trade) ? color.lime : color.gray, text_size=size.normal)
+    t.cell(0, 2, "環境", text_color=color.white, text_size=size.small)
+    t.cell(1, 2, bull ? "牛市" : "熊市", text_color=bull ? color.lime : color.red, text_size=size.small)
+    t.cell(0, 3, "ADX / 路由", text_color=color.white, text_size=size.small)
+    t.cell(1, 3, str.tostring(adxVal, "#.#") + (isRange ? " 橫盤→引擎一" : trendUp ? " 升勢→引擎二" : " 向下"), text_color=color.white, text_size=size.small)
+    t.cell(0, 4, "引擎一級別", text_color=color.white, text_size=size.small)
+    t.cell(1, 4, e1Txt, text_color=tier > 0 ? color.lime : color.gray, text_size=size.small)
+    t.cell(0, 5, "引擎一評分 / R", text_color=color.white, text_size=size.small)
+    t.cell(1, 5, str.tostring(score, "#.###") + " / " + str.tostring(rVal, "#.##") + "R", text_color=color.white, text_size=size.small)
+    t.cell(0, 6, "引擎一止蝕", text_color=color.white, text_size=size.small)
+    t.cell(1, 6, "$" + str.tostring(stopL, "#.##") + " (-" + str.tostring(riskPctVal, "#.#") + "%)", text_color=stopTooWide ? color.red : color.white, text_size=size.small)
+    t.cell(0, 7, "引擎一股數", text_color=color.white, text_size=size.small)
+    t.cell(1, 7, sharesE1 >= 1 ? str.tostring(sharesE1) + "股" : "買唔起", text_color=sharesE1 >= 1 ? color.aqua : color.red, text_size=size.small)
+    t.cell(0, 8, "RSI2 / OBV背離", text_color=color.white, text_size=size.small)
+    t.cell(1, 8, str.tostring(rsi2, "#.#") + " / " + (obvDiv ? "有" : "無"), text_color=color.white, text_size=size.small)
+    t.cell(0, 9, "引擎二", text_color=color.white, text_size=size.small)
+    t.cell(1, 9, e2Txt, text_color=e2Trade ? color.fuchsia : color.gray, text_size=size.small)
+    t.cell(0, 10, "引擎二評分", text_color=color.white, text_size=size.small)
+    t.cell(1, 10, str.tostring(tScore, "#.###"), text_color=tScore >= 0.65 ? color.lime : color.gray, text_size=size.small)
+    t.cell(0, 11, "突破20日高", text_color=color.white, text_size=size.small)
+    t.cell(1, 11, breakout ? "✅" : "❌", text_color=breakout ? color.lime : color.red, text_size=size.small)
+    t.cell(0, 12, "引擎二止損", text_color=color.white, text_size=size.small)
+    t.cell(1, 12, "$" + str.tostring(stopTR, "#.##") + " (-" + str.tostring(riskTR, "#.#") + "%)", text_color=riskTR > 12 ? color.red : color.white, text_size=size.small)
+    t.cell(0, 13, "引擎二股數", text_color=color.white, text_size=size.small)
+    t.cell(1, 13, sharesE2 >= 1 ? str.tostring(sharesE2) + "股" : "買唔起", text_color=sharesE2 >= 1 ? color.aqua : color.red, text_size=size.small)
+    t.cell(0, 14, "投機股?", text_color=color.white, text_size=size.small)
+    t.cell(1, 14, isSpec ? "⚠️係" : "否", text_color=isSpec ? color.orange : color.gray, text_size=size.small)
+    t.cell(0, 15, "財報", text_color=color.white, text_size=size.small)
+    t.cell(1, 15, "手動查 >5 日", text_color=color.orange, text_size=size.small)
+
+// 警報
+alertcondition(e2Trade and not e2Trade[1], "🚀引擎二(交易路徑)", "引擎二突破訊號(交易路徑)")
+alertcondition(premium and not premium[1], "⭐引擎一頂級", "引擎一頂級訊號")
+alertcondition(strong and not strong[1], "💪引擎一強", "引擎一強訊號")
+alertcondition(basic and not basic[1], "🔵引擎一普通", "引擎一普通訊號(交易路徑,倉位1%)")
