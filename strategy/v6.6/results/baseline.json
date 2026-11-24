@@ -1,0 +1,36 @@
+{
+ "window": [
+  "2022-11-30",
+  "2026-11-23"
+ ],
+ "results": {
+  "bt": {
+   "trades": 135,
+   "hash": "3044c31236e877f0",
+   "EV_net%": 0.8061,
+   "CAGR%": 2.2056,
+   "pnl$": 116.32
+  },
+  "scan": {
+   "trades": 96,
+   "hash": "22a6705839cd0add",
+   "EV_net%": 0.508,
+   "CAGR%": 0.8149,
+   "pnl$": 42.1
+  },
+  "per_trade_bt": {
+   "trades": 1087,
+   "hash": "4555f0151f59867a",
+   "EV_net%": 0.3954,
+   "CAGR%": null,
+   "pnl$": null
+  },
+  "per_trade_scan": {
+   "trades": 631,
+   "hash": "228c6a3ba475cc46",
+   "EV_net%": 0.9171,
+   "CAGR%": null,
+   "pnl$": null
+  }
+ }
+}

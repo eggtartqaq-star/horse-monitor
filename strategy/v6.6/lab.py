@@ -504,7 +504,7 @@ def periods(first, last, is_end):
     return {"ALL": (first, last), "IS": (first, is_end), "OOS": (is_end + pd.Timedelta(days=1), last)}
 
 
-def run_ab(sig, data, first, last, is_end, out):
+def run_ab(sig, data, first, last, is_end, out, path="all"):
     exps = [
         AS_TESTED,
         replace(AS_TESTED, name="as_tested+成本10bp", broker="webull0"),
@@ -518,6 +518,9 @@ def run_ab(sig, data, first, last, is_end, out):
         replace(AS_TRADED, name="M2 量度:壓力成本US$1/邊", broker="min1"),
         replace(AS_TRADED, name="M4 量度:冇名義上限(整數股)", notional_cap=False),
     ]
+    if path != "all":
+        want_scan = path == "scan"
+        exps = [c for c in exps if (not c.e2_breakout_gate) == want_scan]
     rows = []
     for cfg in exps:
         for per, (s, e) in periods(first, last, is_end).items():
@@ -576,12 +579,12 @@ def run_sens(sig, first, last, is_end, out):
     print(piv.round(3).to_string())
 
 
-def run_caps(sig, first, last, is_end, out):
+def run_caps(sig, first, last, is_end, out, path="all"):
     """量度:名義上限 × 同時持倉數 嘅取捨。★ 呢個係風控參數,唔係訊號參數 —— 改唔改由 Owner + CRO 決定。"""
     orig = R.MAX_POSITION_PCT
     rows = []
     try:
-        for base, tag in ((AS_TRADED, "bt"), (SCANNER, "scan")):
+        for base, tag in [(b_, t_) for b_, t_ in ((AS_TRADED, "bt"), (SCANNER, "scan")) if path in ("all", t_)]:
           for cap in (10, 15, 20, 30, 1e9):
             for slots in (2, 3):
                 R.MAX_POSITION_PCT = cap
@@ -600,12 +603,49 @@ def run_caps(sig, first, last, is_end, out):
     print(res.pivot_table(index="cfg", columns="per", values=["CAGR%", "maxDD%", "EV_net%", "trades"]).round(2).to_string())
 
 
+def trade_hash(tr) -> str:
+    """交易清單指紋:代號/引擎/日期/價(6位小數)。任何一筆交易變咗,指紋就變。"""
+    import hashlib
+    if tr is None or len(tr) == 0:
+        return "empty"
+    cols = ["ticker", "engine", "sig_date", "entry_date", "exit_date", "entry", "exit", "reason"]
+    t = tr[cols].copy()
+    for c in ("entry", "exit"):
+        t[c] = t[c].astype(float).round(6)
+    for c in ("sig_date", "entry_date", "exit_date"):
+        t[c] = pd.to_datetime(t[c]).dt.strftime("%Y-%m-%d")
+    t = t.sort_values(cols).reset_index(drop=True)
+    return hashlib.sha256(t.to_csv(index=False).encode()).hexdigest()[:16]
+
+
+def run_baseline(sig, first, last, out):
+    """回歸基準:兩條路徑 as_traded 全期。results/baseline.json 係「冇改到規則」嘅證據。"""
+    import json
+    res = {}
+    for cfg, key in ((AS_TRADED, "bt"), (SCANNER, "scan"), (PER_TRADE, "per_trade_bt"),
+                     (replace(PER_TRADE, e2_breakout_gate=False, e1_strong_only=True), "per_trade_scan")):
+        tr, eq, _ = simulate(sig, cfg, first, last)
+        r = summarize(tr, eq)
+        res[key] = {"trades": int(r["trades"]), "hash": trade_hash(tr),
+                    "EV_net%": round(float(r["EV_net%"]), 4),
+                    "CAGR%": None if eq is None else round(float(r["CAGR%"]), 4),
+                    "pnl$": None if eq is None else round(float(r["pnl$"]), 2)}
+        print(f"  {key:15} {res[key]}")
+    path = os.path.join(out, "baseline.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"window": [str(first.date()), str(last.date())], "results": res}, f, ensure_ascii=False, indent=1)
+    print(f"已寫入 {path}")
+    return res
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", choices=["csv", "yf"], default="csv")
     ap.add_argument("--data", default=os.path.join(HERE, "data"))
     ap.add_argument("--is_end", default="2024-12-31")
-    ap.add_argument("--mode", choices=["ab", "sens", "caps"], default="ab")
+    ap.add_argument("--mode", choices=["ab", "sens", "caps", "baseline"], default="ab")
+    ap.add_argument("--path", choices=["all", "bt", "scan"], default="all",
+                    help="ab/caps 只跑一條路徑(預設兩條都跑)")
     ap.add_argument("--out", default=os.path.join(HERE, "results"))
     a = ap.parse_args()
     pd.set_option("display.width", 250); pd.set_option("display.max_columns", 30)
@@ -623,11 +663,13 @@ def main():
     print(f"可交易期: {first.date()} → {last.date()}(SPY MA200 有效之後)  樣本內至 {is_end.date()}")
     os.makedirs(a.out, exist_ok=True)
     if a.mode == "ab":
-        run_ab(sig, data, first, last, is_end, a.out)
+        run_ab(sig, data, first, last, is_end, a.out, a.path)
+    elif a.mode == "baseline":
+        run_baseline(sig, first, last, a.out)
     elif a.mode == "sens":
         run_sens(sig, first, last, is_end, a.out)
     else:
-        run_caps(sig, first, last, is_end, a.out)
+        run_caps(sig, first, last, is_end, a.out, a.path)
 
 
 if __name__ == "__main__":

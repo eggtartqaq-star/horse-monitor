@@ -174,7 +174,10 @@ def classify(row):
 
 
 def trend_entry_ok(row):
-    """引擎二入場前置條件(scan 同 bt 一致):ADX≥25、DI+>DI−、今日高 ≥ 20日高。"""
+    """引擎二入場前置條件 —— 回測版(run_trend_backtest / oos_validation / momentum_pit):
+    ADX≥25、DI+>DI−、今日高 ≥ 20日高(手冊第三節條件3)。
+    ★ 更正(Tom F-3):V6.4.2 嘅 run_scan() 同 daily_strong_signals.py **冇**最後一個突破條件。
+      以前呢度寫「scan 同 bt 一致」係錯嘅。"""
     return (pd.notna(row["ADX"]) and row["ADX"] >= 25
             and pd.notna(row["DI_PLUS"]) and pd.notna(row["DI_MINUS"])
             and row["DI_PLUS"] > row["DI_MINUS"]
@@ -202,3 +205,47 @@ def position_plan(entry, stop, account_hkd=ACCOUNT_HKD, usd_hkd=USD_HKD,
     else:
         sh = min(int(risk_budget // per_share_risk), int(max_notional // entry))
     return sh, sh * entry
+
+
+# ============================================================
+# 以下兩個函數由 V6.4.2 原檔逐行搬過嚟,只改咗「點樣攞財報日」(由參數傳入,方便離線測試)
+# ============================================================
+def classify_mr_tier(row, score, plan, days_er):
+    """daily_strong_signals.classify_mr_tier:'PREMIUM'/'STRONG'/'BASIC'/None。
+    原版喺函數入面 call get_days_to_earnings(ticker);呢度由 days_er 參數傳入(None = 查唔到)。"""
+    if plan is None or plan.get("target") is None or plan.get("r") is None:
+        return None
+    r = plan["r"]
+    rsi2 = row.get("RSI2")
+    obv_div = bool(row.get("OBV_Div", False))
+    if not (score >= 0.55 and r >= MIN_R):
+        return None
+    cond_rsi2 = pd.notna(rsi2) and rsi2 < 10
+    cond_r3 = r >= 3.0
+    is_strong = cond_rsi2 and cond_r3
+    if not is_strong:
+        return "BASIC"
+    cond_er = days_er is not None and abs(days_er) > 5
+    if obv_div and cond_er:
+        return "PREMIUM"
+    return "STRONG"
+
+
+def position_plan_ccy(entry, stop, currency="USD", account_hkd=ACCOUNT_HKD, usd_hkd=USD_HKD,
+                      risk_pct=RISK_PCT, max_position_pct=MAX_POSITION_PCT):
+    """dual_engine_v6_4.position_plan 原版(含 V6.4.2 港股貨幣修正 D-05)。回傳 (股數, 投入金額)。"""
+    per_share_risk = entry - stop
+    if per_share_risk <= 0 or entry <= 0:
+        return 0, 0
+    risk_hkd = account_hkd * risk_pct / 100
+    if currency == "HKD":
+        risk_budget = risk_hkd
+        account_val = account_hkd
+    else:
+        risk_budget = risk_hkd / usd_hkd
+        account_val = account_hkd / usd_hkd
+    shares_by_risk = int(risk_budget // per_share_risk)
+    max_notional = account_val * max_position_pct / 100
+    shares_by_notional = int(max_notional // entry)
+    shares = min(shares_by_risk, shares_by_notional)
+    return shares, round(shares * entry, 0)
