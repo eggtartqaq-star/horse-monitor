@@ -76,6 +76,23 @@ def main():
         check("每筆股數 ≥ 1 且名義值 ≤ US$128.21", ((tr["shares"] >= 1) & (tr["shares"] * tr["entry"] <= 10000 / 7.8 * 0.10 + 1e-6)).all())
         net_lt_gross = (tr["net_pct"] <= tr["gross_pct"] + 1e-9).all()
         check("扣成本後回報 ≤ 毛回報", net_lt_gross)
+    # Tom 2026-11-24:買唔起(股數<1)嘅訊號唔可以霸住倉位(真掃描器收市已經唔列出)
+    idx2 = pd.bdate_range("2024-01-01", periods=4)
+    def mini(px, kind_e2):
+        e = ({"kind": "TR", "score": 0.9, "close": px, "atr": px * 0.02, "brk": True} if kind_e2 else
+             {"kind": "MR", "score": 0.9, "close": px, "atr": px * 0.02, "low10": px * 0.95,
+              "ma50": px * 1.3, "h60": px * 1.4, "plan": {"stop": round(px * 0.945, 2), "target": round(px * 1.3, 2)}})
+        f = pd.DataFrame({"Open": px, "High": px * 1.001, "Low": px * 0.999, "Close": px, "Volume": 1e6,
+                          "ATR": px * 0.02, "mom_126": 0.0}, index=idx2)
+        f["sig"] = [e, {"route": "SKIP"}, {"route": "SKIP"}, {"route": "SKIP"}]
+        return f
+    trs, _, rj = lab.simulate({"EXP": mini(500.0, True), "CHP": mini(50.0, False)},
+                              lab.replace(lab.AS_TRADED, max_positions=1))
+    check("買唔起嘅 E2 訊號唔霸倉位 → 買得起嘅 E1 成交",
+          len(trs) == 1 and trs["ticker"].iloc[0] == "CHP" and rj["scan_0_shares"] == 1)
+    check("拆股表包括 MSTR 2024-08-08(10拆1)", lab.raw_factor("MSTR", pd.Timestamp("2024-08-07")) == 10
+          and lab.raw_factor("MSTR", pd.Timestamp("2024-08-08")) == 1)
+
     trf, _, _ = lab.simulate(sig, lab.AS_TESTED)
     check("as_tested(零成本):淨 = 毛", len(trf) == 0 or np.allclose(trf["net_pct"], trf["gross_pct"]))
 

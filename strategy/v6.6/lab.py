@@ -50,6 +50,7 @@ SPLITS = {
     "WMT":  [("2024-02-26", 3)],
     "NVDA": [("2024-06-10", 10)],
     "AVGO": [("2024-07-15", 10)],
+    "MSTR": [("2024-08-08", 10)],   # Tom 2026-11-24:原表漏咗(10拆1,2024-08-08 起按拆後價交易)
     "NFLX": [("2025-11-17", 10)],
 }
 
@@ -101,6 +102,10 @@ class Cfg:
     deviation_pct: Optional[float] = 1.0   # 開市偏離訊號價 >1% → 重計,唔達標放棄
     month_breaker_pct: Optional[float] = 10.0
     e1_gap_fill: bool = True         # 引擎一跳空穿止蝕以開市價出(V6.4回測冇)
+    # Tom F-3:你每日用嘅 daily_strong_signals.py 同回測唔一樣 ——
+    #   引擎二冇「今日高 ≥ 20日高」突破門檻;引擎一只列 💪強/⭐頂級(RSI2<10 且 R≥3)。
+    e2_breakout_gate: bool = True    # True = 回測版;False = 掃描器版
+    e1_strong_only: bool = False     # False = 回測版;True = 掃描器版
     mom_filter: Optional[str] = None  # "top_half" = 引擎二只做126日動能前50%
     account_hkd: float = 10000.0
     # 敏感度測試用(預設 = V6.4.2 鎖死值)
@@ -134,10 +139,16 @@ def build_signal(e, cfg):
             plan = None if not v else {"stop": round(stop, 2), "target": round(min(v)[0], 2)}
         if not plan:
             return None
+        if cfg.e1_strong_only:
+            r = (plan["target"] - e["close"]) / (e["close"] - plan["stop"])
+            if not (pd.notna(e.get("rsi2")) and e["rsi2"] < 10 and r >= 3.0):
+                return None
         if (e["close"] - plan["stop"]) / e["close"] * 100 > R.MAX_STOP_PCT_MR:
             return None
         return {"engine": "E1", "score": e["score"], "stop": plan["stop"], "target": plan["target"]}
     if k == "TR":
+        if cfg.e2_breakout_gate and not e.get("brk", False):
+            return None
         if e["score"] < cfg.trend_score_min or pd.isna(e["atr"]) or e["atr"] <= 0:
             return None
         stop = e["close"] - cfg.trail_mult * e["atr"]
@@ -150,6 +161,8 @@ def build_signal(e, cfg):
 AS_TESTED = Cfg("as_tested(V6.4回測假設)", fill="close", broker="free", max_positions=None,
                 notional_cap=False, deviation_pct=None, month_breaker_pct=None, e1_gap_fill=False)
 AS_TRADED = Cfg("as_traded(你實際執行)")
+SCANNER = Cfg("scanner_path(daily_strong_signals 真正會出嘅訊號)",
+              e2_breakout_gate=False, e1_strong_only=True)
 
 
 # ============================================================
@@ -204,9 +217,10 @@ def precompute(data):
                     plan = R.mr_plan(row)          # 用 V6.4.2 真函數(MIN_R=2)
                     e.update(kind="MR", score=R.mr_score(row), close=row["Close"],
                              atr=row["ATR"], low10=row["low_10d"], ma50=row["MA50"],
-                             h60=row["high_60d"], plan=plan)
-                elif route == "TREND_UP" and R.trend_entry_ok(row):
-                    e.update(kind="TR", score=R.trend_score(row), close=row["Close"], atr=row["ATR"])
+                             h60=row["high_60d"], plan=plan, rsi2=row["RSI2"])
+                elif route == "TREND_UP":
+                    e.update(kind="TR", score=R.trend_score(row), close=row["Close"], atr=row["ATR"],
+                             brk=bool(R.trend_entry_ok(row)))
             recs.append(e)
         df["sig"] = recs
         sig[tk] = df
@@ -233,7 +247,7 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
     open_pos, pending, trades, equity = [], [], [], []
     busy_until = {}                     # 同一隻股出場當日唔再入
     rejects = {"no_slot": 0, "notional_or_risk_0_shares": 0, "deviation": 0,
-               "breaker": 0, "mom_filter": 0}
+               "breaker": 0, "mom_filter": 0, "scan_0_shares": 0}
     realized = 0.0
     month_pnl, cur_month = 0.0, None
     unlimited = cfg.max_positions is None
@@ -376,6 +390,16 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
         for _, _, tk, s, atr_sig, k in cands:
             if breaker:
                 rejects["breaker"] += 1; continue
+            if not unlimited:
+                # Tom 2026-11-24:真掃描器(dual_engine_v6_4.run_scan / daily_strong_signals)
+                # 喺收市用訊號價計 position_plan,股數 <1 嘅訊號根本唔會列出 ——
+                # 所以佢唔應該霸住一個倉位,令下一個買得起嘅候選被擋。
+                f0 = raw_factor(tk, d)
+                sh0, _ = R.position_plan(s["sig_close"] * f0, s["stop"] * f0, account_hkd=cfg.account_hkd,
+                                         max_position_pct=R.MAX_POSITION_PCT if cfg.notional_cap else 1e9,
+                                         fractional=cfg.fractional)
+                if sh0 <= 0:
+                    rejects["scan_0_shares"] += 1; continue
             if not unlimited and len(open_pos) + len(pending) >= cfg.max_positions:
                 rejects["no_slot"] += 1; continue
             if cfg.fill == "close":
@@ -394,9 +418,10 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
                     mtm += (arr[p.tk]["Close"].iloc[k] - p.entry) * p.shares
             equity.append((d, acct_usd + realized + mtm, len(open_pos)))
 
-    # 數據結束:強制平倉
+    # 數據結束:強制平倉(Tom 2026-11-24:用期間最後一日,唔係成份數據最後一日)
     for p in open_pos:
         df = arr[p.tk]
+        df = df[df.index <= dates[-1]] if dates else df
         close_trade(p, df.index[-1], df["Close"].iloc[-1], "數據結束")
     tr = pd.DataFrame(trades)
     eq = pd.DataFrame(equity, columns=["date", "equity", "n_pos"]).set_index("date") if equity else None
@@ -484,7 +509,9 @@ def run_ab(sig, data, first, last, is_end, out):
         AS_TESTED,
         replace(AS_TESTED, name="as_tested+成本10bp", broker="webull0"),
         PER_TRADE,
+        replace(PER_TRADE, name="per_trade 掃描器版", e2_breakout_gate=False, e1_strong_only=True),
         AS_TRADED,
+        SCANNER,
         replace(AS_TRADED, name="A1 只做引擎二", engines=("E2",)),
         replace(AS_TRADED, name="A2 引擎二動能前50%", mom_filter="top_half"),
         replace(AS_TRADED, name="M1 量度:碎股", fractional=True),
@@ -554,10 +581,11 @@ def run_caps(sig, first, last, is_end, out):
     orig = R.MAX_POSITION_PCT
     rows = []
     try:
-        for cap in (10, 15, 20, 30, 1e9):
+        for base, tag in ((AS_TRADED, "bt"), (SCANNER, "scan")):
+          for cap in (10, 15, 20, 30, 1e9):
             for slots in (2, 3):
                 R.MAX_POSITION_PCT = cap
-                cfg = replace(AS_TRADED, name=f"cap{int(cap) if cap < 1e6 else 'none'}_slots{slots}",
+                cfg = replace(base, name=f"{tag}_cap{int(cap) if cap < 1e6 else 'none'}_slots{slots}",
                               max_positions=slots)
                 for per, (s, e) in periods(first, last, is_end).items():
                     tr, eq, rej = simulate(sig, cfg, s, e)
