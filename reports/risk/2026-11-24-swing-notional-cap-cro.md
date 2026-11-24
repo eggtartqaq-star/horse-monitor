@@ -314,3 +314,27 @@ Scale as in July: 0 = do not deploy, 100 = clear at full size; higher is safer. 
 | G. No cap | **VETO** (10) | Notional up to 364.7% is leverage; worst trade −6.57% |
 
 Committee input: **74 / 100 for B′, conditional.** Gates V-0 (Tom) and V-1 (costs) must clear before real capital, and the pre-registered stop conditions S1–S4 are binding on Zac and 死潘狗 for any tickets.
+
+---
+
+<!-- provenance-stamp -->
+## Provenance and coverage
+
+*Appended by `scripts/stamp_provenance.py`. Records how this report was
+produced, so its weight can be judged later without reconstructing the
+conditions from memory.*
+
+**Sourcing — direct page fetch was blocked.** In this environment every
+direct page fetch returned HTTP 403 under an organisation egress policy
+(verified against the proxy status endpoint; hosts denied included
+`hkexnews.hk`, `finance.yahoo.com`, `stooq.com`, `alphavantage.co`,
+`data.nasdaq.com`). **No primary filing or factsheet was opened.** Figures
+here are search-engine extractions of those documents plus secondary
+reporting. Treat structural claims (share structure, fee schedules, exact
+line items) as lower confidence than headline financials, which were
+generally cross-checked against two or more independent sources.
+
+**Standing rules.** No figure in this report may be invented; every number
+should carry a source and a date, and estimates should be marked as
+estimates (CLAUDE.md rule 5). Research and decision support only — not
+financial advice, and no agent of this firm places orders.
