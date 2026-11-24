@@ -497,7 +497,7 @@ def bench(data, start, end):
 
 
 PER_TRADE = replace(AS_TESTED, name="per_trade(聽日開市+10bp)", fill="next_open",
-                    deviation_pct=1.0, broker="webull0")
+                    deviation_pct=1.0, broker="webull0", e1_gap_fill=True)   # CRO:跳空穿止蝕以開市價出
 
 
 def periods(first, last, is_end):

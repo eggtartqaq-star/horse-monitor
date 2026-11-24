@@ -2,13 +2,33 @@
 
 **Author:** John, Chief Risk Officer (Dept 6) · **Date:** 2026-11-24
 **Subject:** Whether to keep, raise or replace the 10% single-position notional cap adopted in V6.4.2
-**Status:** DRAFT — being filled section by section
+**Status:** FINAL, 2026-11-24. Built on the corrected lab (Tom F-1/F-2) and both signal paths (F-3).
 
 ---
 
 ## 0. Verdict
 
-_(pending)_
+**APPROVED WITH CONDITIONS: a narrow amendment, path-dependent. Flat 15% is not recommended (not vetoed). 20% and "no cap" are VETOED.**
+
+1. **The 10% cap stays operative today.** It stays on the scanner path until that path's rules are validated.
+2. **Construct B′ is cleared on risk.** B′ means 10% for every position, except that an Engine 2 entry may be **one share up to 15%** (US$192.31) if that share's risk to the stop is ≤ 1% (US$12.82).
+   - Its worst trade is essentially the same as 10% flat (−1.09 / −1.06% per signal; ≤ −1.17% in any perturbed run).
+   - Its median max DD is better than 10% on the scanner path (−3.40 vs −4.84).
+3. **B′ becomes the recommended limit** if the Owner aligns his live scanner to the validated (backtest-path) rules, **and** costs, code tests and parity are verified (§5 gates G-1, V-1 to V-3).
+4. **On the scanner path B′ fails the both-halves test I pre-registered** (base IS 1.51% vs 2.29%; it wins only 64% of perturbed runs), so there the recommendation lapses to keep 10%.
+5. **Flat 15% is not recommended, but not vetoed.** On the scanner path it beats 10% in 93% of IS runs with better drawdown. Its edge over B′ comes from sizing Engine 1 and multi-share positions above 10%, which is where every loss above 1.25% of the account occurred (worst −2.19% / −1.67%).
+6. **20% is vetoed** (the Owner may override). The worst observed same-night pair would cost 9.6% against the −10% monthly breaker, and it exceeds the firm's 15% at-market ceiling. Its strong scanner-path returns are recorded and do not move a tail-based veto.
+
+**The CEO report's cap numbers (0.96% CAGR; "10% worst in both halves") are superseded** by Tom's F-1 and F-2. Corrected 10% = 2.21% CAGR (backtest path) / 0.81% (scanner path). A higher cap wins OOS on both paths in every run. IS is a coin flip on the backtest path and favours flat caps on the scanner path. The evidence rests mainly on 2025–26.
+
+**How the scanner/backtest divergence (Tom F-3) affects this ruling:** it decides it.
+- The two paths rank the options differently, and the scanner path, the one the Owner trades, runs on rules no one has validated (E2 OOS +0.17–0.20% per trade; −0.82% CAGR OOS at the current limit).
+- A risk limit must be set for a defined system. **Escalated to the CEO and the Owner:** decide which rules are live (G-1) before any limit is changed.
+- On the backtest path: B′. On the scanner path: 10% until its rules are validated, then re-decide on forward data under the test pre-registered in §5.
+
+**On my July recommendation:** the mechanism was right. Gap loss scales with notional, and the multi-share 10% wall still earns its place. The calibration was wrong: a firm-book 10% was applied to single-share positions in a 2-slot account and shipped before the portfolio test (CL-5) I had specified to price it. See §6.
+
+**Risk score: 74 / 100 for B′** (conditional, backtest path), **70 for keeping 10%**, 50 for flat 15%, veto for 20% and no cap.
 
 ## 1. Inputs read
 
@@ -18,35 +38,47 @@ _(pending)_
 | `strategy/v6.6/README.md`, `lab.py`, `rules_v642.py::position_plan`, `results/caps.csv`, `results/summary.csv` | Read. **`--mode caps` re-run independently into scratchpad: all 30 rows of `caps.csv` reproduced to the second decimal.** |
 | My July ruling `reports/risk/2026-07-30-v64-risk-review.md` (C-1, §4.3, CL-3, CL-5, CL-8, escalation item 2) | Re-read |
 | `strategy/v6.5/risk_config.py` (`RiskLimits`) and `config/risk-limits.yaml` | Read |
-| Tom's parallel review `reports/quant/2026-11-24-v66-lab-tom-review.md` | **File exists but every section reads PENDING as of this ruling.** It neither confirms nor refutes the cap numbers. See §5, condition V-0. |
+| Tom's review `reports/quant/2026-11-24-v66-lab-tom-review.md` | Read in final form. **It refutes the CEO's cap numbers**: F-1 slot bug (HIGH), F-2 MSTR split, F-3 scanner ≠ backtest (HIGH), F-5 CEO report must be reissued. The ruling below is built on the corrected lab. |
+| CEO correction (coordinator message, 2026-11-24) and `bt/results2/caps.csv` | Corrected cap table on both signal paths; A, D and F re-run by me with identical output |
 | Webull read-only daily bars, 38 names + SPY (scratchpad `bt/data/`, split-adjusted; un-adjusted for sizing via lab `SPLITS`) | Used for all new measurements below |
-| Mo Peter (VaR) / Mario (stress) | Not available in this session. I computed an **interim** historical 1-day VaR from the simulated equity curves (§8), labelled as such; formal runs commissioned in §5. |
+| Mo Peter (VaR) / Mario (stress) | Not available in this session. I computed an **interim** historical 1-day VaR on the pre-correction simulation (§8), indicative only; formal runs commissioned in §5. |
 
-**My own measurement tooling (scratchpad, not shipped):** an instrumented copy of `lab.py` that additionally records each trade's initial stop and whether the exit was a gap through the stop (`px < stop`), plus a hook that lets `position_plan` see the engine. No signal rule, fill rule or cost assumption was changed. Scripts are in `/tmp/claude-0/-home-user-horse-monitor/54e44e17-7784-559b-835e-2acd5a9d7af1/scratchpad/cro/` (`lab_cro.py`, `gaps.py`, `pertrade_gf.py`, `constructs.py`).
+**My own measurement tooling (scratchpad, not shipped):** an instrumented copy of `lab.py` that additionally records each trade's initial stop and whether the exit was a gap through the stop (`px < stop`), plus a hook that lets `position_plan` see the engine. No signal rule, fill rule or cost assumption was changed. Scripts are in `/tmp/claude-0/-home-user-horse-monitor/54e44e17-7784-559b-835e-2acd5a9d7af1/scratchpad/cro/` (`lab_f3.py` = corrected lab plus instrumentation, `f3.py`, `f3b.py`, `pertrade_tom.py`, `perturb.py`, `gaps.py`; the earlier `lab_cro*.py` runs are pre-correction and superseded).
 
-Window: tradeable 2022-11-30 → 2026-11-23, IS to 2024-12-31, OOS after (as in the CEO report). Account US$1,282.05 (HK$10,000 / 7.8). All "derived" numbers below are my arithmetic on these sources.
+Window: tradeable 2022-11-30 → 2026-11-23, IS to 2024-12-31, OOS after. **All return and drawdown figures in §2, §4, §5 and §8 are from the corrected lab** unless marked pre-correction. Account US$1,282.05 (HK$10,000 / 7.8). All "derived" numbers below are my arithmetic on these sources.
 
-## 2. What the CEO's backtest shows about the cap
+## 2. What the corrected backtest shows about the cap
 
-**What the 10% cap actually does.** Under `position_plan()`, shares = min(⌊US$12.82 / per-share risk⌋, ⌊US$128.21 / price⌋). The 1% risk rule alone already caps notional at 1% ÷ stop% (derived: 20% at a 5% stop, 12.5% at 8%, 8.3% at 12%). So the 10% cap does two different jobs, and only one of them is the job I wrote it for in July:
+> **The CEO report's cap numbers (§4–§5: 10% = 0.96% CAGR, "10% is worst in both halves") are superseded.** Tom found and fixed:
+> - **F-1:** an unaffordable signal held a slot overnight, blocking an affordable candidate.
+> - **F-2:** the MSTR 10:1 split (2024-08-08) was missing from `SPLITS`.
+> - **F-3:** the Owner's daily scanner (`daily_strong_signals.py`) does **not** emit what the backtest tests. E2 has no 20-day breakout gate, and E1 is strong-tier only (RSI2 < 10 and R ≥ 3). The CEO confirmed this in the source.
+>
+> Everything below uses the corrected lab (`strategy/v6.6/lab.py` working copy, with Tom's fixes) and reports **both** signal paths. I re-ran A, D and F myself on both paths and reproduce the CEO's corrected figures (scratchpad `bt/results2/caps.csv`) exactly.
 
-1. **Multi-share, tight-stop positions** (the July C-1 case: $200 stock, 2% stop → 3 shares = 46.8%). Here the cap prevents a "1% risk" position from becoming a large gap exposure. **This job is valid, and the data below confirms it (§3).**
-2. **Single-share positions in US$128–256 names with stops under ~10%.** Here one share already exceeds US$128.21, so the cap blocks the trade outright. The 1% rule would have allowed 1 share at 10–20% notional. **This is the job that starves Engine 2.** `caps.csv` records 611 zero-share rejections at 10% vs 381 at 15% (ALL period).
+**What the 10% cap does.** Under `position_plan()`, shares = min(⌊US$12.82 / per-share risk⌋, ⌊US$128.21 / price⌋). The 1% risk rule alone already caps notional at 1% ÷ stop% (derived: 20% at a 5% stop, 12.5% at 8%, 8.3% at 12%). So the cap does two different jobs:
 
-**Reproduced cap table (2 slots, `as_traded`, ALL / IS / OOS):**
+1. **Multi-share, tight-stop positions** (the July C-1 case). The cap stops a "1% risk" position from becoming a large gap exposure. **This job is valid, and §3 confirms it.**
+2. **Single-share positions in US$128–256 names.** One share already exceeds US$128.21, so the trade is blocked outright, although the 1% rule would allow 1 share at 10–20% notional. This is the **share-price barrier**.
 
-| Cap | CAGR % | Max DD % | Net EV/trade % | Trades |
-|---|---|---|---|---|
-| 10% (V6.4.2) | 0.96 / 0.94 / 0.51 | −3.89 / −3.89 / −2.82 | 0.40 / 0.62 / −0.03 | 88 |
-| 15% | 4.28 / 3.40 / 5.27 | −4.66 / −4.66 / −3.08 | 1.67 / 1.40 / 1.90 | 89 |
-| 20% | 4.24 / 3.06 / 5.45 | −5.65 / −5.65 / −3.51 | 1.38 / 0.89 / 1.78 | 96 |
-| none | 3.55 / 2.25 / 4.75 | −6.46 / −6.46 / −3.53 | 1.29 / 0.84 / 1.61 | 96 |
+**Corrected cap table, 2 slots, CAGR % ALL / IS / OOS · max DD % (ALL):**
 
-Source: `strategy/v6.6/results/caps.csv`, re-run by me with identical output.
+| Cap | Backtest path (validated rules) | Scanner path (what the Owner trades) |
+|---|---|---|
+| 10% (V6.4.2) | 2.21 / 1.82 / 2.62 · −4.49 | 0.81 / 2.29 / **−0.82** · −4.87 |
+| 15% | 3.90 / 2.07 / 4.88 · −5.86 | 3.16 / 2.43 / 4.08 · −3.45 |
+| 20% | 5.68 / **1.01** / 10.00 · −6.61 | 4.51 / 4.04 / 5.49 · −3.77 |
+| none | 2.49 / **−0.01** / 6.01 · −8.89 | 4.16 / 4.36 / 4.28 · −3.77 |
 
-**Path robustness (new).** Because 2 slots make the result depend on which signals arrive first, I re-ran from 12 monthly start offsets (2022-11-30 → 2023-11-01, each running to 2026-11-23). **10% was the worst setting at every one of the 12 starts:** mean CAGR 1.57% (range 0.96–2.17) vs 15% 5.04% (4.28–5.82) and 20% 5.07% (4.24–6.10). Mean max DD was −2.96% (10%), −3.05% (15%), −4.33% (20%). These runs share most of their data, so they show **path robustness, not statistical independence**. **These figures use the lab as committed. §4.1 shows that one plausible change to how slots are reserved roughly doubles the 10% result and reorders the alternatives. Read this table as an upper bound on the cap's cost.**
+Source: `bt/results2/caps.csv` (CEO, corrected lab); A, D and F re-run by me with identical output.
 
-**Price-band check, corrected for splits (new).** The CEO's band table uses split-adjusted prices, which he flags. Re-cut on **actual** entry prices (lab `raw_factor`), E2 gross EV per trade at next-open fills:
+**What survives the corrections:**
+
+- **OOS (2025–26): 10% is the worst setting on both paths.** Tom: 15% beats 10% in 100% of 48 perturbed backtest-path runs.
+- **IS (Dec 2022–2024) is a coin flip on the backtest path.** 15% beats 10% in 58% of Tom's runs; 20% and none lose to 10%. On the scanner path at base, 15% and 20% beat 10% (§4 tests whether that is robust).
+- **The cap's measured cost comes mainly from one regime**, 2025–26, when the mega-cap trend names a US$128 cap excludes did very well (Tom §5). That is one regime, not a structural law.
+
+**Price-band check on actual prices** (lab `raw_factor`, with MSTR fixed). Backtest path, E2 gross EV per trade:
 
 | E2 entry price (actual) | IS | OOS |
 |---|---|---|
@@ -54,7 +86,11 @@ Source: `strategy/v6.6/results/caps.csv`, re-run by me with identical output.
 | US$128–250 | +2.07% (59) | +3.10% (33) |
 | > US$250 | +1.90% (93) | +0.55% (75) |
 
-The correction makes the IS contrast **stronger** (the CEO's +1.49% IS for ≤$128 included pre-split NVDA and AVGO at their adjusted prices). Bootstrap of the ($128–250) minus (≤$128) difference, E2 per-trade SD 8.9pp: IS +1.82pp, 90% CI [−0.65, +4.35], P(≤0) = 0.12. OOS +3.02pp, [−1.14, +7.27], P(≤0) = 0.12. Pooled +2.24pp, [+0.04, +4.45]. This is an iid bootstrap on time-clustered trades, so the true CIs are wider. **The direction is the same in both halves, but neither half is significant on its own.** I do not rely on the band effect for this ruling (see §5).
+Bootstrap of the (US$128–250) minus (≤ US$128) difference (E2 per-trade SD 8.9pp):
+- IS: +1.82pp, 90% CI [−0.65, +4.35], P(≤ 0) = 0.12.
+- OOS: +3.02pp, [−1.14, +7.27], P(≤ 0) = 0.12.
+
+Same direction in both halves; neither half significant. The bootstrap is iid on time-clustered trades, so the true CIs are wider. **I do not rely on the band effect.**
 
 ## 3. Gap-through-stop risk quantified (10% / 15% / 20% / alternatives)
 
@@ -75,26 +111,27 @@ Worst single gaps: **MSTR −27.4% (2024-08-05)**, INTC −25.8% (2026-10-30), I
 
 ### 3.2 What gaps actually cost: every signal, sized at each cap
 
-I sized all 1,087 `per_trade` signals (next-open fills, every signal taken) at each cap, using actual share prices and **gap-through-stop fills for both engines**. The lab's `PER_TRADE` config inherits `e1_gap_fill=False`, so I switched it on; see §7. Loss is gross P&L as a % of the US$1,282 account.
+I sized every `per_trade` signal (next-open fills, every signal taken) at each cap. Sizing uses actual share prices (MSTR split included) and **gap-through-stop fills for both engines**. The lab's `PER_TRADE` inherits `e1_gap_fill=False`, so I switched it on; see §7. Loss is gross P&L as a % of the US$1,282 account.
 
-| Sizing rule | Trades sizable | Mean / max notional | Worst trade, % of account | Trades losing > 1.25% / > 1.5% / > 2% | Gap exits |
-|---|---|---|---|---|---|
-| 10% flat | 339 | 7.9% / 10.0% | **−1.17%** | 0 / 0 / 0 | 38 |
-| **B′: 10% + 1-share ≤ 15%, E2 only** (§4) | 380 | n/a / 15.0% | **−1.17%** | 0 / 0 / 0 | n/a |
-| B: 10% + 1-share ≤ 15%, both engines | 468 | n/a / 15.0% | −1.26% | 1 / 0 / 0 | n/a |
-| 15% flat | 468 | 11.0% / 15.0% | **−2.19%** | 5 / 2 / 1 | 44 |
-| 20% flat | 526 | 13.2% / 20.0% | **−2.19%** | 5 / 3 / 1 | 46 |
-| no cap | 577 | 18.3% / **364.7%** | **−6.57%** | 6 / 4 / 2 | 50 |
+| Sizing rule | Backtest path (1,087 signals): worst trade · count < −1.25% / < −2% | Scanner path (631 signals): worst trade · count < −1.25% / < −2% |
+|---|---|---|
+| A. 10% flat | **−1.09%** · 0 / 0 | **−1.06%** · 0 / 0 |
+| **B′. 10% + 1 share ≤ 15%, E2 only** (§4) | **−1.09%** · 0 / 0 | **−1.06%** · 0 / 0 |
+| B. 10% + 1 share ≤ 15%, both engines | −1.26% · 1 / 0 | n/a |
+| D. 15% flat | −2.19% · 5 / 1 | −1.67% · 2 / 0 |
+| F. 20% flat | −2.19% · 5 / 1 | −1.67% · 3 / 0 (CAT E1, 1 share = 18.6%: −1.50%) |
+| G. no cap | −6.57% · 6 / 2 (max notional 364.7%) | −3.81% · 4 / 1 (CRM E1, −3.81%) |
 
-**Where the tail comes from.** Every trade that lost more than 1.25% of the account at 15% or 20% was an **Engine 1, multi-share, tight-stop** position held through a gap:
+**Where the tail comes from, on both paths.** Every trade that lost more than 1.25% of the account was an **Engine 1 position sized above 10%** and held through a gap:
 
-- NKE E1, entered 2024-06-17 with a 2.19% stop, 2 shares = 13.5% notional, held into the −18.1% gap on 2024-06-28: **−2.19%** of the account (−1.09% at a 10% cap).
-- NKE E1 2025-03-25: −1.67%.
+- NKE E1, entered 2024-06-17 with a 2.19% stop, 2 shares = 13.5%, held into the −18.1% gap of 2024-06-28: −2.19% (−1.09% at a 10% cap).
+- NKE E1 2025-03-25, 2 shares: −1.67%.
 - PFE E1 2023-12-04, 8 shares: −1.41%.
+- TSLA E1 2024-04-16, 1 share: −1.26%.
 
-**Engine 2 gap exits never cost more than about 1.02% of the account at any cap.** Its trailing stop has usually ratcheted above entry by the time a gap arrives.
+**Engine 2 losses never exceeded about 1.02% of the account at any cap, on either path.** Its trailing stop has usually ratcheted up by the time a gap arrives.
 
-**"No cap" is vetoed outright.** A 364.7% notional is leverage, a breach of `leverage: none`, and it is exactly the July C-1 failure.
+**"No cap" is vetoed outright.** A notional of 364.7% is leverage, a breach of `leverage: none`, and it is exactly the July C-1 failure.
 
 ### 3.3 Stress arithmetic beyond the sample
 
@@ -107,8 +144,7 @@ The sample is survivor-selected (F-01: a 2026 universe) and contains no 2022-sty
 | Single name, −40% (assumption) | 4.0% | 6.0% / 4.0% | 6.0% | 8.0% |
 | Both slots, −40% each (assumption) | 8.0% | 12.0% max | 12.0% | **16.0%** |
 | Owner's monthly breaker −10%: tripped in one night by the observed pair? | No | No | No | No (9.6%, near it) |
-| Interim 1-day VaR95 / VaR99 on invested days (original sim) | 0.31 / 0.65% | 0.36 / 0.68% (B) | 0.41 / 0.73% | 0.51 / 0.92% |
-| Worst simulated day / worst month (original sim, approx.) | −0.96 / −1.42% | −1.12 / −1.52% (B) | −1.20 / −1.54% | −1.61 / −1.94% |
+| Interim 1-day VaR95 / VaR99 on invested days (**pre-correction** sim, indicative only) | 0.31 / 0.65% | 0.36 / 0.68% (B) | 0.41 / 0.73% | 0.51 / 0.92% |
 
 At 20%, the worst **observed** correlated pair costs 9.6% of the account in one night, effectively the whole monthly breaker. At 15% (either form), that pair costs 7.2%, which leaves headroom. 15% is also the firm's own `max_single_position_drifted: 0.15` in `config/risk-limits.yaml`, the most the firm tolerates in one name at market. I anchor on that.
 
@@ -122,119 +158,123 @@ These are reasons to keep a ceiling. They are not reasons for that ceiling to be
 
 ## 4. Ruling on the construct
 
-### 4.1 A simulator mechanic changes the ranking
+### 4.1 Constructs tested on the corrected lab, both signal paths (2 slots, `as_traded`; only sizing changes)
 
-In `lab.py`, a signal reserves one of the 2 slots at the close (`pending.append`), and is only sized at the next open. If it then gets 0 shares (unaffordable under the cap), the slot was **wasted for that day**, and an affordable candidate ranked below it was rejected as `no_slot`. A human reading a scanner that already prints `買唔起` would skip to the next name. Under a tight cap this mechanic penalises the 10% setting the most: 611 zero-share rejects at 10% vs 381 at 15% (`caps.csv`).
-
-I therefore ran every construct twice:
-
-- **"original":** the lab as committed.
-- **"prescreen":** unaffordable signals are skipped at scan time and do not take a slot.
-
-Neither is certified. Tom reports he has found two defects that "move (c) and (d)", meaning the as-traded result and the cap table, and has not yet published them (§1). This may or may not be one of them.
-
-| Construct (2 slots, `as_traded`) | Original: CAGR ALL / IS / OOS · DD | Prescreen: CAGR ALL / IS / OOS · DD | Prescreen 12-start mean CAGR · mean DD |
-|---|---|---|---|
-| A. 10% flat (V6.4.2) | 0.96 / 0.94 / 0.51 · −3.89 | 2.04 / 1.49 / 2.62 · −4.49 | 2.77 · −5.86 |
-| D. 15% flat | 4.28 / 3.40 / 5.27 · −4.66 | 3.15 / **0.51** / 4.88 · −6.02 | 4.46 · −5.26 |
-| F. 20% flat | 4.24 / 3.06 / 5.45 · −5.65 | 5.46 / **0.51** / 10.00 · −7.55 | 7.25 · −5.26 |
-| B. 10% + 1 share ≤ 15%, both engines | 4.12 / 2.85 / 5.39 · −3.82 | 2.60 / **−0.13** / 4.59 · −6.10 | 3.92 · −4.96 |
-| C. E2 15% / E1 10% | 4.35 / 3.09 / 5.66 · −4.33 | 3.52 / 1.83 / 5.39 · −4.66 | 4.57 · −3.46 |
-| **B′. 10% + 1 share ≤ 15%, Engine 2 only** | **4.19 / 3.02 / 5.38 · −3.82** | **3.28 / 1.52 / 5.09 · −4.45** | **4.30 · −4.34** |
-
-Sources: rows A, D, F (original) match `caps.csv`. Everything else is my runs (scratchpad `constructs*.csv`, `starts*.csv`).
-
-**What is robust across both mechanics:**
-
-1. Flat 10% has the **lowest full-period CAGR at every one of the 24 start-date runs** (12 per variant).
-2. The **ranking among the alternatives is not robust.** 15% flat and B lose to 10% in-sample under prescreen. 20% goes from roughly equal to 15% to best. Choosing among the alternatives on CAGR would be fitting noise.
-3. **The 10% cap does not reliably buy drawdown protection.** Under prescreen it has the deepest mean drawdown of all constructs (−5.86%).
-
-### 4.2 Tail risk by construct (every-signal sample, §3.2 method)
-
-| Construct | Worst trade, % of account | Exception tier: trades / mean gross / worst |
+| Construct | Backtest path: CAGR ALL / IS / OOS · DD · worst trade | Scanner path: CAGR ALL / IS / OOS · DD · worst trade |
 |---|---|---|
-| A. 10% flat | −1.17 | n/a |
-| **B′. E2-only 1-share ≤ 15%** | **−1.17** | 41 / +1.86% / −0.78% |
-| B. 1-share ≤ 15%, both engines | −1.26 | 129 / +1.48% / −1.26% (TSLA E1) |
-| D / F. 15% / 20% flat | −2.19 | n/a (NKE E1, 2 shares) |
+| A. 10% flat (V6.4.2) | 2.21 / 1.82 / 2.62 · −4.49 · −1.04 | 0.81 / 2.29 / −0.82 · −4.87 · −1.04 |
+| **B′. 10% + 1 share ≤ 15%, E2 only** | **3.66 / 2.31 / 5.09 · −4.20 · −0.84** | **1.74 / 1.51 / 2.02 · −3.35 · −0.87** |
+| B. 10% + 1 share ≤ 15%, both engines | 3.28 / 1.28 / 4.59 · −4.96 · −0.95 | 2.48 / 1.51 / 3.63 · −3.43 · −0.87 |
+| C. E2 15% / E1 10% | 3.90 / 2.61 / 5.39 · −4.39 · −0.84 | 2.18 / 2.12 / 2.31 · −3.55 · −0.87 |
+| D. 15% flat | 3.90 / 2.07 / 4.88 · −5.86 · −1.69 | 3.16 / 2.43 / 4.08 · −3.45 · −1.69 |
+| F. 20% flat | 5.68 / 1.01 / 10.00 · −6.61 · −1.69 | 4.51 / 4.04 / 5.49 · −3.77 · −1.69 |
+
+Sources: my runs on an instrumented copy of the corrected `lab.py` (scratchpad `cro/lab_f3.py`, `f3_base.csv`, `f3b_base.csv`). A, D and F match the CEO's corrected `caps.csv` exactly.
+
+**Path perturbations** (base, 7 start shifts, 20 random within-engine picks: 28 runs each; Tom's method). "P(beats A)" is the share of runs in which the construct's CAGR exceeds 10% flat.
+
+| Perturbation stat (28 runs each) | Backtest path | Scanner path |
+|---|---|---|
+| P(B′ beats A), IS / OOS / ALL | **0.61** (median +0.50pp) / 1.00 / 1.00 | **0.64** (median +0.89pp) / 1.00 / 1.00 |
+| P(C beats A), IS | 0.68 | 0.64 |
+| P(D 15% beats A), IS | 0.64 | **0.93** (median +1.69pp) |
+| P(F 20% beats A), IS | n/a (Tom: 20% < 10% at base) | **1.00** (median +1.83pp) |
+| Median ALL max DD: A / B′ / C / D / F | −4.60 / −5.08 / −5.34 / −6.09 / n/a | −4.84 / **−3.40** / −3.67 / −3.62 / −3.99 |
+| Worst ALL max DD over runs: A / B′ / D / F | −5.38 / −9.34 / −9.53 / n/a | −6.70 / −6.24 / −6.50 / −5.76 |
+| Worst single trade in any run: A / B′ / D / F | −1.11 / −1.11 / −1.69 / n/a | −1.07 / −1.17 / −1.69 / −1.69 |
+
+Sources: scratchpad `perturb.csv` (backtest path, my run) and `f3_perturb.csv` (scanner path). Tom's independent 48-run backtest-path test: 15% beats 10% in IS in 58% of runs.
+
+**Note on the −9.34% backtest-path worst case for B′.** It is a 14-month run of small losses in 2023, each at most about −1% of the account and mostly in positions at or under 10%, with a worst month of −1.76%. It is path dispersion from different trade selection, not gap risk.
+
+### 4.2 Reading the two paths together
+
+1. **OOS (2025–26): every alternative beats 10% on both paths, in every run.** This is robust, but it is one regime.
+2. **IS on the backtest path: nothing robustly beats 10%** (Tom 58%; my runs 61–68%).
+3. **IS on the scanner path: the flat caps win robustly** (D 93%, F 100%). The constructs that keep E1 and multi-share positions at 10% win only 64% of the time. **The robust part of the scanner-path IS gain therefore comes from sizing E1 and multi-share positions above 10%**, which is where every loss above 1.25% of the account occurred (§3.2). It buys return with the gap-tail engine. B′'s base-path IS loss (1.51 vs 2.29) sits in the unlucky third of its own distribution, but it is a loss.
+4. **Drawdown does not favour 10%.** On the scanner path every alternative has a better median max DD than 10%, B′ best (−3.40 vs −4.84). The 10% cap buys a smaller worst single trade (−1.07 vs −1.17 for B′, −1.69 for D and F), not a smaller drawdown.
+5. **The divergence is the larger finding.** On the path the Owner actually trades, the current limit simulates −0.82% CAGR OOS, and Tom puts that path's E2 OOS edge at +0.17–0.20% per trade. Tuning a risk limit to flatter an unvalidated signal set would be backwards.
 
 ### 4.3 Ruling
 
-**Recommendation to the Owner: adopt B′. VETO flat 20% and no cap. Do not recommend flat 15% or B.**
+> **The single-position limit may be amended, for the backtest-path system only, to: "No position may exceed 10% of the account (US$128.21), with one exception. An Engine 2 entry may be exactly one share of up to 15% of the account (US$192.31), provided that one share's risk to the initial stop is no more than 1% of the account (US$12.82). Engine 1 stays at 10% with no exception."** (construct B′)
 
-> **Single-position limit (swing account): no position may exceed 10% of the account (US$128.21), with one exception. An Engine 2 entry may be exactly one share of up to 15% of the account (US$192.31), provided that one share's risk to the initial stop is no more than 1% of the account (US$12.82). Engine 1 stays at 10% with no exception.**
+| Option | Ruling | Reason |
+|---|---|---|
+| A. Keep 10% flat | **Operative today, and remains so on the scanner path** | B′ fails my pre-registered V-0 on the scanner path (§5); a limit should not be tuned to an unvalidated signal set |
+| **B′. E2 single share ≤ 15%** | **APPROVED WITH CONDITIONS**, on the backtest path after gates G-1 and V-1 to V-3 | Tail-neutral on both paths; passes V-0 on the backtest path; removes only the share-price barrier |
+| C. E2 15% / E1 10% | Not recommended; not vetoed | Lets multi-share E2 positions reach 15% at 3×ATR stops in low-ATR names, the 6–9 ATR gappers of §3.1. Loses IS on the scanner path. |
+| B. 1 share ≤ 15%, both engines | Not recommended | Adds an E1 tail (TSLA −1.26%); loses IS on both paths |
+| D. 15% flat | **Not recommended; not vetoed** | Breaches no survival limit, and on the scanner path it beats 10% in 93% of IS runs with a better median DD. But that extra return over B′ comes from E1 and multi-share positions above 10%, which raises the worst trade to −2.19% / −1.67%; on the backtest path its IS gain is a coin flip. The Owner may choose it knowingly; I do not recommend it. |
+| F. 20% flat | **VETOED** (the Owner may override) | Worst observed same-night pair costs 9.6% against the −10% breaker, and a −40% pair (assumption) costs 16%. Above the firm's 15% `max_single_position_drifted`. IS 1.01 vs 1.82 on the backtest path. **On the scanner path its return case is the strongest of all (100% of IS runs) and its DD is fine. I record that plainly. It does not move a veto grounded in the one-night tail**, and I would reconsider only on forward data plus Mario's stress. |
+| G. No cap | **VETOED** | Notional up to 364.7% is leverage |
+| Per-name gap-risk cap | Hypothesis | Needs a look-ahead-free per-name gap estimate and its own validation |
 
-Why:
+**Honest disclosure.** B′ was shaped after seeing this data, so its backtest numbers are in-sample to this decision. What protects the Owner is that it does not depend on the return evidence being right: it adds no measured risk. Where it does fail the return test (the scanner path), I have applied my own pre-registered rule against it.
 
-1. **It is risk-neutral on every measure I can compute.** On the every-signal sample its worst trade equals 10% flat (−1.17%). Max DD is equal or slightly better in both simulator variants (−3.82 vs −3.89; −4.45 vs −4.49). Its 12-start mean DD under prescreen is better (−4.34 vs −5.86). The worst-case single-name gap from entry is 15% × 27.4% = **4.1%** of the account (derived; worst observed gap). The worst same-night pair is ≤ 7.2%, inside the −10% monthly breaker.
-2. **It removes exactly the defect that was measured, and nothing else.** That defect is the whole-share price barrier that blocks Engine 2 in US$128–192 names. Multi-share positions stay at 10% in both engines. E1 keeps the 10% wall entirely, because E1 is where the gap tail lives (NKE, PFE, TSLA in §3.2) and E1 has no robust per-trade edge (OOS −0.16% with gap fills, §7).
-3. **It is the only construct that is not worse than 10% in either half under either mechanic** (IS: 3.02 vs 0.94 and 1.52 vs 1.49; OOS: 5.38 vs 0.51 and 5.09 vs 2.62). The prescreen IS result is a **tie**, not a win, and I record it as such.
-4. **Flat 15% (D) and B are not recommended.** Under prescreen both lose to 10% in-sample, and both let E1 positions reach 15%, which doubles the worst-trade tail (D: −2.19%).
-5. **C (E2 15% / E1 10%)** is acceptable on returns. I prefer B′ because C lets **multi-share** E2 positions reach 15% at tight 3×ATR stops in low-ATR names, exactly the names that gapped 6–9 ATRs (§3.1). I would not veto C, but I record it as the riskier option.
-6. **20% flat is vetoed.** The worst observed correlated pair would cost 9.6% in one night against a −10% monthly breaker, and it exceeds the firm's 15% drifted ceiling. Its prescreen IS (0.51) is worse than 10%.
-7. **No cap is vetoed.** Notional reaches 364.7%, which is leverage, and the worst trade was −6.57%.
-8. **A per-name gap-risk cap** (notional ≤ Y ÷ that name's stressed gap) is theoretically better but needs a look-ahead-free gap estimate and its own validation. It is recorded as a hypothesis for a larger account.
-
-**Honest disclosure.** B′ was shaped after seeing this data: the E2-only restriction came from the NKE/PFE finding. Its backtest numbers are therefore in-sample to this decision, and only the forward protocol in §5 can validate it. What protects the Owner is that the change does not depend on the return evidence being right. It is justified by not adding measurable risk while removing a mechanical defect that keeps the account from running the strategy it is supposed to be testing.
-
-**Firm limits are not changed.** `config/risk-limits.yaml` governs the firm book and stays as written. The swing-account limit is the **Owner's personal limit** (July escalation item 2). This ruling is a proposal to him. `MAX_POSITION_PCT` in his V6.4.2 code, and `RiskLimits` in `strategy/v6.5/risk_config.py`, change only if he adopts it.
+**Firm limits are not changed.** `config/risk-limits.yaml` governs the firm book and stays as written. The swing-account limit is the **Owner's personal limit**. This is a proposal to him; `MAX_POSITION_PCT` in his V6.4.2 code, and `RiskLimits` in `strategy/v6.5/risk_config.py`, change only if he adopts it.
 
 ## 5. Is the evidence strong enough? Validation protocol
 
-**Short answer:** the evidence is **not** strong enough to claim the system earns more at a higher cap. It **is** strong enough to make the narrow B′ change, because B′ does not depend on the return evidence. Its risk is measured on 1,087 signals plus arithmetic, and it is indistinguishable from the status quo. The status quo is shown to stop the account from running the strategy it is meant to test.
+**Short answer:** the evidence is **not** strong enough to claim the system earns more at a higher cap. Tom's own words: the direction "rests on 2025–26 alone". The evidence **is** strong enough on one point: the **E2 single-share exception (B′) adds no measurable tail on either signal path.** So B′ may be adopted on the narrow ground that it removes a share-price barrier without adding risk, but only where it also passes the Owner's own both-halves rule.
 
 | Question | Evidence | Strength |
 |---|---|---|
-| Does a higher cap earn more? | ~88–136 portfolio trades per run; E2 per-trade SD 8.9pp; ranking flips with a single simulator mechanic (§4.1); Tom reports unpublished defects in the cap table | **Weak.** Do not quote 4%/yr as an expectation. |
-| Is the 10% cap the worst setting? | 24 of 24 start-date runs across two mechanics | **Moderate**, on one survivor-selected 4-year window |
-| Does the $128–250 band carry E2's edge? | Same direction in both halves; neither half significant (P ≈ 0.12) | **Weak to moderate.** Not relied on. |
-| Does B′ add tail risk? | Worst trade −1.17% vs −1.17%; exception tier worst −0.78% over 41 signals; DD equal or better; worst-case gap arithmetic 4.1% single / 7.2% pair | **Adequate for a bounded change.** Survivorship and the absence of a bear market are covered by the arithmetic in §3.3, not by the sample. |
-| Does flat 15% or 20% add tail risk? | Worst trade doubles to −2.19% (E1 multi-share); 20% pair stress 9.6% | **Yes.** Not approved. |
+| Does a higher cap earn more? | ~45–67 trades per half; E2 per-trade SD 8.9pp. IS is a coin flip on the backtest path (Tom 58%), but robust for flat 15–20% on the scanner path (93–100%). The two paths disagree, and the scanner path's rules are themselves unvalidated. | **Weak to moderate, and path-dependent.** Do not quote any higher-cap CAGR as an expectation. |
+| Is 10% the worst setting OOS? | Both paths; 100% of Tom's runs | **Moderate, one regime (2025–26)** |
+| Does B′ add tail risk? | Worst trade equal to 10% on both paths (−1.09 / −1.06 per-signal); max DD better at base on both paths (−4.20 vs −4.49; −3.35 vs −4.87); exception-tier worst −0.78% | **Adequate for a bounded change** |
+| Do flat 15% or 20% add tail risk? | Worst trade −2.19% (bt) / −1.67% (scan), every case an E1 position above 10%; 20% pair stress 9.6% | **Yes.** 15%: not recommended (not vetoed). 20%: vetoed. |
 
-### Validation protocol (binding if the Owner adopts B′; pre-registered today, 2026-11-24)
+### V-0, the test I pre-registered for Tom's corrections, applied honestly
 
-**Before anything goes live (gates):**
+Earlier in this ruling I pre-registered that B′ stands only if, on Tom's corrected simulator, (a) its worst trade and max DD are no worse than 10% flat by more than 0.5pp, and (b) its CAGR is not below 10% flat in either half.
 
-- **V-0. Tom's corrections.** When Tom publishes his corrected cap tables, B′ stands only if, under his corrected simulator, **both** of these hold:
-  - (a) B′'s worst trade and max DD are no worse than 10% flat by more than 0.5 percentage points of the account;
-  - (b) B′'s CAGR is not below 10% flat in either IS or OOS.
+| Path | (a) tail and DD | (b) both halves at base | Perturbations: P(B′ beats A in IS) | V-0 |
+|---|---|---|---|---|
+| Backtest (validated rules) | Pass at base (−0.84 vs −1.04; −4.20 vs −4.49). Disclosed: the perturbed worst path is −9.34 vs −5.38, from small-loss dispersion, not gaps (§4.1) | Pass (IS 2.31 vs 1.82; OOS 5.09 vs 2.62) | 0.61 (median +0.50pp) | **PASS** (IS robustness marginal) |
+| Scanner (what the Owner trades) | Pass (−0.87 vs −1.04; −3.35 vs −4.87) | **FAIL** (IS 1.51 vs 2.29) | 0.64 (median +0.89pp) | **FAIL** on the test as written → recommendation lapses to **keep 10%** on this path |
 
-  If either fails, **this recommendation lapses automatically to "keep 10% flat"**, and it is not re-argued on the same 2022–2026 data. If Tom's defects are in the signal rules rather than the simulator, everything is re-run first.
+**I will not move the goalposts.** On the scanner path B′ fails the test I set before seeing those numbers, so on that path the operative limit stays 10%. The perturbation result (64%, median +0.89pp) says the base path was somewhat unlucky. It is recorded, but it was not the test I set, and 64% is not robust either. Per signal, B′-tier E2 trades do outperform the E2 trades that 10% can already size, in all four cells (bt IS/OOS +0.91/+4.36% vs +0.05/−1.27%; scan +1.16/+2.99% vs +0.79/0.00%; 9–40 trades per cell). The scanner-path portfolio shortfall is therefore slot allocation (B′ trades displace E1 trades), not worse trades. That is worth watching forward, but it is not a reason to override V-0.
+
+### Gates before any change reaches real capital
+
+- **G-1. Resolve the signal path (Tom F-3).** The Owner decides whether the live scanner is aligned to the validated rules (E2 breakout gate, E1 as backtested) or stays as it is. **The cap ruling follows the path:**
+  - **Aligned to the backtest path:** adopt B′ once V-1 to V-3 pass.
+  - **Scanner kept as is:** 10% flat stays. The scanner's rules must be validated on their own before any limit is tuned to them; that is a bigger issue than the cap (−0.82% OOS CAGR at the current limit). The scanner-path cap is then re-decided on **forward shadow-ledger data**, not this window. The test is pre-registered now: a construct must beat 10% flat in at least two-thirds of perturbed runs **in each half**, with a worst single trade no worse than −1.5% of the account. On today's data, B′ (64%) and C (64%) fall just short, and D and F (worst trade −1.69%) fail the tail clause.
 - **V-1. Costs (July CL-7, still open).** One real Webull contract note covering commission, platform fee, SEC/TAF and FX. If there is any fixed per-order charge, re-run `as_traded` at that fee. If net EV ≤ 0, the system does not trade at this size under any cap.
 - **V-2. Code, structurally enforced.**
-  - The construct is implemented in one function and read from one config. `assert` statements are added to the scanner's version stamp.
-  - The CEO's README snippet `assert E.MAX_POSITION_PCT == 10.0` must be **replaced**, not deleted. Otherwise it fails on a correct install or gets commented out.
+  - The construct lives in one function, reads from one config, and its `assert` is added to the scanner's version stamp. The scanner also prints which **signal path** it runs.
+  - The CEO's README snippet `assert E.MAX_POSITION_PCT == 10.0` must be **replaced**, not deleted.
   - Unit tests:
-    - $200 stock, 2% stop → BLOCK (July C-1 case).
+    - $200 stock, 2% stop → BLOCK.
     - E2 $150 stock, 7% stop → 1 share.
     - E1 $150 stock, 7% stop → BLOCK.
-    - E2 $195 stock → BLOCK (above US$192.31).
+    - E2 $195 stock → BLOCK.
     - E2 $185 stock, 7.5% stop (1-share risk $13.88 > $12.82) → BLOCK.
     - $60 stock, 5% stop → 2 shares, not 3.
-- **V-3. Parity.** `parity_check.py` passes on the Owner's PC (CEO, NOT OBTAINED 2).
+- **V-3. Parity.** `parity_check.py` passes on the Owner's PC, using Tom's tightened metric (F-6).
 
-**Forward test: a risk test, not a return test.**
+### Forward test: a risk test, not a return test
 
-- **Shadow ledger.** Every scanner signal is logged with the size under **both** A (10% flat) and B′, whether or not it is traded. This costs nothing and builds the clean forward A/B sample that the backtest cannot provide.
-- **Paper first.** If the account is still inside the July CL-8 paper phase, B′ runs in paper. Real capital follows only after V-0 to V-3.
-- **Horizon.** Review at **30 closed Engine 2 trades or 6 months, whichever is later**. This is not "20 trades side by side": the CEO's own §6.5 puts the 20-trade E2 CI at about ±3.3pp, which cannot separate two caps. The review checks risk behaviour only. **No return comparison between caps is made before 100 forward trades.**
-- **Pre-registered stop conditions.** Any one of these reverts the account to 10% flat immediately. The Owner reverts; the firm is informed; there is no re-argument inside the test.
-  - **S1.** Any exception-tier position loses more than **2.0% of the account**. That is twice its planned risk, against a backtest worst of −0.78% for the tier.
-  - **S2.** Any sizing breach: a multi-share position above 10%, an E1 position using the exception, or a share above US$192.31. This also resets the CL-8 counter.
+- **Shadow ledger, starting now on either path.** Every scanner signal is logged with its size under A (10% flat), B′ and D (15% flat), whether or not it is traded. This costs nothing and is the only clean way to get the out-of-sample A/B data that four over-examined years cannot provide.
+- **Paper first.** If the account is still in the July CL-8 paper phase, B′ runs in paper.
+- **Horizon.** Review at **30 closed E2 trades or 6 months, whichever is later**. This is not "20 trades side by side": the CEO's §6.5 puts the 20-trade E2 CI at about ±3.3pp. **No return comparison between caps before 100 forward trades.**
+- **Pre-registered stop conditions.** Any one reverts the account to 10% flat immediately; the firm is informed; there is no re-argument inside the test.
+  - **S1.** An exception-tier position loses more than **2.0% of the account**.
+  - **S2.** Any sizing breach: a multi-share position above 10%, E1 using the exception, a share above US$192.31, or a scanner running an unstamped path. This also resets the CL-8 counter.
   - **S3.** The −10% monthly breaker trips while an exception-tier position is open.
   - **S4.** V-1 shows net EV ≤ 0 at the real fee.
-- **Earnings log.** For every exception-tier position, record whether an earnings date fell inside the hold, and the gap if so. Earnings dates are absent from every backtest (CEO, NOT OBTAINED 3).
+- **Earnings log.** For every exception-tier position, record whether an earnings date fell inside the hold.
 
-**Commissioned (Dept 6), to report before real-capital adoption:**
+**Commissioned (Dept 6), before any real-capital change:**
 
-- **Mo Peter:** 1-day 95% VaR on the maximum-exposure B′ book (one 15% E2 single share plus one 10% position, and two 15% E2 single shares) against the 3% ceiling. My interim simulated figure is 0.36% VaR95 on invested days (construct B, original sim), not a substitute.
+- **Mo Peter:** 1-day 95% VaR on the maximum-exposure B′ book against the 3% ceiling.
 - **Mario:**
-  - a replay of 2024-08-05 (MSTR/COIN/NVDA gap cluster) at maximum B′ exposure;
+  - a replay of 2024-08-05 at maximum B′ exposure;
   - a −40% single-name gap (assumption);
-  - a −10% overnight index gap with both slots in the same sector.
+  - a −10% index gap with both slots in one sector.
 
-**No further raise on this data.** Raising beyond 15%, or extending the exception to E1, may only be argued on data collected after 2026-11-24. The 2022–2026 window has now been looked at too often to adjudicate a risk limit.
+**No further raise on this data.** Raising beyond 15%, or letting E1 exceed 10%, may only be argued on data collected after 2026-11-24.
 
 ## 6. Owning the July recommendation
 
@@ -244,7 +284,7 @@ Why:
 
 - July C-1 said that gap loss is bounded by notional, not by stop distance, and that 1%-risk sizing turns tight stops into large notionals. §3 confirms both in this firm's own data:
   - The worst gaps in ATR terms are in low-volatility names (NKE 9.4×ATR).
-  - Every trade that lost more than 1.25% of the account at a 15–20% cap was a multi-share, tight-stop position (NKE E1: 2.19% stop, −2.19% of the account at 15%, −1.09% at 10%).
+  - Every trade that lost more than 1.25% of the account at a 15–20% cap was an Engine 1 position above 10%, mostly multi-share with a tight stop (NKE E1: 2.19% stop, −2.19% of the account at 15%, −1.09% at 10%).
   - With no cap, notional reaches 364.7%. The multi-share 10% wall I recommended still earns its place, and B′ keeps it.
 
 **What I got wrong:**
@@ -256,10 +296,15 @@ Why:
 **What the backtest cannot show, and why the July cap was still defensible as an emergency control:**
 
 - In July the account had just recorded a ≥2.3x leverage breach (BAC, 2026-07-18) and two overrides in six trading days, and every guardrail was a display. The backtest assumes perfect rule execution. The July cap was partly a **behavioural** containment, and the backtest cannot price that value.
-- The Sep screenshots (CVX US$209 at about 16%; PFE 8 shares = US$229 at about 18%; CEO §6.6) suggest the cap was not even running in the scanner then. That tells against the control's effectiveness, not in favour of it.
+- The Sep screenshots (CVX US$209 at about 16%; PFE 8 shares = US$229 at about 18%; CEO §6.6) suggest the cap was not even running in the scanner then. Tom's F-3 shows the daily scanner does not emit the backtested rules at all. Both tell against the control's effectiveness, not in favour of it.
 - A 4-year, survivor-selected, bull-dominated window cannot show the tail the cap insures against. §3.3's arithmetic is my answer to that, and it is why B′ keeps a ceiling at all.
 
-**Net cost of my error (derived, original sim, so an upper bound given §4.1):** roughly US$175–185 of foregone P&L (B′, B or 15% vs 10%) over four years on a US$1,282 account, with no measurable risk reduction from the single-share part of the cap. Under the prescreen mechanic the cost is smaller (about 1.2pt CAGR, ALL). In money it is small. The larger cost is that for four months the account was validating a system in which Engine 2 was starved and Engine 1 dominated: the reverse of the per-trade picture (CEO §4). A process-validation account testing the wrong process is model risk, and in Dept 6 terms that is the real loss.
+**Net cost of my error (derived, corrected lab):**
+
+- **Backtest path:** 10% earned US$116 over four years, vs US$197 (B′) and US$211 (15% flat). That is about **US$80–95 foregone, all of it in 2025–26.** In-sample the cap cost nothing robust: Tom's runs make it a coin flip.
+- **Scanner path:** US$42 vs US$91 (B′) and US$169 (15%).
+
+In money this is small. The larger cost is model risk. For four months the account validated a system in which the share-price barrier shut E2 out of US$128–192 names. On the scanner path the live system ran at **−0.82% CAGR OOS** under my limit (corrected `caps.csv`). A process-validation account testing a distorted process is the real loss in Dept 6 terms.
 
 **Lesson for 腦大裝草 (memory):** a limit copied from another book must be re-derived for the target's slot count and lot size, and must be marked provisional until a portfolio simulation prices it.
 
@@ -268,36 +313,38 @@ Why:
 | # | Issue | CRO position |
 |---|---|---|
 | 7.1 | **`PER_TRADE` inherits `e1_gap_fill=False` from `AS_TESTED`** (`lab.py`, `PER_TRADE = replace(AS_TESTED, ...)`). E1 stop exits fill at the stop even when the open gapped through it. | With gap fills on, E1 `per_trade` net is **IS +0.23% / OOS −0.16%** (ALL +0.05%), vs the reported +0.39 / −0.03. E2 is unaffected (its gap fill is unconditional). This strengthens "E1 has no edge" and matters for risk: E1 is where the gap tail is. `as_traded` already has gap fills on. Fix: set `e1_gap_fill=True` in `PER_TRADE`. Referred to Tom. |
-| 7.2 | **Slot reservation for unaffordable signals** (§4.1). | It moves the 10% result from 0.96% to 2.04% CAGR and reorders the alternatives. The CEO's "10% is the single largest drag" holds in direction; its **size is overstated** by the committed mechanic. The report should not quote 0.96% vs 4.28% without this caveat. Referred to Tom; it may or may not be one of his two defects. |
+| 7.2 | **Slot reservation for unaffordable signals** (Tom F-1, HIGH). | Confirmed and fixed by Tom. I found the same mechanic independently. The CEO's headline figures (0.96% / +US$50, "10% worst in both halves") are artefacts of it, and **the CEO report must be reissued** (Tom F-5). This ruling uses only corrected numbers. |
+| 7.2a | **Scanner/backtest divergence** (Tom F-3, HIGH). The Owner's daily scanner has no E2 breakout gate and lists only strong-tier E1. | **This is a bigger risk issue than the cap.** The Owner trades a signal set that was never validated: Tom puts scanner-path E2 OOS at +0.17–0.20% per trade vs +0.86%, and under the current 10% limit the scanner path simulates **−0.82% CAGR OOS**. A risk limit cannot be calibrated for a system that is not defined. **Escalated** (§0): the Owner must choose which rules are live, and the scanner must print a version and path stamp. |
 | 7.3 | **Price bands on split-adjusted prices.** | Re-cut on actual prices, the direction holds and IS strengthens (§2). The CEO's caveat was adequate. |
-| 7.4 | **Costs unverified.** The M2 stress (US$1/side) gives −1.9% CAGR. | Agree this is decisive. I add one point: **the cap and costs interact.** A fixed per-order fee costs more in percentage terms on a smaller notional (derived: US$1/side is 1.56% round trip on US$128, 1.04% on US$192). The cap decision and the fee check must be read together. V-1 is a gate, not a footnote. |
+| 7.4 | **Costs unverified.** The M2 stress (US$1/side) gives −1.9% CAGR (Tom: this side number does not reproduce; −2.6% in `summary.csv`). | Agree this is decisive. I add one point: **the cap and costs interact.** A fixed per-order fee costs more in percentage terms on a smaller notional (derived: US$1/side is 1.56% round trip on US$128, 1.04% on US$192). The cap decision and the fee check must be read together. V-1 is a gate, not a footnote. |
 | 7.5 | **Earnings guardrail absent from all backtests.** | Agree, with a correction. The entry guardrail (5 days) does not protect **holds**: E1 holds 10 days and E2 up to 60, and the NKE −2.19% loss was entered 8 trading days before earnings. Live positions will cross earnings regardless. The backtest's earnings gaps are in the price data, so the gap tail is measured, not missing. Earnings log required (§5). |
 | 7.6 | **Version drift.** The Sep scans show CVX at about 16% and PFE 8 shares at about 18% of the account. | **Escalated.** If trades were placed from those scans after V6.4.2 was adopted, those are realised breaches of the Owner's own personal limit, and PFE (multi-share, about 18%) would breach B′ as well. Request: the Owner confirms whether any order was placed from the 6 Sep or 28 Sep scans. The version stamp is endorsed, with the assert updated per V-2. |
 | 7.7 | **`RiskLimits` drift.** `strategy/v6.5/risk_config.py` still says `max_open_positions = 5`; the Owner runs 2. | My own file disagrees with the live system, the same "limits arriving by accident" failure I warned about in July. If B′ is adopted, `RiskLimits` and `plan_position()` must encode B′ **and** `max_open_positions = 2`. Until then, V6.4.2 constants are the operative limits. |
 | 7.8 | **CEO README: "paper-trade both caps side by side, 20 trades."** | Inconsistent with the CEO's own §6.5. 20 trades cannot separate the caps. Replaced by the shadow ledger and risk-based stop conditions (§5). |
-| 7.9 | **"Drawdown barely moves because the 1% rule binds."** | Partly agree. Max DD in a survivor-selected bull window is the wrong measure of gap risk; the per-trade tail (§3.2) and stress arithmetic (§3.3) are the right ones. On those, flat 15–20% **does** move the tail (−2.19% vs −1.17%), and B′ does not. |
+| 7.9 | **"Drawdown barely moves because the 1% rule binds."** | Partly agree. Max DD in a survivor-selected bull window is the wrong measure of gap risk; the per-trade tail (§3.2) and stress arithmetic (§3.3) are the right ones. On those, flat 15–20% **does** move the tail (−2.19% vs −1.09% on the backtest path; −1.67% vs −1.06% on the scanner path), and B′ does not. |
 | 7.10 | **The 2-slot correlated pair.** | Not discussed by the CEO. With 2 slots, both positions can sit in one cluster (2024-08-05: MSTR and COIN both gapped about 20–27%). B′ bounds that pair at 7.2% (derived) against the −10% breaker. No change proposed. Mario is to stress it. |
 | 7.11 | **Idle-cash interest excluded from all CAGRs; universe chosen in 2026 (F-01).** | Agree with the CEO's disclosure. Neither obviously favours one cap over another, but survivorship biases the **gap tail downward**. Hence the 40% assumption row in §3.3. |
 
 ## 8. Limit-by-limit check
 
-Measured against the swing account's operative limits (V6.4.2 constants, the Owner's manual, and my July personal-limit proposals). The firm's `config/risk-limits.yaml` is shown for reference only; it governs the firm book.
+Measured against the swing account's operative limits (V6.4.2 constants, the Owner's manual, and my July personal-limit proposals). `config/risk-limits.yaml` is shown for reference; it governs the firm book. Post-change = B′. Corrected lab; "bt" = backtest path, "scan" = scanner path.
 
 | Limit | Limit value | Current (A: 10% flat) | Post-change (B′) | Pass / Fail |
 |---|---|---|---|---|
 | Single position, multi-share | 10% | ≤ 10% | ≤ 10% (unchanged) | **PASS** |
-| Single position, single share | 10% today → **15% proposed** (= firm `max_single_position_drifted` 0.15) | ≤ 10% | ≤ 15% (US$192.31), E2 only | **PASS** under the proposed limit; Owner decision |
+| Single position, single share | 10% → **15% proposed** (= firm `max_single_position_drifted`) | ≤ 10% | ≤ 15% (US$192.31), E2 only | **PASS** under the proposed limit; Owner decision |
 | Max risk per trade | 1% (US$12.82) | ≤ 1% | ≤ 1%; the exception requires 1-share risk ≤ 1% | **PASS** |
-| Concurrent positions | 2 (Owner's manual) | 2 | 2 | **PASS** |
-| Gross exposure / cash floor | cash ≥ 10% | max 20% gross, cash ≥ 80% | max 30% gross (two E2 single shares), cash ≥ 70% | **PASS** |
-| Leverage | none (cash account, CL-1) | none | none; max notional 15% | **PASS** |
-| Sector / correlated cluster (firm ref.) | 35% / 40% | ≤ 20% | ≤ 30% if both slots share a cluster | **PASS** |
-| Monthly circuit breaker | −10% | worst observed pair gap 4.8%; −40% pair (assumption) 8.0% | worst observed pair 7.2%; −40% pair (assumption) 12.0% | **PASS** on observed data; **FAILS only under a two-name 40% overnight gap**, beyond anything in the sample. Accepted, with Mario to stress it. |
-| Drawdown budget | 20% (July proposal) | sim max DD −3.89% (orig.) / −4.49% (prescreen) | −3.82% / −4.45% | **PASS** |
-| 1-day VaR95 (firm ref. 3%) | 3% | interim 0.31% | interim about 0.36% (B, a proxy for B′) | **PASS**, interim; Mo Peter to confirm |
-| Stop discipline | stop required, never moved down | unchanged | unchanged | **PASS** |
-| Max initial stop | E2 12% / E1 15% | unchanged | unchanged | **PASS** |
-| Cost gate (July CL-7) | net EV > 0 at the real fee | **UNVERIFIED** | **UNVERIFIED** | **OPEN**: gate V-1 |
+| Concurrent positions | 2 | 2 | 2 | **PASS** |
+| Gross exposure / cash floor | cash ≥ 10% | max 20% gross | max 30% gross, cash ≥ 70% | **PASS** |
+| Leverage | none (CL-1) | none | none | **PASS** |
+| Sector / correlated cluster (firm ref.) | 35% / 40% | ≤ 20% | ≤ 30% | **PASS** |
+| Monthly circuit breaker | −10% | worst observed pair gap 4.8% | worst observed pair 7.2%; −40% pair (assumption) 12.0% | **PASS** on observed data; fails only under an unobserved two-name 40% gap. Mario to stress. |
+| Drawdown budget | 20% | base DD −4.49% (bt) / −4.87% (scan); perturbed median −4.60 / −4.84, worst −5.38 / −6.70 | base −4.20 / −3.35; perturbed median −5.08 / −3.40, worst −9.34 / −6.24 | **PASS** |
+| Worst single trade | (no written limit; S1 sets 2%) | every signal −1.09% (bt) / −1.06% (scan); any perturbed portfolio run −1.11 / −1.07 | −1.09 / −1.06; −1.11 / −1.17 | **PASS**, essentially unchanged |
+| 1-day VaR95 (firm ref. 3%) | 3% | interim 0.31% (pre-correction sim) | interim about 0.36% (B, pre-correction) | **PASS**, indicative only; Mo Peter to confirm |
+| Stop discipline / max initial stop | never moved down; E2 12% / E1 15% | unchanged | unchanged | **PASS** |
+| Signal path defined and stamped | (July H-6 / CL-6 spirit) | **NO**: scanner ≠ backtest (F-3) | must be resolved (G-1) | **OPEN, escalated** |
+| Cost gate (CL-7) | net EV > 0 at the real fee | **UNVERIFIED** | **UNVERIFIED** | **OPEN**: V-1 |
 
 ## 9. Risk score input to committee
 
@@ -305,15 +352,15 @@ Scale as in July: 0 = do not deploy, 100 = clear at full size; higher is safer. 
 
 | Option | Score | Basis |
 |---|---|---|
-| A. Keep 10% flat | 72 | Safe tail, but it distorts the system under test (model risk) and does not buy drawdown protection under prescreen |
-| **B′. 10% + E2 single share ≤ 15%** | **74** (rises to about 80 once V-0, V-1 and Mo Peter/Mario are done) | Tail equal to A, removes the distortion, bounded stress arithmetic |
-| C. E2 15% / E1 10% | 62 | Allows multi-share E2 at 15% in low-ATR, gap-prone names |
-| B. 1-share ≤ 15%, both engines | 60 | E1 exception widens the tail; loses to A in-sample under prescreen |
-| D. 15% flat | 52 | Worst trade doubles (−2.19%); loses to A in-sample under prescreen |
-| F. 20% flat | **VETO** (30) | Observed pair stress 9.6% against the −10% breaker; above the firm's 15% drifted ceiling |
-| G. No cap | **VETO** (10) | Notional up to 364.7% is leverage; worst trade −6.57% |
+| A. Keep 10% flat | 70 | Smallest single-trade tail, but it does not buy drawdown protection (worst median DD of all options on the scanner path), and it keeps the share-price barrier distorting the system under test |
+| **B′. E2 single share ≤ 15%** | **74**, conditional (about 80 once G-1, V-1 to V-3 and Mo Peter/Mario are done) | Tail equal to A on both paths; DD equal or better at base; bounded stress arithmetic |
+| C. E2 15% / E1 10% | 62 | Multi-share E2 at 15% in low-ATR, gap-prone names |
+| B. 1 share ≤ 15%, both engines | 58 | E1 exception widens the tail |
+| D. 15% flat | 50 (not vetoed) | Worst trade −2.19% / −1.67% from E1 above 10%; robust IS gain only on the unvalidated scanner path |
+| F. 20% flat | **VETO** (30) | Pair stress 9.6% against the −10% breaker; above the firm's 15% ceiling |
+| G. No cap | **VETO** (10) | Leverage |
 
-Committee input: **74 / 100 for B′, conditional.** Gates V-0 (Tom) and V-1 (costs) must clear before real capital, and the pre-registered stop conditions S1–S4 are binding on Zac and 死潘狗 for any tickets.
+**Committee input: 74 / 100 for B′, conditional on G-1** (the Owner aligns the scanner to the validated rules) **and V-1 to V-3.** If the scanner path stays live, the input is **70 for keeping 10%**, and the committee's first item should be validating the scanner's own rules, not the cap. Conditions S1–S4 are binding on Zac and 死潘狗 for any tickets.
 
 ---
 
