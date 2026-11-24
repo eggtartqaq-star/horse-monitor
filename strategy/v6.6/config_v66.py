@@ -47,9 +47,9 @@ CORE_FILES = ("rules_v642.py", "indicators.py", "signals_v66.py", "sizing_v66.py
               "guardrails_v66.py", "config_v66.py")
 
 
-def fingerprint() -> str:
+def fingerprint(folder=None) -> str:
     """核心原始碼嘅 SHA-256(行尾統一做 LF)。任何規則/設定改動都會令佢變。"""
-    here = os.path.dirname(os.path.abspath(__file__))
+    here = folder or os.path.dirname(os.path.abspath(__file__))
     h = hashlib.sha256()
     for fn in CORE_FILES:
         with open(os.path.join(here, fn), "rb") as f:

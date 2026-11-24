@@ -10,8 +10,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import rules_v642 as R          # noqa: E402
 import indicators as I          # noqa: E402
 import lab                      # noqa: E402
+import config_v66 as C          # noqa: E402
+import signals_v66 as S         # noqa: E402
+import sizing_v66 as Z          # noqa: E402
+import guardrails_v66 as G      # noqa: E402
 
 FAILS = []
+EXPECTED_SYNTH_HASH = "c76849eb6539"   # 由 V6.6.0 第一次跑出嚟;改規則/模擬器 = 要人手更新 + 寫原因
 
 
 def check(name, cond):
@@ -95,6 +100,92 @@ def main():
 
     trf, _, _ = lab.simulate(sig, lab.AS_TESTED)
     check("as_tested(零成本):淨 = 毛", len(trf) == 0 or np.allclose(trf["net_pct"], trf["gross_pct"]))
+
+    # ---------------- V6.6 核心 ----------------
+    # 1) 訊號等價:signals_v66 同 lab.build_signal 每日每隻每條路徑一樣
+    diffs = 0; n = 0
+    for tk, dfx in sig.items():
+        for i in range(80, len(dfx)):
+            row = dfx.iloc[i]
+            ev = S.evaluate(row)
+            for path, cfg in (("bt", lab.AS_TRADED), ("scan", lab.SCANNER)):
+                a = lab.build_signal(row["sig"], cfg); b = S.on_path(ev, path)
+                n += 1
+                if (a or {}).get("engine") != (b or {}).get("engine") or (a and abs(a["stop"] - b["stop"]) > 1e-9):
+                    diffs += 1
+    check(f"signals_v66 == lab.build_signal(合成數據 {n} 次比較,差異 {diffs})", diffs == 0 and n > 1000)
+
+    # 2) 路徑:突破門檻
+    base = {"bull": True, "ADX": 30.0, "DI_PLUS": 30.0, "DI_MINUS": 10.0, "Close": 100.0, "MA20": 98.0,
+            "MA50": 95.0, "MA200": 90.0, "dist_60h": 0.5, "vol_ratio": 1.3, "ATR": 2.0,
+            "high_20d": 101.0, "High": 100.5}
+    ev = S.evaluate(pd.Series(base))
+    check("引擎二冇突破:bt 唔認,scan 認", S.on_path(ev, "bt") is None and (S.on_path(ev, "scan") or {}).get("engine") == "E2")
+    ev = S.evaluate(pd.Series({**base, "High": 101.0}))
+    check("引擎二有突破(今日高 = 20日高,包括今日):兩條路徑都認",
+          (S.on_path(ev, "bt") or {}).get("engine") == "E2" and (S.on_path(ev, "scan") or {}).get("engine") == "E2")
+    check("熊市(bull=False)→ 冇訊號", S.evaluate(pd.Series({**base, "bull": False}))["route"] == "SKIP")
+
+    # 3) CRO V-2 倉位(B′ 用 size(mode="B_PRIME") 直接測;現行 live 係 A)
+    cases = [("$200,止蝕2%,E2 → 擋", 200, 196, "E2", 0), ("E2 $150,止蝕7% → 1股", 150, 139.5, "E2", 1),
+             ("E1 $150,止蝕7% → 擋", 150, 139.5, "E1", 0), ("E2 $195 → 擋", 195, 190, "E2", 0),
+             ("E2 $185,止蝕7.5%(1股風險$13.88)→ 擋", 185, 171.125, "E2", 0), ("$60,止蝕5% → 2股唔係3股", 60, 57, "E2", 2)]
+    for name, e, st, eng, want in cases:
+        got = Z.size(e, st, eng, "B_PRIME")["shares"]
+        check(f"CRO V-2 B′:{name}(得 {got})", got == want)
+    check("A 模式:E2 $150,止蝕7% → 擋(10%)", Z.size(150, 139.5, "E2", "A")["shares"] == 0)
+    check("D 模式(影子):$60,止蝕5% → 3股", Z.size(60, 57, "E2", "D")["shares"] == 3)
+    check("現行 live 模式 = A", Z.live_mode() == "A")
+
+    # 4) 設定結構性控制:關卡未過唔可以開 B′
+    old = (C.CAP_MODE, C.B_PRIME_ENABLED)
+    try:
+        C.CAP_MODE, C.B_PRIME_ENABLED = "B_PRIME", True
+        try:
+            C.check_config(); blocked = False
+        except AssertionError:
+            blocked = True
+        check("關卡未過 → 開 B′ 會被 assert 擋", blocked)
+    finally:
+        C.CAP_MODE, C.B_PRIME_ENABLED = old
+    check("設定自檢通過", C.check_config())
+
+    # 5) 指紋:改一個字節就變
+    import shutil, tempfile
+    tmp = tempfile.mkdtemp()
+    try:
+        here = os.path.dirname(os.path.abspath(__file__))
+        for fn in C.CORE_FILES:
+            shutil.copy(os.path.join(here, fn), tmp)
+        f0 = C.fingerprint(tmp)
+        with open(os.path.join(tmp, "rules_v642.py"), "ab") as f:
+            f.write(b"\n# x\n")
+        check("指紋:規則檔改動 → 指紋改變", C.fingerprint(tmp) != f0)
+        f1 = C.fingerprint(tmp)
+        p_cfg = os.path.join(tmp, "config_v66.py")
+        with open(p_cfg, "rb") as f:
+            raw = f.read().replace(b"\r\n", b"\n")
+        with open(p_cfg, "wb") as f:
+            f.write(raw.replace(b"\n", b"\r\n"))
+        check("指紋:Windows 行尾(CRLF)唔影響", C.fingerprint(tmp) == f1)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+    # 6) 護欄
+    df_small = synth(n=200)
+    check("護欄:止蝕16% → 擋", not G.check("X", df_small, 16.0, earnings_ts=None)["ok"])
+    check("護欄:財報3日後 → 擋", not G.check("X", df_small, 5.0, earnings_ts=pd.Timestamp.now() + pd.Timedelta(days=3))["ok"])
+    g = G.check("X", df_small, 5.0, earnings_ts=None)
+    check("護欄:查唔到財報 → 唔擋,標 ?", g["ok"] and g["days_er"] is None)
+    check("護欄:歷史重跑 → 財報 off", G.check("X", df_small, 5.0, asof_mode=True)["days_er"] == "off")
+    check("classify_mr_tier:查唔到財報 → 最多 STRONG",
+          R.classify_mr_tier({"RSI2": 5.0, "OBV_Div": True}, 0.6, {"target": 1, "r": 3.2}, None) == "STRONG")
+
+    # 7) 回歸指紋(合成數據交易清單;只用代號/引擎/日期/出場原因,避開浮點雜訊)
+    sig_list = tr[["ticker", "engine", "sig_date", "exit_date", "reason"]].astype(str).values.tolist() if len(tr) else []
+    import hashlib
+    h = hashlib.sha256(repr(sig_list).encode()).hexdigest()[:12]
+    check(f"合成數據交易清單回歸指紋 {h} == {EXPECTED_SYNTH_HASH}", h == EXPECTED_SYNTH_HASH)
 
     print(f"\n{'全部通過' if not FAILS else f'{len(FAILS)} 項失敗'}")
     sys.exit(1 if FAILS else 0)
