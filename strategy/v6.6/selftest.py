@@ -220,6 +220,27 @@ def main():
     finally:
         shutil.rmtree(tmpL, ignore_errors=True)
 
+    # 9) Telegram bot(離線)
+    import telegram_bot_v66 as B
+    check("bot:遮 token", "<TOKEN>" in B.redact("/bot123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe")
+          and "AAEhBP0av18tR" not in B.redact("/bot123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe"))
+    old_env = os.environ.get("SWING_BOT_TOKEN")
+    os.environ["SWING_BOT_TOKEN"] = B.PLACEHOLDER
+    try:
+        B.load_token(); refused = False
+    except SystemExit:
+        refused = True
+    finally:
+        if old_env is None:
+            os.environ.pop("SWING_BOT_TOKEN", None)
+        else:
+            os.environ["SWING_BOT_TOKEN"] = old_env
+    check("bot:placeholder token → 拒絕啟動", refused)
+    fetch = lambda tk: data.get(tk)
+    txt = B.analyze(R.TICKERS[0], fetch=fetch, earnings="off")
+    check("bot:離線分析有版本指紋同兩條路徑", C.fingerprint() in txt and "舊掃描器路徑" in txt)
+    check("bot:唔喺股票池 → 擋", "唔喺你38隻股票池" in B.analyze("ZZZZ", fetch=lambda tk: data.get(tk, data["SPY"]), earnings="off"))
+
     print(f"\n{'全部通過' if not FAILS else f'{len(FAILS)} 項失敗'}")
     sys.exit(1 if FAILS else 0)
 
