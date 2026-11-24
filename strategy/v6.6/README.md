@@ -25,7 +25,7 @@
    cd %USERPROFILE%\Desktop\v6.6
    python selftest.py
    ```
-   要見到「全部通過」(54 項)。
+   要見到「全部通過」(47 項)。
 4. **對照測試(關卡 V-3)** —— 證明 V6.6 同你用開嘅 `ta` 版每日出一樣嘅訊號:
    ```cmd
    copy ..\dual_engine_v6_4.py .
