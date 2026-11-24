@@ -136,19 +136,29 @@ def main():
         check(f"CRO V-2 B′:{name}(得 {got})", got == want)
     check("A 模式:E2 $150,止蝕7% → 擋(10%)", Z.size(150, 139.5, "E2", "A")["shares"] == 0)
     check("D 模式(影子):$60,止蝕5% → 3股", Z.size(60, 57, "E2", "D")["shares"] == 3)
-    check("現行 live 模式 = A", Z.live_mode() == "A")
+    # Tom 2026-11-24:B′ 依手續正式開咗(關卡全過 + CRO 文件)之後,呢兩項唔可以令 selftest 失敗(否則 .bat 拒絕掃描)
+    authorised = (C.CAP_MODE == "B_PRIME" and C.B_PRIME_ENABLED and not C.gates_outstanding() and bool(C.B_PRIME_CRO_NOTE))
+    check(f"現行 live 模式 = {'B_PRIME(已授權)' if authorised else 'A'}", Z.live_mode() == ("B_PRIME" if authorised else "A"))
 
-    # 4) 設定結構性控制:關卡未過唔可以開 B′
-    old = (C.CAP_MODE, C.B_PRIME_ENABLED)
+    # 4) 設定結構性控制:關卡未過 / 冇 CRO 文件唔可以開 B′(用臨時設定測,唔受現行設定影響)
+    old = (C.CAP_MODE, C.B_PRIME_ENABLED, dict(C.GATES), C.B_PRIME_CRO_NOTE)
     try:
-        C.CAP_MODE, C.B_PRIME_ENABLED = "B_PRIME", True
+        C.CAP_MODE, C.B_PRIME_ENABLED, C.B_PRIME_CRO_NOTE = "B_PRIME", True, "test"
+        C.GATES.update({k: True for k in C.GATES}); C.GATES[next(iter(C.GATES))] = False
         try:
             C.check_config(); blocked = False
         except AssertionError:
             blocked = True
         check("關卡未過 → 開 B′ 會被 assert 擋", blocked)
+        C.GATES.update({k: True for k in C.GATES}); C.B_PRIME_CRO_NOTE = ""
+        try:
+            C.check_config(); blocked = False
+        except AssertionError:
+            blocked = True
+        check("關卡全過但冇 CRO 文件 → 開 B′ 會被擋", blocked)
     finally:
-        C.CAP_MODE, C.B_PRIME_ENABLED = old
+        C.CAP_MODE, C.B_PRIME_ENABLED, C.B_PRIME_CRO_NOTE = old[0], old[1], old[3]
+        C.GATES.clear(); C.GATES.update(old[2])
     check("設定自檢通過", C.check_config())
 
     # 5) 指紋:改一個字節就變
@@ -220,10 +230,79 @@ def main():
     finally:
         shutil.rmtree(tmpL, ignore_errors=True)
 
+    # 8b) Tom 2026-11-24:fill 時嘅 S2 偵測(過期訊號、護欄擋、A=0、自訂收緊止蝕、超過2倉)
+    import types
+    tmpF = tempfile.mkdtemp()
+    try:
+        def srow(day, tk, **kw):
+            r = {c: "" for c in L.SIGNAL_COLS}
+            r.update(bar_date=day, ticker=tk, path="bt", live=True, engine="E2", score=0.8, close=50, stop=46,
+                     guard_ok=True, size_A=2, size_Bp=2, size_D=3, rank=1)
+            r.update(kw); return r
+        L.append_signals([srow("2026-03-02", "OLD"), srow("2026-03-03", "NEW"),
+                          srow("2026-03-03", "ERN", guard_ok=False, guard_reason="財報2日內"),
+                          srow("2026-03-03", "EXP", close=126, stop=112, size_A=0, size_Bp=0)], tmpF)
+
+        def fill(tk, px, sh, st, day="2026-03-04"):
+            a = types.SimpleNamespace(action="open", ticker=tk, price=px, shares=sh, stop=st, engine="E2",
+                                      date=day, fees=0.0, reason=None, target=None)
+            with contextlib.redirect_stdout(io.StringIO()):
+                L.cmd_fill(a, tmpF)
+            f = L.read(tmpF, "fills.csv", L.FILL_COLS)
+            return f[f["ticker"] == tk]["flags"].iloc[-1]
+        check("fill:今日有 live 訊號 → 冇 S2", "S2" not in fill("NEW", 50.0, 2, 46.0))
+        check("fill:幾日前嘅 live 訊號(上次掃描冇呢隻)→ S2 過期", "S2:冇 live 訊號(stale" in fill("OLD", 50.0, 2, 46.0))
+        L._rewrite(tmpF, "fills.csv", L.FILL_COLS, L.read(tmpF, "fills.csv", L.FILL_COLS).iloc[0:0])
+        check("fill:護欄擋咗嘅訊號 → S2", "S2:護欄擋咗" in fill("ERN", 50.0, 2, 46.0))
+        fl = fill("EXP", 126.0, 1, 116.0)
+        check("fill:A=0 + 自訂收緊止蝕 → S2(兩樣都標)", "S2:系統A倉位=0" in fl and "自訂收緊" in fl)
+        check("fill:已有2倉再開 → S2", "S2:已有2倉" in fill("NEW", 50.0, 2, 46.0))
+    finally:
+        shutil.rmtree(tmpF, ignore_errors=True)
+
+    # 8c) Tom 2026-11-24:掃描器 —— 未收市唔寫記錄簿;已持倉唔佔排名(合成數據,唔使上網)
+    import daily_scan_v66 as D
+    orig = (D.load, D.partial_bar_warning)
+    D.load = lambda t, s_, dd, a_: ({k: (v if a_ is None else v[v.index <= a_]) for k, v in data.items()}, [])
+    days = [d for d in data["SPY"].index[-200:]][::-1]
+    found = None
+    try:
+        for d0 in days[:80]:
+            with contextlib.redirect_stdout(io.StringIO()):
+                out = D.scan("syn", None, str(d0.date()), tempfile.mkdtemp(), dry_run=True, quiet=True)
+            if out and out.get("live"):
+                found = (d0, out); break
+    finally:
+        D.load = orig[0]
+    check("掃描器:合成數據搵到有 live 訊號嘅日子(下面兩項嘅前提)", found is not None)
+    if found:
+        d0, out = found
+        try:
+            D.load = lambda t, s_, dd, a_: ({k: v[v.index <= d0] for k, v in data.items()}, [])
+            D.partial_bar_warning = lambda: True
+            tmpS = tempfile.mkdtemp()
+            with contextlib.redirect_stdout(io.StringIO()):
+                o2 = D.scan("yf", None, None, tmpS, dry_run=False, quiet=True)
+            check("掃描器:開市中(未收市)→ 有訊號都唔寫記錄簿",
+                  o2 is not None and len(o2["rows"]) > 0 and not os.path.exists(os.path.join(tmpS, "signals.csv")))
+            tk0 = out["live"][0]["ticker"]
+            L._append_rows(tmpS, "fills.csv", L.FILL_COLS, [{"fill_id": "x", "ticker": tk0, "engine": "E2",
+                                                            "open_date": "2020-01-01", "close_date": ""}])
+            D.partial_bar_warning = lambda: False
+            with contextlib.redirect_stdout(io.StringIO()):
+                o3 = D.scan("yf", None, None, tmpS, dry_run=True, quiet=True)
+            ranks = [r["rank"] for r in o3["live"]]
+            check("掃描器:已持倉嘅股唔佔排名(同 lab 一樣跳過)",
+                  tk0 not in [r["ticker"] for r in o3["live"]] and tk0 in [r["ticker"] for r in o3["held_signals"]]
+                  and ranks == list(range(1, len(ranks) + 1)))
+        finally:
+            D.load, D.partial_bar_warning = orig
+
     # 9) Telegram bot(離線)
     import telegram_bot_v66 as B
     check("bot:遮 token", "<TOKEN>" in B.redact("/bot123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe")
           and "AAEhBP0av18tR" not in B.redact("/bot123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe"))
+    check("bot:遮 URL 編碼咗嘅 token(%3A)", "AAEhBP0av18tR" not in B.redact("/bot123456789%3AAAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe"))
     old_env = os.environ.get("SWING_BOT_TOKEN")
     os.environ["SWING_BOT_TOKEN"] = B.PLACEHOLDER
     try:

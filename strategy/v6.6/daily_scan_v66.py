@@ -189,7 +189,10 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
 
     if not quiet:
         _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs)
-    if partial and not dry_run:
+    if asof_mode and not dry_run and os.path.abspath(ledger_dir) == os.path.abspath(L.DEFAULT_DIR):
+        # Tom 2026-11-24(CRO C-3):歷史重跑唔可以寫入正式記錄簿(會污染 6 個月時鐘同 resolve)
+        print("\nℹ️ 歷史重跑(--asof)唔寫正式記錄簿。要測試請加 --ledger 其他資料夾。")
+    elif partial and not dry_run:
         # Tom 2026-11-24:記錄簿係「同一 (日期,代號,路徑) 只寫第一次」—— 未收市嘅數一寫入,
         # 收市後嘅正確數就永遠寫唔入。所以開市期間一律唔寫。
         print("\n⚠️ 今日條 bar 未收市 → 唔寫影子記錄簿。收市後再跑一次。")

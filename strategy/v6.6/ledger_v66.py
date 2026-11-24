@@ -135,6 +135,13 @@ def cmd_fill(a, folder):
                 if len(lv) and not (lv["guard_ok"] == "True").any():
                     # Tom 2026-11-24:交易路徑有訊號,但被護欄擋咗(財報/止蝕過闊)—— 唔係「可以交易」
                     flags.append(f"S2:護欄擋咗({lv['guard_reason'].iloc[0]})")
+                if len(lv):
+                    # Tom 2026-11-24(CRO C-4b):系統話 A 買唔起,或者自己將止蝕收緊去「造」出股數 → 違規
+                    if (lv["size_A"] == "0").all() and "B'例外" not in flags:
+                        flags.append("S2:系統A倉位=0(買唔起)")
+                    sys_stop = pd.to_numeric(lv["stop"], errors="coerce").max()
+                    if pd.notna(sys_stop) and a.stop > sys_stop + max(0.01, 0.005 * a.price):
+                        flags.append(f"S2:止蝕{a.stop}高過系統止蝕{sys_stop}(自訂收緊)")
                 if (pl["live"] == "True").any():
                     rk = pd.to_numeric(pl[pl["live"] == "True"]["rank"], errors="coerce").min()
                     # 空位 = 2 − 今日之前已開嘅倉(同日開兩筆唔會誤報)
@@ -205,7 +212,7 @@ def cmd_resolve(a, folder):
     sig = read(folder, "signals.csv", SIGNAL_COLS)
     if not len(sig):
         print("ledger 未有訊號。"); return None
-    sig = sig[sig["guard_ok"] == "True"]
+    sig = sig[(sig["guard_ok"] == "True") & (sig["partial_bar"] != "True")]   # Tom:未收市嘅舊行唔計
     data = _load_prices(sorted(set(sig["ticker"])) + ["SPY"], a.source, a.data)
     first = pd.Timestamp(sig["bar_date"].min())
     rows = []
@@ -253,7 +260,11 @@ def review(folder, today=None):
         g = r.groupby(["path", "engine"])["net_pct"].agg(["size", "mean"]).round(3)
         print(g.to_string() if len(g) else "  未有已完結訊號")
         e2 = r[(r["path"] == C.LIVE_PATH) & (r["engine"] == "E2")]
-        months = (today - pd.Timestamp(sig["bar_date"].min())).days / 30.4 if len(sig) else 0
+        # Tom 2026-11-24:用「第一次記錄嘅日子」(logged_at)計 6 個月,--asof 歷史行唔會令時鐘提早
+        t0 = pd.to_datetime(sig["logged_at"], errors="coerce").min() if len(sig) else pd.NaT
+        if pd.isna(t0) and len(sig):
+            t0 = pd.Timestamp(sig["bar_date"].min())
+        months = (today - t0.normalize()).days / 30.4 if len(sig) else 0
         out["closed_e2_live"] = len(e2)
         due = len(e2) >= 30 and months >= 6
         print(f"\n  檢討時間表:已完結引擎二(交易路徑)訊號 {len(e2)}/30,已記錄 {months:.1f}/6 個月 → "
