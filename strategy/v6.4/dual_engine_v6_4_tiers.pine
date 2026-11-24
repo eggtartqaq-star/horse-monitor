@@ -1,0 +1,240 @@
+// ============================================================
+// Swing Trade V6.2 三級訊號指標（均值回歸引擎）
+// ============================================================
+// 明確度來⾃「多重條件疊加」，不是單純提⾼評分
+//
+// 
+ 普通(藍)：評分≥0.55 + ⽜市 + ADX<25 + 2R          → 可觀察
+// 
+ 強(綠)  ：普通 + RSI(2)<10 + R值≥3                  → 建議入場
+// 
+ 頂級(⾦)：強 + OBV背離                              → 優先執⾏
+//   （財報過濾在Pine難⾃動判斷，需你⼿動確認距財報>5天）
+//
+// 倉位：普通0.5%風險 / 強1% / 頂級1%（不加⼤）
+// ============================================================
+//@version=6
+indicator("Swing V6.4 三級訊號", overlay=true, max_labels_count=500, 
+max_lines_count=100)
+MIN_R = input.float(2.0, "最低R值")
+ACCOUNT_HKD = input.float(10000, "短線資⾦(HKD)")
+RISK_PCT = input.float(1.0, "每筆風險%")
+USD_HKD = input.float(7.8, "美元兌港元")
+// 均線
+ma20  = ta.sma(close, 20)
+ma50  = ta.sma(close, 50)
+ma200 = ta.sma(close, 200)
+plot(ma20, "MA20", color.orange, 2)
+plot(ma50, "MA50", color.blue, 2)
+plot(ma200,"MA200",color.purple,1)
+// ⼤市環境
+spy_close = request.security("AMEX:SPY", "D", close)
+spy_ma200 = request.security("AMEX:SPY", "D", ta.sma(close, 200))
+bull = spy_close > spy_ma200
+// 指標
+rsi14 = ta.rsi(close, 14)
+rsi2  = ta.rsi(close, 2)
+[diP, diM, adxVal] = ta.dmi(14, 14)
+isRange = adxVal < 25
+pv20 = (close - ma20)/ma20*100
+mt   = (ma20 - ma50)/ma50*100
+ret5 = (close-close[5])/close[5]*100
+ret10= (close-close[10])/close[10]*100
+
+volR = ta.sma(volume,5)/ta.sma(volume,20)
+obvV = ta.obv
+obvDiv = (close < close[5]) and (obvV > obvV[5])
+low10 = ta.lowest(low,10)
+high60= ta.highest(high,60)
+// 評分
+s1 = (rsi14>=35 and rsi14<=45)?1.0:(rsi14>45 and rsi14<=55)?0.8:(rsi14>=30 and 
+rsi14<35)?0.6:(rsi14>55 and rsi14<=65)?0.4:(rsi14>65)?0.1:0.3
+s2 = (rsi2<5)?1.0:(rsi2<10)?0.85:(rsi2<20)?0.70:(rsi2<30)?0.50:0.20
+s3 = (pv20>=-5 and pv20<=0 and mt>0)?1.0:(pv20>=-10 and pv20<-5 and mt>0)?0.8:
+(pv20>0 and pv20<=3 and mt>0)?0.7:(pv20<-10 and mt>0)?0.4:0.2
+s4 = (ret10>=-15 and ret10<=-5)?1.0:(ret10>=-20 and ret10<-15)?0.7:(ret10>-5 and 
+ret10<=-2)?0.5:(ret10>0)?0.1:0.3
+s5 = (ret5<0 and volR>1.3)?1.0:(ret5<0 and volR>1.1)?0.8:(ret5<0 and volR>0.9)?
+0.5:(ret5>=0 and volR>1.2)?0.6:0.2
+score = math.min(s1*0.20+s2*0.15+s3*0.20+s4*0.20+s5*0.15 + (obvDiv?0.10:0.0), 1.0)
+// 交易計劃（V6.2升級：⽌蝕=結構位與2×ATR取較闊，回測EV由0.24%升⾄1.10%）
+atrVal = ta.atr(14)
+stopStruct = low10*0.995
+stopATR = close - 2.0*atrVal
+stopL = math.min(stopStruct, stopATR)
+riskA = close - stopL
+target = high60 > close ? high60 : (ma50 > close ? ma50 : close)
+rVal = riskA>0 ? (target-close)/riskA : 0
+// ============================================================
+// V6.4 護欄 + 倉位計算
+// ============================================================
+riskPctVal = (close - stopL) / close * 100
+// ⽌蝕護欄:>15%為波動失控
+stopTooWide = riskPctVal > 15
+// 投機標記:半年(126根)⾼低波幅>=2倍
+hi126 = ta.highest(high, 126)
+lo126 = ta.lowest(low, 126)
+isSpec = lo126 > 0 and (hi126 / lo126) >= 2.0
+// 倉位:1%風險可買整數股
+riskUSD = ACCOUNT_HKD * RISK_PCT / 100 / USD_HKD
+perShareRisk = close - stopL
+sharesCanBuy = perShareRisk > 0 ? math.floor(riskUSD / perShareRisk) : 0
+costUSD = sharesCanBuy * close
+// 倉位護欄:1股已超預算
+posTooExpensive = sharesCanBuy < 1
+// ============================================================
+// 三級訊號判定
+
+// ============================================================
+basic  = bull and isRange and score >= 0.55 and rVal >= MIN_R and not stopTooWide 
+and not posTooExpensive
+strong = basic and rsi2 < 10 and rVal >= 3.0
+premium= strong and obvDiv
+// 級別（數字：3=頂級 2=強 1=普通 0=無）
+tier = premium ? 3 : strong ? 2 : basic ? 1 : 0
+// ============================================================
+// 背景 + ⽌損⽌盈線
+// ============================================================
+bgcolor(not bull ? color.new(color.red, 92) : premium ? color.new(color.yellow, 
+78) : strong ? color.new(color.green, 84) : basic ? color.new(color.blue, 88) : 
+na)
+plot(tier > 0 ? stopL : na,  "⽌蝕", color.new(color.red, 20),   
+style=plot.style_linebr, linewidth=2)
+plot(tier > 0 ? target : na, "⽌盈", color.new(color.green, 20), 
+style=plot.style_linebr, linewidth=2)
+// ============================================================
+// 訊號標記（不同級別不同⼤⼩/顏⾊）
+// ============================================================
+riskPct = (close-stopL)/close*100
+rewPct  = (target-close)/close*100
+if premium and not premium[1]
+   label.new(bar_index, low, "
+頂級買入\n評分:"+str.tostring(score,"#.##")+" 
+R:"+str.tostring(rVal,"#.##")+"\n優先執⾏(倉位1%不加⼤)", color=color.yellow, 
+textcolor=color.black, style=label.style_label_up, size=size.large)
+   line.new(bar_index, close, bar_index+12, close, color=color.yellow, width=3)
+   line.new(bar_index, stopL, bar_index+12, stopL, color=color.red, width=2, 
+style=line.style_dashed)
+   line.new(bar_index, target, bar_index+12, target, color=color.green, width=2, 
+style=line.style_dashed)
+   label.new(bar_index+12, stopL, "⽌蝕 $"+str.tostring(stopL,"#.##")+" (-
+"+str.tostring(riskPct,"#.#")+"%)", color=color.red, textcolor=color.white, 
+style=label.style_label_left, size=size.small)
+   label.new(bar_index+12, target, "⽌盈 $"+str.tostring(target,"#.##")+" 
+(+"+str.tostring(rewPct,"#.#")+"%)", color=color.green, textcolor=color.white, 
+style=label.style_label_left, size=size.small)
+if strong and not premium and not (strong[1] and not premium[1])
+   label.new(bar_index, low, "
+強買入\n評分:"+str.tostring(score,"#.##")+" 
+R:"+str.tostring(rVal,"#.##")+"\n建議入場(倉位1%)", color=color.green, 
+textcolor=color.white, style=label.style_label_up, size=size.normal)
+
+   line.new(bar_index, close, bar_index+12, close, color=color.green, width=2)
+   line.new(bar_index, stopL, bar_index+12, stopL, color=color.red, width=1, 
+style=line.style_dashed)
+   line.new(bar_index, target, bar_index+12, target, color=color.green, width=1, 
+style=line.style_dashed)
+   label.new(bar_index+12, stopL, "⽌蝕 $"+str.tostring(stopL,"#.##")+" (-
+"+str.tostring(riskPct,"#.#")+"%)", color=color.red, textcolor=color.white, 
+style=label.style_label_left, size=size.small)
+   label.new(bar_index+12, target, "⽌盈 $"+str.tostring(target,"#.##")+" 
+(+"+str.tostring(rewPct,"#.#")+"%)", color=color.green, textcolor=color.white, 
+style=label.style_label_left, size=size.small)
+if basic and not strong and not (basic[1] and not strong[1])
+   label.new(bar_index, low, "
+普通\n評分:"+str.tostring(score,"#.##")+" 
+R:"+str.tostring(rVal,"#.##")+"\n可觀察(⼩注0.5%)", color=color.blue, 
+textcolor=color.white, style=label.style_label_up, size=size.small)
+   line.new(bar_index, close, bar_index+12, close, color=color.blue, width=1)
+   line.new(bar_index, stopL, bar_index+12, stopL, color=color.red, width=1, 
+style=line.style_dashed)
+   line.new(bar_index, target, bar_index+12, target, color=color.green, width=1, 
+style=line.style_dashed)
+   label.new(bar_index+12, stopL, "⽌蝕 $"+str.tostring(stopL,"#.##")+" (-
+"+str.tostring(riskPct,"#.#")+"%)", color=color.red, textcolor=color.white, 
+style=label.style_label_left, size=size.small)
+   label.new(bar_index+12, target, "⽌盈 $"+str.tostring(target,"#.##")+" 
+(+"+str.tostring(rewPct,"#.#")+"%)", color=color.green, textcolor=color.white, 
+style=label.style_label_left, size=size.small)
+// ============================================================
+// 持續顯示⽌蝕/⽌盈數字標籤（修正：不再只在訊號觸發當刻才顯示）
+// ============================================================
+var label stopLabel = na
+var label targetLabel = na
+if barstate.islast
+   label.delete(stopLabel)
+   label.delete(targetLabel)
+   if tier > 0
+       stopLabel := label.new(bar_index + 3, stopL, "⽌蝕 $" + str.tostring(stopL, 
+"#.##") + " (-" + str.tostring(riskPct, "#.#") + "%)", color=color.red, 
+textcolor=color.white, style=label.style_label_left, size=size.small)
+       targetLabel := label.new(bar_index + 3, target, "⽌盈 $" + 
+str.tostring(target, "#.##") + " (+" + str.tostring(rewPct, "#.#") + "%)", 
+color=color.green, textcolor=color.white, style=label.style_label_left, 
+size=size.small)
+// ============================================================
+// 資訊⾯板
+
+// ============================================================
+var table t = table.new(position.top_right, 2, 13, bgcolor=color.new(color.black, 
+15), border_width=1)
+if barstate.islast
+   tierTxt = tier==3?"
+頂級":tier==2?"
+強":tier==1?"
+普通":not bull?"熊市停
+⼿":"無訊號"
+   tierCol = tier==3?color.yellow:tier==2?color.lime:tier==1?
+color.aqua:color.gray
+   actTxt  = tier==3?"優先執⾏":tier==2?"建議入場":tier==1?"可觀察⼩注":"等待"
+   riskTxt = tier==3?"1%":tier==2?"1%":tier==1?"0.5%":"-"
+   tierTxt2 = posTooExpensive ? "買唔起(需碎股)" : stopTooWide ? "⽌蝕過闊擋" : 
+tierTxt
+   tierCol2 = (posTooExpensive or stopTooWide) ? color.red : tierCol
+   t.cell(0,0,"V6.4三級訊號", text_color=color.white, 
+bgcolor=color.new(color.blue,50), text_size=size.small)
+   t.cell(1,0,"", bgcolor=color.new(color.blue,50))
+   t.cell(0,1,"訊號級別", text_color=color.white, text_size=size.small)
+   t.cell(1,1, tierTxt2, text_color=tierCol2, text_size=size.normal)
+   t.cell(0,2,"建議⾏動", text_color=color.white, text_size=size.small)
+   t.cell(1,2, actTxt, text_color=tierCol, text_size=size.small)
+   t.cell(0,3,"評分", text_color=color.white, text_size=size.small)
+   t.cell(1,3, str.tostring(score,"#.##"), text_color=color.white, 
+text_size=size.small)
+   t.cell(0,4,"R值", text_color=color.white, text_size=size.small)
+   t.cell(1,4, str.tostring(rVal,"#.##")+"R", text_color=rVal>=3?
+color.lime:rVal>=2?color.yellow:color.red, text_size=size.small)
+   t.cell(0,5,"RSI2", text_color=color.white, text_size=size.small)
+   t.cell(1,5, str.tostring(rsi2,"#.#"), text_color=rsi2<10?
+color.lime:color.gray, text_size=size.small)
+   t.cell(0,6,"OBV背離", text_color=color.white, text_size=size.small)
+   t.cell(1,6, obvDiv?"
+有":"無", text_color=obvDiv?color.aqua:color.gray, 
+text_size=size.small)
+   t.cell(0,7,"入場/⽌蝕", text_color=color.white, text_size=size.small)
+   t.cell(1,7, "$"+str.tostring(close,"#.#")+"/"+str.tostring(stopL,"#.#"), 
+text_color=color.white, text_size=size.small)
+   t.cell(0,8,"⽌蝕距離", text_color=color.white, text_size=size.small)
+   t.cell(1,8, str.tostring(riskPctVal,"#.#")+"%", text_color=stopTooWide?
+color.red:color.white, text_size=size.small)
+   t.cell(0,9,"建議股數", text_color=color.white, text_size=size.small)
+   t.cell(1,9, sharesCanBuy>=1?str.tostring(sharesCanBuy)+"股
+(~$"+str.tostring(costUSD,"#")+")":"買唔起", text_color=sharesCanBuy>=1?
+color.aqua:color.red, text_size=size.small)
+   t.cell(0,10,"投機股?", text_color=color.white, text_size=size.small)
+   t.cell(1,10, isSpec?"
+係":"否", text_color=isSpec?color.orange:color.gray, 
+text_size=size.small)
+
+   t.cell(0,11,"財報", text_color=color.white, text_size=size.small)
+   t.cell(1,11, "⼿動查>5天", text_color=color.orange, text_size=size.small)
+   t.cell(0,12,"環境", text_color=color.white, text_size=size.small)
+   t.cell(1,12, bull?"⽜市":"熊市", text_color=bull?color.lime:color.red, 
+text_size=size.small)
+// 警報
+alertcondition(premium and not premium[1], "
+頂級訊號", "頂級買入訊號！優先執⾏")
+alertcondition(strong and not strong[1], "
+強訊號", "強買入訊號！建議入場")
+alertcondition(basic and not basic[1], "
+普通訊號", "普通訊號，可觀察")

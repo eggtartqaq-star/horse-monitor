@@ -1,0 +1,617 @@
+<title>3416.HK — Full Analysis &amp; Evaluation</title>
+<style>
+  :root{
+    --paper:#F2F1ED; --card:#FCFCFB; --card2:#F6F5F1;
+    --ink:#15171A; --ink2:#4E5257; --ink3:#7C8288;
+    --line:#DEDCD5; --hair:#E9E7E1;
+    --acc:#0E6F62; --acc-soft:#DCEDE9;
+    --s1:#2a78d6; --s2:#eb6834;
+    --good:#0ca30c; --warn:#9A6A12; --crit:#C0392B;
+    --grid:#e1e0d9; --base:#c3c2b7;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:where(:not([data-theme="light"])){
+      --paper:#0F1113; --card:#171A1D; --card2:#1D2124;
+      --ink:#ECEEF0; --ink2:#A4ABB2; --ink3:#7C8288;
+      --line:#262A2E; --hair:#1F2326;
+      --acc:#4ECBB8; --acc-soft:#10302C;
+      --s1:#3987e5; --s2:#d95926;
+      --good:#3FBF3F; --warn:#D9A44C; --crit:#E06A5C;
+      --grid:#2c2c2a; --base:#383835;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0F1113; --card:#171A1D; --card2:#1D2124;
+    --ink:#ECEEF0; --ink2:#A4ABB2; --ink3:#7C8288;
+    --line:#262A2E; --hair:#1F2326;
+    --acc:#4ECBB8; --acc-soft:#10302C;
+    --s1:#3987e5; --s2:#d95926;
+    --good:#3FBF3F; --warn:#D9A44C; --crit:#E06A5C;
+    --grid:#2c2c2a; --base:#383835;
+  }
+  :root[data-theme="light"]{
+    --paper:#F2F1ED; --card:#FCFCFB; --card2:#F6F5F1;
+    --ink:#15171A; --ink2:#4E5257; --ink3:#7C8288;
+    --line:#DEDCD5; --hair:#E9E7E1;
+    --acc:#0E6F62; --acc-soft:#DCEDE9;
+    --s1:#2a78d6; --s2:#eb6834;
+    --good:#0ca30c; --warn:#9A6A12; --crit:#C0392B;
+    --grid:#e1e0d9; --base:#c3c2b7;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ background:var(--paper); }
+  body{ margin:0; color:var(--ink); overflow-x:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans CJK TC','PingFang TC','Microsoft JhengHei',sans-serif;
+    font-size:16.5px; line-height:1.66; }
+  .wrap{ max-width:920px; margin:0 auto; padding:0 22px 90px; }
+  @media (max-width:600px){ .wrap{ padding:0 15px 60px; } }
+  .m{ font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+      font-variant-numeric:tabular-nums; }
+
+  header{ padding:54px 0 26px; border-bottom:2px solid var(--ink); }
+  .kick{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--acc); margin:0 0 15px; }
+  h1{ font-family:Georgia,'Iowan Old Style','Times New Roman',serif; font-weight:600;
+    font-size:clamp(28px,5vw,44px); line-height:1.12; margin:0; letter-spacing:-.015em;
+    text-wrap:balance; }
+  .dek{ margin:16px 0 0; max-width:63ch; color:var(--ink2); font-size:17px; }
+  .stamp{ display:flex; flex-wrap:wrap; gap:7px 24px; margin-top:22px;
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; color:var(--ink3); }
+  .stamp b{ color:var(--ink2); font-weight:500; }
+
+  h2{ font-family:Georgia,'Iowan Old Style',serif; font-weight:600; font-size:24px;
+    margin:0; letter-spacing:-.01em; text-wrap:balance; }
+  h3{ font-family:Georgia,'Iowan Old Style',serif; font-weight:600; font-size:18.5px;
+    margin:0 0 8px; text-wrap:balance; }
+  section{ margin-top:54px; }
+  .sh{ display:flex; align-items:baseline; gap:13px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:11px; margin-bottom:22px; }
+  .sh .n{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; color:var(--acc); }
+  p{ max-width:70ch; }
+  p.wide{ max-width:none; }
+  strong{ font-weight:640; }
+
+  .verdict{ margin-top:30px; background:var(--card); border:1px solid var(--line);
+    border-left:4px solid var(--acc); padding:24px 26px; }
+  .verdict h3{ margin-top:0; }
+  .verdict p{ color:var(--ink2); margin:0 0 11px; }
+  .verdict p:last-child{ margin-bottom:0; }
+  .verdict strong{ color:var(--ink); }
+
+  .facts{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); }
+  @media (max-width:720px){ .facts{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:420px){ .facts{ grid-template-columns:1fr; } }
+  .fact{ background:var(--card); padding:15px 17px; }
+  .fact .l{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px;
+    letter-spacing:.11em; text-transform:uppercase; color:var(--ink3); }
+  .fact .v{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:20px;
+    margin-top:5px; letter-spacing:-.01em; }
+  .fact .s{ font-size:12.5px; color:var(--ink3); margin-top:3px; }
+
+  figure{ margin:28px 0 0; background:var(--card); border:1px solid var(--line);
+    padding:22px 24px 18px; }
+  @media (max-width:600px){ figure{ padding:17px 14px 13px; } }
+  figcaption .ft{ font-weight:640; font-size:16.5px; }
+  figcaption .fs{ font-size:14px; color:var(--ink2); margin-top:5px; max-width:66ch; }
+
+  .bars{ display:flex; flex-direction:column; gap:14px; margin-top:20px; }
+  .brow{ display:grid; grid-template-columns:132px 1fr; gap:12px; align-items:center; }
+  @media (max-width:460px){ .brow{ grid-template-columns:96px 1fr; gap:9px; } }
+  .blab{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px;
+    color:var(--ink2); text-align:right; line-height:1.35; }
+  .btrack{ position:relative; height:24px; }
+  .bar{ position:absolute; top:2px; height:20px; border-radius:0 3px 3px 0; }
+  .bar.neg{ border-radius:3px 0 0 3px; }
+  .bval{ position:absolute; top:3px; font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:11.5px; white-space:nowrap; color:var(--ink); }
+  .zero{ position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--base); }
+  .axis{ margin-top:10px; border-top:1px solid var(--base); padding-top:5px; display:flex;
+    justify-content:space-between; font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:10.5px; color:var(--ink3); }
+  .leg{ display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:15px; font-size:12.5px;
+    color:var(--ink2); align-items:center; }
+  .leg span{ display:inline-flex; align-items:center; gap:7px; }
+  .sw{ width:12px; height:12px; border-radius:2px; flex:0 0 auto; }
+
+  .scroll{ overflow-x:auto; }
+  table{ border-collapse:collapse; width:100%; min-width:480px; font-size:14px; margin-top:6px; }
+  th,td{ text-align:left; padding:10px 13px; border-bottom:1px solid var(--hair);
+    vertical-align:top; }
+  td.num,th.num{ text-align:right; font-variant-numeric:tabular-nums;
+    font-family:ui-monospace,Menlo,Consolas,monospace; }
+  th{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink3); font-weight:400; background:var(--card2); }
+  tbody tr:last-child td{ border-bottom:none; }
+
+  .note{ margin-top:22px; background:var(--card); border:1px solid var(--line);
+    border-left:3px solid var(--warn); padding:17px 20px; }
+  .note.crit{ border-left-color:var(--crit); }
+  .note.ok{ border-left-color:var(--good); }
+  .note.acc{ border-left-color:var(--acc); }
+  .note p{ margin:0; color:var(--ink2); font-size:15px; }
+  .note p+p{ margin-top:9px; }
+  .note strong{ color:var(--ink); }
+
+  ol.steps{ counter-reset:s; list-style:none; padding:0; margin:20px 0 0;
+    display:flex; flex-direction:column; gap:1px; background:var(--line);
+    border:1px solid var(--line); }
+  ol.steps li{ counter-increment:s; background:var(--card); padding:18px 20px;
+    display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:start; }
+  ol.steps li::before{ content:counter(s); font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:19px; color:var(--acc); line-height:1.35; }
+  ol.steps p{ margin:0; color:var(--ink2); font-size:15px; max-width:none; }
+  ol.steps p+p{ margin-top:7px; }
+
+  code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.87em;
+    background:var(--card2); border:1px solid var(--hair); padding:1px 5px; }
+  svg{ display:block; max-width:100%; height:auto; }
+  footer{ margin-top:60px; padding-top:22px; border-top:1px solid var(--line);
+    font-size:13px; color:var(--ink3); }
+  footer p{ margin:0 0 9px; max-width:74ch; }
+  a{ color:var(--acc); }
+  a:focus-visible{ outline:2px solid var(--acc); outline-offset:2px; }
+
+  /* ---------- print / PDF ---------- */
+  @page{ size:A4; margin:15mm 14mm 16mm; }
+  @media print{
+    /* force the light palette — a dark PDF is unreadable on paper and wastes ink */
+    :root, :root[data-theme="dark"], :root[data-theme="light"]{
+      --paper:#FFFFFF; --card:#FCFCFB; --card2:#F6F5F1;
+      --ink:#000000; --ink2:#3A3E42; --ink3:#6A7076;
+      --line:#CFCCC4; --hair:#E2E0D9;
+      --acc:#0B5C51; --s1:#2a78d6; --s2:#d4551f;
+      --good:#0a7d0a; --warn:#8A5C0E; --crit:#A82F22;
+      --grid:#e1e0d9; --base:#b6b5aa;
+    }
+    html,body{ background:#fff !important; font-size:10.4pt; line-height:1.5; }
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    .wrap{ max-width:none; padding:0; }
+    header{ padding-top:0; }
+    h1{ font-size:22pt; }
+    h2{ font-size:14pt; }
+    h3{ font-size:11.5pt; }
+    p, .note p, ol.steps p{ max-width:none; }
+    section{ margin-top:22pt; page-break-inside:auto; }
+    .sh{ page-break-after:avoid; break-after:avoid; }
+    h3{ page-break-after:avoid; break-after:avoid; }
+    figure, .note, .verdict, .facts, ol.steps li, tr, svg{
+      page-break-inside:avoid; break-inside:avoid; }
+    table{ min-width:0; }
+    .scroll{ overflow:visible; }
+    figure{ margin-top:14pt; }
+    /* the gap:1px background trick leaves a grey slab when a list breaks
+       across a page — use real borders in print instead */
+    ol.steps, .facts{ background:transparent !important; gap:0 !important; border:none; }
+    /* each item carries its own box, so a page break never strands an empty
+       container border at the foot of the page */
+    ol.steps li{ border:1px solid var(--line); margin-bottom:-1px; }
+    .facts .fact{ border:1px solid var(--line); margin:0 -1px -1px 0; }
+    .verdict{ page-break-after:auto; }
+    footer{ page-break-inside:avoid; }
+    a{ color:var(--acc); text-decoration:none; }
+    a[href^="http"]::after{ content:" (" attr(href) ")"; font-size:7.5pt; color:var(--ink3);
+      word-break:break-all; }
+    .stamp{ font-size:8.5pt; }
+  }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none!important; } }
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="kick">皮褸黃 Capital · Research Report</p>
+  <h1>3416.HK — Global X HSCEI Components Covered Call Active ETF</h1>
+  <p class="dek">Full analysis and evaluation, written against two questions: should an 18-year-old university student put HK$1,000 a month into this — and what should someone already holding HK$8,000 of it do?</p>
+  <div class="stamp">
+    <span><b>Date</b> 2026-08-04, hold/sell 2026-08-07 · corrected 2026-08-07</span>
+    <span><b>Analyst</b> CEO (皮褸黃)</span>
+    <span><b>Status</b> department pipeline incomplete — see §10</span>
+    <span><b>Not financial advice</b></span>
+  </div>
+</header>
+
+<div class="verdict">
+  <h3>The short version</h3>
+  <p><strong>The habit is right. The vehicle probably isn't — but not for the reason most people would guess.</strong></p>
+  <p>This is a competently run fund doing exactly what it advertises. It is not a scam and it is not badly managed. Over the past year it roughly matched the plain index while falling noticeably less in the sell-off, which is precisely what a covered-call strategy is supposed to do.</p>
+  <p><strong>The mismatch is horizon, not quality.</strong> A covered-call fund sells away the largest upward moves in exchange for income now. For an 18-year-old, those largest upward moves — compounded over forty years — are the entire point of owning equities. This product is built for someone who needs income today and can't tolerate volatility. That describes a retiree, not a first-year student.</p>
+  <p><strong>Two facts could settle this before any of that matters, and only you can check them:</strong> the board lot size, and your broker's minimum commission. See §7.</p>
+</div>
+
+
+<div class="note crit" style="margin-top:22px">
+  <p><strong>Correction, 7 August 2026.</strong> The first edition of this report used NAV of HK$9.63. That figure was stale. The fund last printed at <strong>HK$8.64 (23 July 2026)</strong> — roughly 21% below its 52-week high and about 5% above its low, near the bottom of its range. All figures below are corrected.</p>
+  <p><strong>Two of the report's open questions are now answered</strong>, and both matter: the board lot is <strong>500 units (~HK$4,320)</strong>, and 2026 has supplied a dated, real-world demonstration of the structural asymmetry this report argued on theory. See §3a and §7.</p>
+</div>
+
+<!-- ========== 1 ========== -->
+<section>
+  <div class="sh"><span class="n">01</span><h2>What you would actually be buying</h2></div>
+  <p>3416.HK is <strong>not a company</strong> — it is an exchange-traded fund. There are no earnings to value, no management team to assess, and no competitive moat to analyse. Those are the wrong questions here.</p>
+  <p>It does two things at once:</p>
+  <ol class="steps">
+    <li><div><p><strong>Holds Chinese large caps.</strong> The 53 constituents of the Hang Seng China Enterprises Index — mainland companies listed in Hong Kong. Alibaba, Tencent, the big state banks, Xiaomi.</p></div></li>
+    <li><div><p><strong>Sells call options on that index every month</strong>, and pays the premium out to you as a monthly distribution.</p><p>That second part is the whole story. It is what produces the eye-catching yield, and it is also what makes the fund unsuitable for a long horizon.</p></div></li>
+  </ol>
+
+  <div class="facts" style="margin-top:26px">
+    <div class="fact"><div class="l">Inception</div><div class="v">Feb 2024</div><div class="s">~2.4 years of history</div></div>
+    <div class="fact"><div class="l">NAV / unit</div><div class="v">HK$8.64</div><div class="s">23 Jul 2026 · ~15th pct of range</div></div>
+    <div class="fact"><div class="l">Expense ratio</div><div class="v">0.75%</div><div class="s">per year, ongoing</div></div>
+    <div class="fact"><div class="l">Holdings</div><div class="v">53</div><div class="s">HSCEI constituents</div></div>
+    <div class="fact"><div class="l">Distribution</div><div class="v">Monthly</div><div class="s">12× per year, in cash</div></div>
+    <div class="fact"><div class="l">Trailing yield</div><div class="v">~16–18%</div><div class="s">distribution, not return</div></div>
+  </div>
+
+  <div class="note">
+    <p><strong>A discrepancy I could not resolve.</strong> Fund size is reported as HK$7.3bn (Nov 2025), HK$21.3bn, and HK$22.37bn depending on the source. That is a threefold spread. It may reflect different dates or separate HKD/USD counters, but I could not confirm which, so treat any AUM figure here as unverified.</p>
+  </div>
+</section>
+
+<!-- ========== 2 ========== -->
+<section>
+  <div class="sh"><span class="n">02</span><h2>How a covered call changes what you own</h2></div>
+  <p>This is the single most important concept in the report, and it is not complicated once drawn.</p>
+  <p>When the fund sells a call option, it collects cash today. In exchange, it promises that <strong>if the index rises above a certain level, it gives away everything above that level.</strong> The downside is not sold. You keep all of that.</p>
+
+  <figure>
+    <figcaption>
+      <div class="ft">The trade you are making, every month</div>
+      <p class="fs">Schematic, not measured data — it shows the shape of the payoff, not a forecast. The dashed line is simply owning the index; the solid line is the covered-call version.</p>
+    </figcaption>
+    <svg viewBox="0 0 760 350" role="img" aria-label="Payoff diagram. Owning the index is a straight rising line. The covered-call version runs parallel and slightly above it while the market falls — the premium cushions losses — but stops rising at the strike price, so all gains beyond that point are given up.">
+      <g stroke="var(--grid)" stroke-width="1">
+        <line x1="70" y1="60" x2="640" y2="60"/><line x1="70" y1="118" x2="640" y2="118"/>
+        <line x1="70" y1="232" x2="640" y2="232"/><line x1="70" y1="290" x2="640" y2="290"/>
+      </g>
+      <line x1="70" y1="175" x2="640" y2="175" stroke="var(--base)" stroke-width="1.5"/>
+      <line x1="340" y1="45" x2="340" y2="300" stroke="var(--base)" stroke-width="1.5"/>
+
+      <text x="20" y="64" fill="var(--ink3)" font-size="11" font-family="ui-monospace,Menlo,monospace">gain</text>
+      <text x="20" y="294" fill="var(--ink3)" font-size="11" font-family="ui-monospace,Menlo,monospace">loss</text>
+      <text x="74" y="318" fill="var(--ink3)" font-size="11" font-family="ui-monospace,Menlo,monospace">market falls</text>
+      <text x="340" y="318" fill="var(--ink3)" font-size="11" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">flat</text>
+      <text x="638" y="318" fill="var(--ink3)" font-size="11" text-anchor="end" font-family="ui-monospace,Menlo,monospace">market rises</text>
+
+      <!-- the gains handed away: between the two lines past the crossover -->
+      <polygon points="525,104 640,57 640,104" fill="var(--s1)" opacity="0.16"/>
+
+      <!-- simply owning the index -->
+      <line x1="75" y1="285" x2="640" y2="57" stroke="var(--s1)" stroke-width="2.5" stroke-dasharray="7 5"/>
+      <!-- covered call: parallel and above (premium) until the strike, then flat -->
+      <path d="M75,263 L470,104 L640,104" fill="none" stroke="var(--s2)" stroke-width="3"
+            stroke-linejoin="round"/>
+
+      <line x1="470" y1="96" x2="470" y2="190" stroke="var(--ink3)" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="474" y="204" fill="var(--ink3)" font-size="11" font-family="ui-monospace,Menlo,monospace">strike</text>
+
+      <text x="638" y="44" fill="var(--s1)" font-size="12.5" font-weight="600" text-anchor="end">Own the index</text>
+      <text x="482" y="128" fill="var(--s2)" font-size="12.5" font-weight="600">Covered call — stops here</text>
+      <line x1="600" y1="80" x2="648" y2="80" stroke="var(--ink3)" stroke-width="1"/>
+      <text x="652" y="76" fill="var(--ink2)" font-size="10.5" font-family="ui-monospace,Menlo,monospace">gains you</text>
+      <text x="652" y="89" fill="var(--ink2)" font-size="10.5" font-family="ui-monospace,Menlo,monospace">gave away</text>
+
+      <line x1="118" y1="244" x2="118" y2="266" stroke="var(--ink3)" stroke-width="1.5"/>
+      <text x="128" y="292" fill="var(--ink2)" font-size="11">the gap is the premium — it cushions the fall, it does not stop it</text>
+    </svg>
+    <div class="leg">
+      <span><i class="sw" style="background:var(--s1)"></i> Simply owning the index</span>
+      <span><i class="sw" style="background:var(--s2)"></i> The covered-call version (this fund)</span>
+    </div>
+  </figure>
+
+  <p style="margin-top:24px">Read the two lines where they differ. On the left the covered-call line runs a little <em>above</em> the index — the premium genuinely does cushion a fall, and §3 shows that cushion working in a real sell-off. <strong>But it is a cushion, not protection: you still lose money, just less of it.</strong> On the right the two separate permanently — the index keeps climbing and the covered-call line goes flat. The shaded wedge is what you handed over.</p>
+  <p><strong>You have sold the best outcomes and kept the worst ones</strong>, in return for a steady payment. For some investors that is a genuinely good bargain. Whether it is a good bargain for you depends entirely on how long you intend to hold.</p>
+</section>
+
+<!-- ========== 3 ========== -->
+<section>
+  <div class="sh"><span class="n">03</span><h2>How it has actually performed</h2></div>
+  <p>Here the fund defends itself well, and it deserves to be said clearly.</p>
+
+  <figure>
+    <figcaption>
+      <div class="ft">Against a plain Chinese-index ETF (2828.HK), over one year</div>
+      <p class="fs">Total return, i.e. including dividends and distributions. Both figures to approximately 21 November 2025.</p>
+    </figcaption>
+    <div class="bars" id="c1"></div>
+    <div class="axis"><span>0%</span><span>7.5%</span><span>15%</span></div>
+    <div class="leg">
+      <span><i class="sw" style="background:var(--s2)"></i> 3416 — covered call</span>
+      <span><i class="sw" style="background:var(--s1)"></i> 2828 — plain index</span>
+    </div>
+  </figure>
+
+  <figure>
+    <figcaption>
+      <div class="ft">And when the market fell from its October peak</div>
+      <p class="fs">This is the cushion working exactly as designed — the option premium absorbs part of the decline.</p>
+    </figcaption>
+    <div class="bars" id="c2"></div>
+    <div class="axis"><span>−9%</span><span>−4.5%</span><span>0%</span></div>
+  </figure>
+
+  <div class="note ok">
+    <p><strong>The honest bull case, stated at full strength.</strong> Over the past year this fund delivered essentially the same total return as the plain index (13.57% vs 13.96%) while falling less than half as far in the drawdown (−3.40% vs −7.85%). If that pattern persisted, you would be getting index-like returns with materially less pain — an excellent trade.</p>
+    <p><strong>Why I don't lean on it:</strong> one year, in one market regime, is not evidence about forty. Covered-call strategies keep pace in flat and falling markets — that is when they shine. The gap opens in sustained rallies, and this sample does not contain one.</p>
+  </div>
+</section>
+
+
+<section>
+  <div class="sh"><span class="n">03a</span><h2>2026 settled the argument with real numbers</h2></div>
+  <p>Section 3 showed one year in which the fund essentially matched the index. <strong>2026 has now delivered the other regime</strong> — and it is the one the theory in §2 predicts.</p>
+  <figure>
+    <figcaption>
+      <div class="ft">Downside taken in full. Upside taken in part.</div>
+      <p class="fs">Hang Seng China Enterprises Index move against the fund's move over the same window. This is the asymmetry in §2, measured rather than drawn.</p>
+    </figcaption>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Window</th><th class="num">HSCEI</th><th class="num">3416</th><th>What happened</th></tr></thead>
+        <tbody>
+          <tr><td>H1 2026 (fall)</td><td class="num">−15.21%</td><td class="num">participated fully</td><td>No meaningful protection</td></tr>
+          <tr><td>July 2026 (rally)</td><td class="num">+13.94%</td><td class="num">+2.13% price<br>+3.90% w/ distribution</td><td><strong>~28% of the move captured</strong></td></tr>
+          <tr><td>Year to date, total return</td><td class="num">≈ −3.9% to −4.7%</td><td class="num">−9.18%</td><td>Roughly 5pp behind the index</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </figure>
+  <div class="note crit">
+    <p><strong>July 2026 was the biggest monthly point gain in the index in nearly two years, and the fund captured a bit over a quarter of it.</strong> That is not a malfunction — it is the covered-call mechanism doing precisely what it is built to do. But it is the clearest possible illustration of what §5 argues: you keep the falls and you rent out the recoveries.</p>
+    <p><strong>The direct implication for anyone holding today:</strong> if you expect Chinese equities to recover from here, this is the wrong vehicle to express that view. July is the evidence — a 14-point index move became a 4-point fund move.</p>
+  </div>
+  <div class="note ok">
+    <p><strong>What argues the other way, stated fairly.</strong> The monthly distribution was <em>not</em> cut — it rose from HK$0.14 to HK$0.15 and has held there for four consecutive months. The designated early-warning signal did not fire. Fund assets have grown from about HK$7.3bn (Nov 2025) to roughly HK$22bn (Jul 2026), so there is no closure or liquidity risk. Since inception the total return remains positive. The fund is doing its job; the job is simply not the one a 40-year investor needs.</p>
+    <p><strong>But note how that positive since-inception return is composed:</strong> +35.60% total, of which <strong>29.45 points came from distributions</strong> while NAV fell from about HK$10.52 to HK$8.64. The capital base is shrinking and the return is arriving as payout — which is the return-of-capital question in §4, now visible in the numbers.</p>
+  </div>
+</section>
+
+<!-- ========== 4 ========== -->
+<section>
+  <div class="sh"><span class="n">04</span><h2>The 18% is not a return</h2></div>
+  <p>This is the number most likely to attract a beginner, and the one most likely to be misread.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Term</th><th>What it means</th><th>This fund</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Distribution yield</strong></td><td>What the fund <em>pays out</em>, as a % of price. Can include your own capital being handed back.</td><td class="num">~16–18%</td></tr>
+        <tr><td><strong>Total return</strong></td><td>What you actually <em>earn</em>: change in NAV <strong>plus</strong> distributions. The only number that matters.</td><td class="num">13.57% <span style="color:var(--ink3)">(1 yr)</span></td></tr>
+        <tr><td><strong>Average annual since launch</strong></td><td>Across ~2.4 years.</td><td class="num">10.50% *</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--ink3);margin-top:8px">* Single source, unverified — treat as indicative only.</p>
+
+  <div class="note">
+    <p><strong>Read the gap between the first row and the second.</strong> The fund pays out 16–18% while earning roughly 10–14%. A fund cannot durably pay more than it earns without shrinking, so part of that distribution is very likely <strong>return of capital</strong> — your own money, handed back to you, and taxed nowhere but felt in the NAV.</p>
+    <p>That is not fraud; it is standard for this product type and it is disclosed in the monthly factsheet. But it means <strong>a "17% income" mental model is simply wrong</strong>, and building a forty-year plan on it would be building on sand.</p>
+  </div>
+</section>
+
+<!-- ========== 5 ========== -->
+<section>
+  <div class="sh"><span class="n">05</span><h2>Why the horizon decides it</h2></div>
+  <p>Everything above is context. This section is the actual argument.</p>
+  <p>Long-run stock market returns are not evenly distributed. A large share of the total comes from <strong>a small number of very big upward moves</strong>. Miss them and the long-run result collapses. That's not opinion; it's the shape of the distribution.</p>
+  <p>A covered-call fund sells those moves. Not accidentally — <em>by design</em>, every single month, as its core mechanism.</p>
+
+  <div class="note acc">
+    <p><strong>An 18-year-old's single greatest financial asset is time.</strong> Not income, not knowledge, not capital — time. And nearly all of time's value sits in that right tail of large gains compounding across decades.</p>
+    <p><strong>This product's core function is to sell exactly that.</strong> Paying you a comfortable monthly amount in exchange is a fair trade for someone who needs money now. For someone who needs it in 2066, it is selling the only thing they own that a 50-year-old cannot buy back.</p>
+  </div>
+
+  <h3 style="margin-top:30px">Who this fund genuinely suits</h3>
+  <p>Stated fairly — this is a well-built product for the right person:</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Suits someone who…</th><th>Does this describe an 18-year-old student?</th></tr></thead>
+      <tbody>
+        <tr><td>Needs income <em>now</em></td><td>No — they need growth later</td></tr>
+        <tr><td>Has low tolerance for volatility</td><td>Arguably, but they have decades to recover</td></tr>
+        <tr><td>Has a short horizon (retiree, near-term goal)</td><td>No — the opposite</td></tr>
+        <tr><td>Expects a flat or sideways market</td><td>Over 40 years, no reasonable person forecasts this</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:14px"><strong>Zero of four.</strong> That is the evaluation, and it does not depend on any forecast about China.</p>
+
+  <div class="note crit">
+    <p><strong>A second, quieter problem: the monthly cash payout.</strong> To compound, every distribution must be reinvested. Paid in cash, monthly, to a student, it either becomes twelve extra tiny purchases a year — each paying a brokerage minimum on a small amount — or it sits idle, or it gets spent.</p>
+    <p><strong>A monthly-cash-paying product is close to the worst possible structure for someone whose entire goal is to not touch the money for decades.</strong></p>
+  </div>
+</section>
+
+<!-- ========== 6 ========== -->
+<section>
+  <div class="sh"><span class="n">06</span><h2>The cost of buying HK$1,000 at a time</h2></div>
+  <p>One piece of good news first: <strong>ETFs are exempt from Hong Kong's 0.1% stamp duty.</strong> The largest statutory charge doesn't apply.</p>
+  <p>What remains is your broker's <strong>minimum commission</strong>, and against a HK$1,000 ticket it dominates everything.</p>
+
+  <figure>
+    <figcaption>
+      <div class="ft">What a fixed minimum commission costs you on each HK$1,000 purchase</div>
+      <p class="fs">One-way, as a percentage of the amount invested. Illustrative brackets — replace with your broker's actual schedule.</p>
+    </figcaption>
+    <div class="bars" id="c3"></div>
+    <div class="axis"><span>0%</span><span>5%</span><span>10%</span></div>
+  </figure>
+
+  <div class="note crit">
+    <p><strong>At a traditional bank's HK$100 minimum, a tenth of every deposit is gone before the market opens.</strong> No strategy survives that. At a zero-commission app broker the plan is completely fine on cost.</p>
+    <p>This single fact swings the outcome more than any view on Chinese equities — and it is the one input I cannot look up for you.</p>
+    <p><strong>If the minimum is material, buying quarterly instead of monthly cuts the drag by roughly two-thirds</strong> for the same annual contribution. Same discipline, one-third the friction.</p>
+  </div>
+
+  <p style="margin-top:22px">Note also the <strong>0.75% annual expense ratio</strong>. That is reasonable for an actively managed options strategy, but it is roughly seven to fifteen times what a plain broad-market index fund charges, and it compounds against you every year for forty years.</p>
+</section>
+
+<!-- ========== 7 ========== -->
+<section>
+  <div class="sh"><span class="n">07</span><h2>Two things to check before anything else</h2></div>
+  <ol class="steps">
+    <li><div><h3 style="margin:0 0 6px">The board lot size</h3>
+      <p><strong>ANSWERED — and it breaks the plan as designed. The board lot is 500 units.</strong> At HK$8.64 that is <strong>HK$4,320 per lot</strong>.</p>
+      <p>HK$1,000 a month buys about 116 units. <strong>You would need to save for roughly 4.3 months to afford a single lot.</strong> "HK$1,000 into 3416 every month" is not executable — it is HK$4,320 roughly every four months, or an odd-lot purchase at a worse price.</p>
+      <p><em>Source confidence: moderate. Two search results attribute 500 units to etnet/HKEX, but the pages could not be opened. Worth a 30-second check in your broker app before acting.</em></p></div></li>
+    <li><div><h3 style="margin:0 0 6px">Your broker's minimum commission</h3>
+      <p>See §6. If it is zero, cost is a non-issue. If it is HK$50–100, the plan is losing 5–10% up front and needs restructuring regardless of what you think of the fund.</p></div></li>
+  </ol>
+</section>
+
+<!-- ========== 8 ========== -->
+<section>
+  <div class="sh"><span class="n">08</span><h2>Before any of this: the ordering</h2></div>
+  <p>This matters more than product selection, and it is the part most first-time investors skip.</p>
+  <ol class="steps">
+    <li><div><p><strong>Money you might need within five years does not belong in equities at all.</strong> The real risk for a student is not a bad fund — it is being forced to sell at the bottom to pay for something unexpected.</p></div></li>
+    <li><div><p><strong>Clear high-interest debt first.</strong> Paying off a 15% credit card is a guaranteed 15% return. Nothing in any market beats a guaranteed return.</p></div></li>
+    <li><div><p><strong>Keep a small emergency buffer in cash</strong> before investing anything.</p></div></li>
+    <li><div><p><strong>Then invest — and the monthly discipline is the right instinct.</strong> Regular investing from 18 is one of the most powerful financial decisions available to anyone. Nothing in this report should discourage it.</p></div></li>
+  </ol>
+  <div class="note acc">
+    <p><strong>The question is not whether to invest. It is whether a product built to sell away long-term growth belongs in a forty-year plan.</strong> A single-country, single-index fund concentrated in Chinese banks and platforms is also a lot of concentration for a first-ever investment — and watching a first investment fall 30% teaches a lesson that can put someone off investing for a decade.</p>
+  </div>
+</section>
+
+
+<!-- ========== 9 ========== -->
+<section>
+  <div class="sh"><span class="n">09</span><h2>Hold or sell — an existing HK$8,000 position</h2></div>
+  <p>This section answers a different question from the rest of the report. Everything above asks <em>should someone start buying?</em> This asks <em>what should someone already holding HK$8,000 do?</em> — and the answer is smaller than it feels.</p>
+
+  <div class="facts" style="margin-top:24px">
+    <div class="fact"><div class="l">Position held</div><div class="v">HK$8,000</div><div class="s">≈ 926 units at HK$8.64</div></div>
+    <div class="fact"><div class="l">Next 10 yrs of the plan</div><div class="v">HK$120,000</div><div class="s">= 120 months</div></div>
+    <div class="fact"><div class="l">In board lots</div><div class="v">1.85 lots</div><div class="s">1 full lot + 426 odd units</div></div>
+  </div>
+
+  <h3 style="margin-top:30px">What staying actually costs, per year</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Item</th><th class="num">On HK$8,000</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Fee gap — 0.75% here vs ~0.10% for a plain index ETF</td><td class="num">HK$52 / yr</td><td>Certain — it is a published fee</td></tr>
+        <tr><td>Observed return gap — 0.39pp over the past year</td><td class="num">HK$31 / yr</td><td>Weak — one year, one regime</td></tr>
+        <tr><td><strong>Indicative total</strong></td><td class="num"><strong>~HK$83 / yr</strong></td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-top:26px">What switching costs, and when it pays back</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Your broker's minimum</th><th class="num">Payback on the fee gap alone</th></tr></thead>
+      <tbody>
+        <tr><td>HK$0 (app broker)</td><td class="num">immediate</td></tr>
+        <tr><td>HK$30</td><td class="num">0.6 years</td></tr>
+        <tr><td>HK$50</td><td class="num">1.0 years</td></tr>
+        <tr><td>HK$100 (bank)</td><td class="num">1.9 years</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--ink3);margin-top:8px">Hong Kong does not levy capital gains tax on share disposals by individuals, so selling does not trigger a tax bill — unusually, nothing argues for holding on tax grounds. Confirm against your own circumstances.</p>
+
+  <div class="note acc">
+    <p><strong>The honest summary: at HK$8,000 there is no urgency and no wrong answer.</strong> Holding costs roughly HK$83 a year. Selling costs one commission and recovers that within two years. Neither is a mistake, and anyone presenting this as an urgent decision has lost proportion.</p>
+    <p><strong>The decision worth 15× more is where the next HK$1,000 a month goes.</strong> The same fee gap on the plan's growing balance is about <strong>HK$429 a year</strong> by year ten — before the structural question of capped upside over a multi-decade horizon, which is the real issue and does not appear in a one-year sample.</p>
+  </div>
+
+  <div class="note crit">
+    <p><strong>One question matters more than all of the above, and this report cannot answer it: is HK$8,000 most of this person's savings?</strong></p>
+    <p>If it sits on top of a cash buffer, the arithmetic above is the whole story and it is a minor optimisation. <strong>If it is essentially everything they have</strong>, the fee gap is irrelevant and the real issues are concentration — one country, one index, heavily Chinese banks and platforms — and the absence of a buffer. The genuine risk to a student is not a mediocre fund; it is being forced to sell at the bottom because something unexpected came up.</p>
+    <p>In that case the question is not "hold or sell 3416" but "how much of this should be in equities at all yet."</p>
+  </div>
+
+
+  <div class="note">
+    <p><strong>A selling friction the earlier edition missed.</strong> At 926 units the position is <strong>one board lot of 500 plus 426 odd units</strong>. Odd lots in Hong Kong trade on a separate, thinner market and typically fill below the board-lot price. Selling the whole position therefore means accepting a worse price on roughly 46% of it, or selling one clean lot and keeping the remainder.</p>
+    <p>This does not change the conclusion — at HK$8,000 the stakes are small — but it is a real cost that belongs in the arithmetic.</p>
+  </div>
+  <div class="note crit">
+    <p><strong>And one timing fact that cuts both ways.</strong> The position sits near a 52-week low, after the fund took a 15% index fall in full. Selling now crystallises the downside you already absorbed.</p>
+    <p><strong>But the reason not to hold is the same reason not to wait:</strong> July showed the fund captures roughly a quarter of a rally. If you are holding in hope of a recovery, this structure hands most of that recovery to the option buyer. <strong>Waiting for a rebound in a fund designed to cap rebounds is the one plan the evidence directly contradicts.</strong></p>
+  </div>
+  <div class="note">
+    <p><strong>Three things that are not reasons to sell:</strong> what you paid for it (sunk — it says nothing about what happens next); the fact that a report was critical (this fund is competently run and matched the index over the past year); and the urge to act (selling into cash is itself a market bet, usually a worse one).</p>
+    <p><strong>The middle option:</strong> stop adding, keep what you hold, redirect new money. It stops the mismatch compounding without forcing a decision on incomplete information, and it costs nothing.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sh"><span class="n">10</span><h2>What this report does not know</h2></div>
+  <p>Stated plainly, because a report that hides its gaps is worth less than one that admits them.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Gap</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Board lot size</strong></td><td>May make the monthly plan mechanically impossible</td></tr>
+        <tr><td><strong>Your broker's minimum commission</strong></td><td>Swings the answer more than any market view</td></tr>
+        <tr><td><strong>Distribution composition</strong></td><td>How much is option premium vs return of capital — disclosed in the monthly factsheet, which I could not open</td></tr>
+        <tr><td><strong>NAV at inception</strong></td><td>Would establish whether capital has eroded. These funds typically launch at HK$10.00, but "typically" is not a source</td></tr>
+        <tr><td><strong>Full NAV series</strong></td><td>One-year and since-inception figures come from secondary sources, not the fund's own factsheet</td></tr>
+        <tr><td><strong>Fund size</strong></td><td>Sources disagree threefold (HK$7.3bn / 21.3bn / 22.37bn)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <p><strong>Why the gaps exist.</strong> Three specialist agents — news, options structure, and risk — were dispatched and all three were terminated by a session limit before writing anything. Beyond that, direct page fetching is blocked in this environment (HTTP 403 across financial domains, including the fund's own factsheet PDFs), so everything here comes from search-engine extraction of those documents rather than the documents themselves.</p>
+    <p><strong>The structural argument in §2 and §5 does not depend on any of the missing data.</strong> The performance figures in §3 do, and should be re-verified against the fund's official factsheet before anyone acts on them.</p>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Research and decision support — not financial advice.</strong> This is analysis of a product's structure and suitability, not a recommendation to buy or sell. Markets cannot be reliably predicted. No agent of this firm places orders; the decision is entirely the reader's.</p>
+  <p>Sources: <a href="https://stockanalysis.com/quote/hkg/3416/">stockanalysis.com</a> · <a href="https://www.globalxetfs.com.hk/funds/hscei-covered-call-etf/">Global X ETFs Hong Kong</a> · <a href="https://cbonds.com/etf/220601/">Cbonds</a> · <a href="https://talkmoney.com.hk/etf-3416-hk/">talkmoney.com.hk</a> · <a href="https://www.25y-retirement.com/etf/3416">25y-retirement.com</a> · <a href="https://finance.yahoo.com/quote/3416.HK/">Yahoo Finance</a></p>
+  <p>Performance comparison figures (3416 vs 2828) are secondary-source, to approximately 21 November 2025. Commission brackets in §6 are illustrative, not a quoted schedule.</p>
+</footer>
+
+</div>
+
+<script>
+function draw(id, rows, max, min){
+  min = min || 0;
+  const host = document.getElementById(id);
+  const span = max - min;
+  const zero = (0 - min) / span * 100;
+  rows.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'brow';
+    const neg = r.v < 0;
+    const left = neg ? (r.v - min) / span * 100 : zero;
+    const w = Math.abs(r.v) / span * 100;
+    const labInside = w > 62;
+    el.innerHTML =
+      `<div class="blab">${r.k}</div>
+       <div class="btrack">
+         ${min < 0 ? `<div class="zero" style="left:${zero}%"></div>` : ''}
+         <div class="bar${neg ? ' neg' : ''}" style="left:${left}%;width:${w}%;background:${r.c}"></div>
+         <div class="bval" style="left:${neg ? left : left + w}%;${
+            neg ? 'transform:translateX(-100%);padding-right:7px'
+                : labInside ? 'transform:translateX(-100%);padding-right:8px;color:#fff'
+                            : 'padding-left:7px'}">${r.t}</div>
+       </div>`;
+    host.appendChild(el);
+  });
+}
+
+draw('c1', [
+  {k:'2828 — plain index', v:13.96, t:'+13.96%', c:'var(--s1)'},
+  {k:'3416 — covered call', v:13.57, t:'+13.57%', c:'var(--s2)'}
+], 15);
+
+draw('c2', [
+  {k:'2828 — plain index', v:-7.85, t:'−7.85%', c:'var(--s1)'},
+  {k:'3416 — covered call', v:-3.40, t:'−3.40%', c:'var(--s2)'}
+], 0, -9);
+
+draw('c3', [
+  {k:'HK$0 app broker', v:0.001, t:'0.0%', c:'var(--good)'},
+  {k:'HK$15 minimum', v:1.5, t:'1.5%', c:'var(--s1)'},
+  {k:'HK$30 minimum', v:3.0, t:'3.0%', c:'var(--warn)'},
+  {k:'HK$50 minimum', v:5.0, t:'5.0%', c:'var(--warn)'},
+  {k:'HK$100 bank min', v:10.0, t:'10.0%  ✕', c:'var(--crit)'}
+], 10);
+</script>

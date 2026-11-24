@@ -1,0 +1,46 @@
+{
+ "eval_id": 0,
+ "run": "with_skill",
+ "expectations": [
+  {
+   "text": "Flags the Wikipedia/current-constituents universe as survivorship bias",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Notes that point-in-time RANKING does not fix a survivor-selected UNIVERSE",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Flags the complete absence of commission/slippage/spread modelling",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Computes expected profit per trade in currency, not only percent",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Notes that no drawdown or equity curve is computed anywhere",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Gives a verdict of UNPROVEN or REFUTED, and does not claim SUPPORTED",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Names at least one thing the code does correctly",
+   "passed": true,
+   "evidence": "pattern matched"
+  },
+  {
+   "text": "Does not present illustrative broker rates as measured figures",
+   "passed": false,
+   "evidence": "needs human review"
+  }
+ ]
+}

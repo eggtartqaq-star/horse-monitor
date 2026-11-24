@@ -1,0 +1,118 @@
+# 皮褸黃 Capital — coverage universe. The Owner and CIO curate; departments
+# monitor these names. Starter list aligned with the target sleeves — edit freely.
+
+ai:
+  - NVDA
+  - MSFT
+  - GOOGL
+  - AMD
+  - PLTR
+
+technology:
+  - AAPL    # OWNER HOLDS (disclosed 2026-11-16), COST US$357.60/sh — NOT in the Webull account;
+            # size and broker NOT DISCLOSED; bought within 0.9% of the all-time high; no decision record.
+            # FULL PIPELINE 2026-11-16 (audited): reports/committee/2026-11-16-aapl-ceo-summary.md
+            # Fin A- 78 · Moat Wide 76 (narrowing at toll) · Mgmt B 72 · Industry NEUTRAL 6/10.
+            # Valuation FV $185-245, central $210; MoS -70%; TRIM; ADD <=~$158 (inputs ERP/10y unverified).
+            # CRO: HOLD <=6.4% of LNW, risk 57/100; HARD STOP daily close <$325.08 -> exit next open
+            #   (老詹 to confirm by 21 Nov); no adds >$245; 2.4% cap if no stop; no margin.
+            # Committee RECOMMENDED. Dated: Epic SCOTUS argument 11 Jan 2027; results late Jan.
+  - AMZN
+  - META
+  - TSM
+  - AVGO
+
+etf:
+  - SPY     # S&P 500
+  - QQQ     # Nasdaq 100
+  - SMH     # semiconductors
+  - XLF     # financials
+
+# Names under research but not yet in any sleeve
+research:
+  - MU    # full pipeline 2026-07-18; reports/*/2026-07-18-mu*; CEO: watch, wrong price
+          # REFRESH 2026-11-17 (audited): FV $351-405 (bull-adjusted $400-470) vs $712 close; CRO VETO 42/100.
+          # Downtrend: lower high $827.58, supports $650/$598. Memory = one cluster with SKHY/000660 (<=5% LNW).
+          # Path A: committee <=$350-400, buy $280/$210. Path B (trade): close >$827.58 + stop + committee, <=3-4% LNW.
+          # Results ~16 Dec (unconfirmed). Plan: reports/committee/2026-11-17-trading-plan.md
+  - MRVL  # full pipeline 2026-07-19; reports/*/2026-07-19-mrvl*; CRO veto, ~2.7x fair value
+  - KLAC  # full pipeline 2026-07-19; reports/*/2026-07-19-klac*; CRO veto on valuation only;
+          # STRONGEST candidate — wide moat, A/91 financials; re-entry alerts ~$130 / ~$95-105
+  - BE    # reduced-core pipeline 2026-07-19; reports/*/2026-07-19-be*; CRO VETO 18/100;
+          # trigger: related-party revenue falling as a share of total in the FY2026 10-K
+  - 3416.HK  # Global X HSCEI Covered Call Active ETF. PIPELINE INCOMPLETE 2026-08-04 —
+             # news/options/risk agents all killed by session limit, nothing filed.
+             # CEO interim only: reports/equity/2026-08-04-3416hk-CEO-INTERIM.md
+             # Context: Owner asked re an 18-y-o student buying HK$1,000/month.
+             # UNKNOWN and decisive: board lot size; broker minimum commission;
+             # HSCEI total return over the same period; distribution composition.
+  - 0100.HK  # MiniMax Group Inc (HKEX 100). PIPELINE INCOMPLETE 2026-07-30 - moat, financials
+             # and news filed; VALUATION, RISK and AUDIT NOT RUN (session limit). No verdict.
+             # Moat NONE 18/100; financials D+ 48/100; HK$212.80, -84% from the Mar-26 high.
+             # Do NOT treat as analysed. Open items: HKEXnews unreachable (403) so no primary
+             # filing read; market cap disputed ~20%; VIE structure unverified.
+             # Dated catalysts: Stock Connect decision ~6 Aug 2026; 1H2026 interims by 31 Aug
+  - INTC  # reduced-core pipeline 2026-07-28; reports/*/2026-07-28-intc*; CRO VETO 28/100;
+          # BINDING price gate: no initiation at or above $45. Triggers: two committed 14A
+          # customers by mid-2027, and DCAI margins >=35% sustained after the CPU shortage
+  - SKHY  # SK hynix ADS, Nasdaq (0.1 × 000660.KS). ★ OWNER EXITED IN FULL at US$137.00
+          # (disclosed 2026-11-16; +6.2% on US$129 cost; date NOT DISCLOSED, consistent with 12 Nov).
+          # POSITION ZERO. Tickets T0-T9 VOID. Re-entry: reports/technical/2026-11-16-skhy-reentry.md
+          # RE-ENTRY VETOED at today's price (CRO 16 Nov: ADS 26/100, ordinary 40/100). Conditional ladder
+          #   in KRW: R1 <=W1,070,000 · R2 <=W856,000 · R3 <=W642,000, each + cycle/trend confirmation; ADS premium is a gate.
+          # History below is the pre-exit record. Pipeline 2026-11-11/12: industry, financials, regulatory,
+          # technicals COMPLETE; news partial; VALUATION, CRO, SIZING, TICKETS, AUDIT
+          # NOT RUN. CEO synthesis: reports/committee/2026-11-12-skhy-ceo-synthesis.md
+          # Financials B+ 72 (~60% of grade is cycle position). Memory sector NEUTRAL
+          # 6/10; 8 of 12 cycle-turn indicators flashing. Peak-to-trough OP survival
+          # in prior cycles: 13% and <0%.
+          # ★ STRUCTURAL: ADS trades 44-56% ABOVE the Korean ordinary because a KSD
+          #   cap on ADR issuance (2.5%) was exhausted 23 Jul 2026; conversion is two-way
+          #   only WITHIN the cap (corrected 17 Nov), so new ADSs cannot be created to arbitrage it. Four desks converged independently. Company buys back the
+          #   ordinary at ~US$98/ADS-equivalent. If the cap lifts, ADS can fall 30%+
+          #   with no business change. No date. Reduce ADS on any sharp premium
+          #   narrowing while Seoul is flat/up, regardless of chart level.
+          # Lock-up was 90 days, expired 8 Oct 2026 — NOT January. IPO 100% primary.
+          # Levels (老詹): stop daily close <$120.35; add zone $127.3-130.0 only;
+          #   do-not-chase >$140; reduce $146.8-149.9 then $158.5-162.0.
+          # Dated: Wuxi fab US tool licence expires 31 Dec 2026, no 2027 licence
+          #   reported; 4Q26 results late Jan 2027; ₩20tn buyback to 28 Jan 2027.
+          # Owner action: confirm US-Korea treaty certification with broker — dividend
+          #   withholding is 22% at source vs 15% certified.
+          # Firm's 21 Aug "HBM margins 2-3x DDR5" line is STALE — TrendForce has HBM
+          #   per-wafer below DDR5 RDIMM as of 1Q26. Do not reuse.
+          # WAVE TWO (2026-11-13): valuation ADS FV $102 central (parity $80, premium-
+          #   persists $112), MoS 40% required, FAILS at $129. CRO: hold APPROVED WITH
+          #   CONDITIONS at <=3% of liquid net worth, ADD VETOED, risk 32/100. Sizing:
+          #   22 ADS per $100k LNW; Zac recommends 1.5% now. Tickets T0-T9 cut, sell-only,
+          #   none placeable until Owner discloses LNW / ADS count / cash-vs-margin.
+          #   Audit: hold, veto and 1.5% all SURVIVE; CEO synthesis failed C8 (inference
+          #   as fact) and was corrected. Live 13 Nov: $131.07 (Webull, read-only).
+          # ★ Webull account (read 13 Nov) holds NO SKHY — 2 AVGO on MARGIN, USD cash
+          #   negative. SKHY broker NOT CONFIRMED (presumed Futu).
+  - 2359.HK  # WuXi AppTec H shares (also 603259.SS). PIPELINE INCOMPLETE 2026-08-10 —
+             # news, regulatory and industry filed; FINANCIALS, MOAT, MANAGEMENT, VALUATION,
+             # QUANT, TECHNICALS, RISK and AUDIT ALL NOT RUN. No verdict, no committee.
+             # reports/news/2026-08-07-2359hk-news.md (修大哥)
+             # reports/news/2026-08-07-2359hk-regulatory.md (The dictator)
+             # reports/industry/2026-08-07-biotech-landscape.md (Elon Musk)
+             # 1H26: revenue RMB28.897bn +38.9%, adj GM 53.9% (+9.4pp), backlog RMB66.43bn
+             # +25.2%; FY26 guidance raised to RMB58.5-60.5bn. Out-earned Lonza for the
+             # first time. Concentration stack: 86.5% Chemistry / GLP-1 peptides / ~70% US
+             # customers (FY2025 basis).
+             # PRICE WARNING: HK$204.20 intraday 10 Aug, all-time high, +97% YTD (A +73.5%).
+             # Consensus avg TP HK$183.46 is BELOW spot — "trades below target" screens are
+             # broken on this name. H shares at a ~5% PREMIUM to the A line (inverted), so
+             # 2359.HK is the expensive way to own it.
+             # DO NOT USE VENDOR MARKET-CAP FIELDS — they span HK$440bn-HK$609bn. Re-derive
+             # from share count. Units trap: 288.97億元 = RMB28.897bn, not RMB289bn.
+             # UNKNOWN and decisive: 1H2026 revenue by geography (NOT OBTAINED); revenue
+             # quantum of the post-1260H contract cancellations Boasberg found as fact;
+             # share count and H/A split; customer concentration; segment gross margins.
+             # Zero primary documents read — every host returned 403.
+             # Dated catalysts: DoD appeal of the 7 Aug injunction (stay already refused,
+             # US$1 bond); 3Q2026 results — first clean period containing the cancellations,
+             # watch BACKLOG not revenue; OMB initial BCC list due ~18 Dec 2026 (independent
+             # (B)-prong survives the 1260H injunction); Delaware Middletown start-up Q4 2026;
+             # next 1260H cycle Jun 2027 for 2269.HK / 2268.HK, neither of which has WuXi
+             # AppTec's legal protection
