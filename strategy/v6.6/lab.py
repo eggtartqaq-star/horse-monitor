@@ -624,6 +624,21 @@ def trade_hash(tr) -> str:
     return hashlib.sha256(t.to_csv(index=False).encode()).hexdigest()[:16]
 
 
+def run_feecheck(sig, first, last, is_end, fee_min, fee_bp):
+    """CRO V-1 / S4:用你真實嘅收費重跑交易路徑(2倉、10%)。淨 EV ≤ 0 → 呢個戶口規模下唔應該交易。"""
+    BROKERS["real"] = Broker(f"真實收費 US${fee_min}/邊最低 + {fee_bp}bp/邊", fee_min, 0.0, fee_bp)
+    rows = {}
+    for per, (s, e) in periods(first, last, is_end).items():
+        tr, eq, _ = simulate(sig, replace(AS_TRADED, broker="real"), s, e)
+        r = summarize(tr, eq)
+        rows[per] = r
+        print(f"  {per:4} 交易 {r['trades']:4}  每筆淨EV {r.get('EV_net%', float('nan')):+.3f}%  "
+              f"年化 {r.get('CAGR%', float('nan')):+.2f}%  最大回撤 {r.get('maxDD%', float('nan')):.2f}%")
+    ok = rows["ALL"].get("EV_net%", -1) > 0 and rows["OOS"].get("EV_net%", -1) > 0
+    print(f"\nS4 / V-1 結論:{'✅ 真實收費下仍然有正 EV' if ok else '❌ 真實收費下淨 EV ≤ 0 → 呢個戶口規模下,任何上限都唔應該交易'}")
+    return ok
+
+
 def run_baseline(sig, first, last, out):
     """回歸基準:兩條路徑 as_traded 全期。results/baseline.json 係「冇改到規則」嘅證據。"""
     import json
@@ -649,7 +664,9 @@ def main():
     ap.add_argument("--source", choices=["csv", "yf"], default="csv")
     ap.add_argument("--data", default=os.path.join(HERE, "data"))
     ap.add_argument("--is_end", default="2024-12-31")
-    ap.add_argument("--mode", choices=["ab", "sens", "caps", "baseline"], default="ab")
+    ap.add_argument("--mode", choices=["ab", "sens", "caps", "baseline", "feecheck"], default="ab")
+    ap.add_argument("--fee-min", type=float, default=0.0, help="feecheck:每邊最低收費 US$")
+    ap.add_argument("--fee-bp", type=float, default=10.0, help="feecheck:每邊差價+滑價+收費(bp)")
     ap.add_argument("--path", choices=["all", "bt", "scan"], default="all",
                     help="ab/caps 只跑一條路徑(預設兩條都跑)")
     ap.add_argument("--out", default=os.path.join(HERE, "results"))
@@ -670,6 +687,8 @@ def main():
     os.makedirs(a.out, exist_ok=True)
     if a.mode == "ab":
         run_ab(sig, data, first, last, is_end, a.out, a.path)
+    elif a.mode == "feecheck":
+        run_feecheck(sig, first, last, is_end, a.fee_min, a.fee_bp)
     elif a.mode == "baseline":
         run_baseline(sig, first, last, a.out)
     elif a.mode == "sens":

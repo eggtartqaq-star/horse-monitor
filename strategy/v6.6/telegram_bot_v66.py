@@ -145,6 +145,7 @@ def analyze(user_input, fetch=None, earnings="lookup"):
     if not is_bull:
         blocks.append("❌ 熊市(或無法判斷)→ 系統停手")
 
+    plan_lines = []
     if any_sig:
         g = G.check(ticker, ind, any_sig["risk_pct"], earnings_ts=earnings if earnings != "off" else None,
                     asof_mode=(earnings == "off"))
@@ -156,31 +157,32 @@ def analyze(user_input, fetch=None, earnings="lookup"):
             tier = R.classify_mr_tier(row, any_sig["score"], plan,
                                       g["days_er"] if isinstance(g["days_er"], int) else None)
             tmap = {"PREMIUM": "⭐頂級", "STRONG": "💪強", "BASIC": "🔵普通", None: "⚪無"}
-            lines += [f"引擎一(均值回歸)評分 {any_sig['score']}  級別 {tmap.get(tier)}",
-                      "── 交易計劃 ──", f"入場: ${close:.2f}",
-                      f"止蝕: ${any_sig['stop']}  (-{any_sig['risk_pct']:.1f}%)",
-                      f"止盈: ${any_sig['target']}  R值 {any_sig['r']}R",
-                      "持倉: 最多10個交易日,第10日收市出"]
+            lines.append(f"引擎一(均值回歸)評分 {any_sig['score']}  級別 {tmap.get(tier)}")
+            plan_lines = ["── 交易計劃 ──", f"入場: ${close:.2f}",
+                          f"止蝕: ${any_sig['stop']}  (-{any_sig['risk_pct']:.1f}%)",
+                          f"止盈: ${any_sig['target']}  R值 {any_sig['r']}R",
+                          "持倉: 最多10個交易日,第10日收市出"]
         else:
-            lines += [f"引擎二(趨勢)評分 {any_sig['score']}  突破20日高: {'✅' if any_sig['breakout'] else '❌'}",
-                      "── 交易計劃 ──", f"入場: ${close:.2f}",
-                      f"初始止損: ${any_sig['stop']}  (-{any_sig['risk_pct']:.1f}%)",
-                      "移動止損: 每日收市後 = 入場以嚟最高價 − 3×ATR,只升不降;冇固定止盈"]
-        lines.append(f"建議股數(上限 {Z.live_mode()}): {sz['shares']}股 (~{sz['notional']:.0f})"
-                     if sz["shares"] >= 1 else "建議股數: 買唔起(10%上限/1%風險)")
+            lines.append(f"引擎二(趨勢)評分 {any_sig['score']}  突破20日高: {'✅' if any_sig['breakout'] else '❌'}")
+            plan_lines = ["── 交易計劃 ──", f"入場: ${close:.2f}",
+                          f"初始止損: ${any_sig['stop']}  (-{any_sig['risk_pct']:.1f}%)",
+                          "移動止損: 每日收市後 = 入場以嚟最高價 − 3×ATR,只升不降;冇固定止盈"]
+        plan_lines.append(f"建議股數(上限 {Z.live_mode()}): {sz['shares']}股 (~{sz['notional']:.0f})")
         if not g["ok"]:
             blocks.append(f"❌ {g['reason']}")
         if sz["shares"] < 1:
-            blocks.append("❌ 買唔起1股(唔准硬買)")
+            blocks.append("❌ 買唔起1股(10%上限/1%風險,唔准硬買)")
         if g["flag"] != "✅":
             blocks.append(f"⚠️ {g['flag']} → 加倍小心或跳過")
         lines.append(f"距財報: {g['days_er'] if g['days_er'] is not None else '?(必須自己上網查)'}")
     elif is_bull:
         lines.append("\n今日冇任何訊號(兩條路徑都冇)")
 
+    bt_ok = sig["bt"] is not None and not [b for b in blocks if b.startswith("❌")]
+    if bt_ok:
+        lines += [""] + plan_lines        # CRO C-2:只有交易路徑、護欄全過先顯示交易計劃同股數
     lines.append("")
     lines.append("=" * 22)
-    bt_ok = sig["bt"] is not None and not [b for b in blocks if b.startswith("❌")]
     if bt_ok:
         lines += ["✅ 交易路徑(回測驗證版):訊號成立,自動護欄全過",
                   "最後一關:你自己認唔認同?落單後即刻設止損 + 用 ledger fill 記錄"]
@@ -190,7 +192,7 @@ def analyze(user_input, fetch=None, earnings="lookup"):
             why = ["❌ 只係舊掃描器路徑先有(例如引擎二冇突破20日高)→ 只記錄,唔交易"] + why
         elif sig["bt"] is None and not why:
             why = ["❌ 交易路徑冇訊號"]
-        lines += ["🚫 唔入場:"] + [f"  {b}" for b in why]
+        lines += ["🚫 唔入場(所以唔顯示交易計劃同股數):"] + [f"  {b}" for b in why]
     lines.append(f"舊掃描器路徑(只記錄):{'有訊號' if sig['scan'] else '冇訊號'}")
     return "\n".join(lines)
 

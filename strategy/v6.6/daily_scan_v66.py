@@ -50,10 +50,11 @@ def stamp(source):
     mode = Z.live_mode()
     lines = [
         "=" * 64,
-        f"Swing {C.VERSION}  指紋 {C.fingerprint()}  |  {datetime.now():%Y-%m-%d %H:%M}",
+        f"Swing {C.VERSION}  規則指紋 {C.fingerprint()}  |  {datetime.now():%Y-%m-%d %H:%M}",
         f"交易路徑: {C.LIVE_PATH}(回測驗證版)  影子路徑: {', '.join(C.SHADOW_PATHS)}(只記錄)",
         f"名義上限: {mode}({'10% 一律' if mode == 'A' else 'B′:引擎二1股≤15%'})  "
         f"B′ {'開' if C.B_PRIME_ENABLED else '關'}  |  每筆風險 {C.RISK_PCT}%  最多 {C.MAX_POSITIONS} 倉",
+        C.settings_line(),
         f"未過關卡: {', '.join(C.gates_outstanding()) or '冇'}",
         f"Python {platform.python_version()}  pandas {pd.__version__}  yfinance {yfv}  數據: {source}",
         "=" * 64,

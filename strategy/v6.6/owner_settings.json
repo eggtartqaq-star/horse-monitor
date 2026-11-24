@@ -1,0 +1,17 @@
+{
+  "_說明": "你自己會改嘅設定。改呢個檔唔會令規則指紋變。B′ 要四個關卡全過 + CRO 書面批准先可以開,否則掃描器拒絕啟動。",
+  "account_hkd": 10000,
+  "cap_mode": "A",
+  "b_prime_enabled": false,
+  "b_prime_cro_note": "",
+  "gates": {
+    "G1_路徑已定": true,
+    "V1_真實收費已核": false,
+    "V2_代碼測試": false,
+    "V3_對照測試": false
+  },
+  "real_fee": {
+    "min_per_side_usd": null,
+    "bp_per_side": null
+  }
+}

@@ -156,10 +156,29 @@ def main():
         except AssertionError:
             blocked = True
         check("關卡全過但冇 CRO 文件 → 開 B′ 會被擋", blocked)
+        C.B_PRIME_CRO_NOTE = "ok"
+        try:
+            C.check_config(); blocked = False
+        except AssertionError:
+            blocked = True
+        check("CRO 文件唔係 reports/risk/...+日期 → 擋", blocked)
+        C.B_PRIME_CRO_NOTE = "reports/risk/2026-12-01-bprime-approval.md 2026-12-01"
+        try:
+            ok_full = C.check_config()
+        except AssertionError:
+            ok_full = False
+        check("關卡全過 + 合格 CRO 文件 → 准開 B′", ok_full is True)
     finally:
         C.CAP_MODE, C.B_PRIME_ENABLED, C.B_PRIME_CRO_NOTE = old[0], old[1], old[3]
         C.GATES.clear(); C.GATES.update(old[2])
     check("設定自檢通過", C.check_config())
+    import inspect
+    check("check_config 冇用 assert(python -O 關唔到)", "assert " not in inspect.getsource(C.check_config))
+    check("規則指紋唔包括 owner_settings.json", "owner_settings.json" not in C.CORE_FILES)
+    bat = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "掃描_v66.bat"), "rb").read().decode("utf-8")
+    check("掃描_v66.bat:冇半形括號(Tom F-1)、selftest 失敗會 goto 停、CRLF、冇 BOM",
+          "(" not in bat and ")" not in bat and "if errorlevel 1 goto FAILED" in bat
+          and bat.count("\r\n") == bat.count("\n") and not bat.startswith("\ufeff"))
 
     # 5) 指紋:改一個字節就變
     import shutil, tempfile
@@ -319,6 +338,38 @@ def main():
     txt = B.analyze(R.TICKERS[0], fetch=fetch, earnings="off")
     check("bot:離線分析有版本指紋同兩條路徑", C.fingerprint() in txt and "舊掃描器路徑" in txt)
     check("bot:唔喺股票池 → 擋", "唔喺你38隻股票池" in B.analyze("ZZZZ", fetch=lambda tk: data.get(tk, data["SPY"]), earnings="off"))
+
+    # 10) 2026-11-24 第二輪修正(CRO C-2、Tom F-8/F-9)
+    txt_scan = None
+    for tk in R.TICKERS:
+        dfx = sig.get(tk)
+        if dfx is None:
+            continue
+        for i in range(len(dfx) - 1, 200, -1):
+            ev = S.evaluate(dfx.iloc[i])
+            if S.on_path(ev, "scan") and not S.on_path(ev, "bt"):
+                cut = dfx.index[i]
+                txt_scan = B.analyze(tk, fetch=lambda t, c=cut: None if data.get(t) is None else data[t][data[t].index <= c],
+                                     earnings="off")
+                break
+        if txt_scan:
+            break
+    check("bot:只有舊掃描器路徑嘅訊號 → 唔顯示交易計劃同股數(CRO C-2)",
+          txt_scan is not None and "建議股數(" not in txt_scan and "── 交易計劃 ──" not in txt_scan
+          and "只係舊掃描器路徑先有" in txt_scan)
+    tmpE = tempfile.mkdtemp()
+    try:
+        L._append_rows(tmpE, "signals.csv", L.SIGNAL_COLS, [dict({c: "" for c in L.SIGNAL_COLS}, bar_date="2026-03-02",
+                       ticker="EEE", path="bt", live=True, engine="E2", earnings_date="2026-03-10", guard_ok=True)])
+        L._append_rows(tmpE, "fills.csv", L.FILL_COLS, [{"fill_id": "e", "ticker": "EEE", "engine": "E2",
+                       "open_date": "2026-03-03", "open_px": 50, "shares": 2, "init_stop": 46,
+                       "close_date": "2026-03-20", "close_px": 51, "flags": "", "notional_pct": 7.8}])
+        with contextlib.redirect_stdout(io.StringIO()):
+            rv = L.review(tmpE, today="2026-03-25")
+        check("review:持倉期內有財報 → 記錄(CRO §5)", any("財報喺持倉期內" in n for n in rv["notes"]))
+        check("review:V-1 未做 → S4 pending(唔會誤報)", rv["s4"]["state"] == "pending")
+    finally:
+        shutil.rmtree(tmpE, ignore_errors=True)
 
     print(f"\n{'全部通過' if not FAILS else f'{len(FAILS)} 項失敗'}")
     sys.exit(1 if FAILS else 0)

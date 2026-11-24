@@ -306,22 +306,65 @@ def review(folder, today=None):
                     if len(exc_open):
                         out["breaches"].append(f"S3:{m} 月熔斷時有例外倉")
             net = closed["pnl"].sum()
-            print(f"  已平倉 {len(closed)} 筆,扣費淨盈虧 US${net:.2f}")
-            if C.GATES.get("V1_真實收費已核") and len(closed) >= 10 and net <= 0:
-                out["breaches"].append("S4:扣真實收費後淨盈虧 ≤ 0")
+            print(f"  已平倉 {len(closed)} 筆,扣費淨盈虧 US${net:.2f}(資料,唔係 S4)")
+        # 持倉期間有冇財報(CRO §5 earnings log)—— 只知道「訊號嗰日」查到嘅下次財報日
+        for x in f.itertuples():
+            ed = _signal_earnings(sig, x.ticker, x.open_date)
+            end = x.close_date or today.strftime("%Y-%m-%d")
+            if ed and x.open_date <= ed <= end:
+                out["notes"].append(f"財報喺持倉期內:{x.ticker} {x.open_date}→{end},財報 {ed}")
     else:
         print("  未有真實交易記錄(fills.csv)")
-    if not C.GATES.get("V1_真實收費已核"):
-        out["notes"].append("S4 未能檢查:V-1 真實收費未核(要一張微牛成交單據)")
+
+    # ---- S4(CRO 定義):V-1 真實收費下,淨 EV ≤ 0 → 呢個戶口規模下,任何上限都唔應該交易 ----
+    out["s4"] = s4_status(sig, res)
+    print(f"  S4 收費關卡:{out['s4']['text']}")
+    if out["s4"]["state"] == "fail":
+        out["breaches"].append("S4:真實收費下淨 EV ≤ 0")
+
     for b in out["breaches"]:
         print(f"  🔴 {b}")
     for n in out["notes"]:
         print(f"  ℹ️ {n}")
-    if out["breaches"]:
+    if any(b.startswith("S4") for b in out["breaches"]):
+        print("\n  ★ S4:真實收費食晒優勢 → 呢個戶口規模下,任何名義上限都唔應該交易。通知 CRO。")
+    elif out["breaches"]:
         print("\n  ★ 有違規 → 即刻返去 A(10%),通知 CRO。測試期內唔可以爭拗。")
     elif len(fills):
         print("  ✅ 冇違規")
     return out
+
+
+def _signal_earnings(sig, ticker, open_date):
+    """搵入場前最近一個 live 訊號記錄嘅下次財報日(YYYY-MM-DD)或 None。"""
+    if not len(sig):
+        return None
+    s = sig[(sig["ticker"] == ticker) & (sig["bar_date"] < open_date) & (sig["earnings_date"] != "")]
+    if not len(s):
+        return None
+    return s.sort_values("bar_date")["earnings_date"].iloc[-1]
+
+
+def s4_status(sig, res):
+    """CRO S4/V-1:真實收費(owner_settings.json real_fee)下,交易路徑每筆淨 EV。
+    回測版:python lab.py --mode feecheck --fee-min X --fee-bp Y(V-1 之後跑一次,結果畀 CRO)。
+    呢度係前向版:用記錄簿已完結嘅交易路徑訊號,按 A 倉位名義值扣真實收費。"""
+    fee = C.REAL_FEE or {}
+    if not C.GATES.get("V1_真實收費已核") or fee.get("bp_per_side") is None or fee.get("min_per_side_usd") is None:
+        return {"state": "pending", "text": "未能檢查 —— 要先做 V-1(微牛成交單據),再喺 owner_settings.json 填 real_fee"}
+    if not len(res) or not len(sig):
+        return {"state": "pending", "text": "未有已完結訊號"}
+    r = res[(res["mode"] == "per_trade") & (res["path"] == C.LIVE_PATH) & (res["reason"] != "持倉中")].copy()
+    sz = sig[sig["path"] == C.LIVE_PATH][["ticker", "bar_date", "notional_A"]].rename(columns={"bar_date": "sig_date"})
+    r = r.merge(sz, on=["ticker", "sig_date"], how="left")
+    r["notional_A"] = pd.to_numeric(r["notional_A"], errors="coerce")
+    r = r[r["notional_A"] > 0]
+    if len(r) < 30:
+        return {"state": "pending", "text": f"已完結而買得起嘅交易路徑訊號 {len(r)}/30,未夠計"}
+    cost_pct = 2 * float(fee["bp_per_side"]) / 100 + 2 * float(fee["min_per_side_usd"]) / r["notional_A"] * 100
+    ev = (r["gross_pct"].astype(float) - cost_pct).mean()
+    state = "fail" if ev <= 0 else "pass"
+    return {"state": state, "text": f"前向 {len(r)} 個訊號,真實收費下每筆淨 EV {ev:+.2f}% → {'❌ 唔過' if state == 'fail' else '✅ 過'}"}
 
 
 def main():
