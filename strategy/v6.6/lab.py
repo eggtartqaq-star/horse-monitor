@@ -136,11 +136,14 @@ def build_signal(e, cfg):
                 return None
             t = [(p, (p - close) / risk) for p in (e["ma50"], e["h60"]) if pd.notna(p) and p > close]
             v = [x for x in t if x[1] >= cfg.min_r]
-            plan = None if not v else {"stop": round(stop, 2), "target": round(min(v)[0], 2)}
+            plan = None if not v else {"stop": round(stop, 2), "target": round(min(v)[0], 2),
+                                       "r": round(min(v)[1], 2)}
         if not plan:
             return None
         if cfg.e1_strong_only:
-            r = (plan["target"] - e["close"]) / (e["close"] - plan["stop"])
+            # 2026-11-24 fidelity:用 plan["r"](同 daily_strong_signals.classify_mr_tier 一樣),
+            # 唔好由四捨五入後嘅止蝕/止盈再計 R(R=3.00 嘅日子會計錯)
+            r = plan["r"] if "r" in plan else (plan["target"] - e["close"]) / (e["close"] - plan["stop"])
             if not (pd.notna(e.get("rsi2")) and e["rsi2"] < 10 and r >= 3.0):
                 return None
         if (e["close"] - plan["stop"]) / e["close"] * 100 > R.MAX_STOP_PCT_MR:
@@ -208,7 +211,10 @@ def precompute(data):
         df = calc_indicators(data[tk])
         df["bull"] = bull.reindex(df.index).ffill().fillna(False).astype(bool)
         recs = []
-        for i, (dt, row) in enumerate(df.iterrows()):
+        # 2026-11-24 fidelity:用 df.iloc[i](numpy float64),同你嘅掃描器 df.iloc[-1] 一樣。
+        # iterrows 會變成 Python float,半仙位四捨五入唔同(例:SHOP 77.825 → 77.83 vs 77.82)。
+        for i in range(len(df)):
+            row = df.iloc[i]
             e = {"route": "SKIP"}
             if i >= 80 and row["bull"]:
                 route = R.classify(row)
