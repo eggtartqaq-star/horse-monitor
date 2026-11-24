@@ -99,12 +99,17 @@ def open_fills(folder=DEFAULT_DIR):
 # ============================================================
 def cmd_fill(a, folder):
     fills = read(folder, "fills.csv", FILL_COLS)
-    today = a.date or datetime.now().strftime("%Y-%m-%d")
+    # Tom 2026-11-24:預設用「紐約日期」。bar_date 係紐約日期;你喺香港朝早(紐約前一晚)記錄,
+    # 用香港日期會將開倉日記遲一日 → 移動止損漏咗入場日,訊號來源亦會對錯 bar。
+    today = a.date or pd.Timestamp.now(tz="America/New_York").strftime("%Y-%m-%d")
     acct_usd = C.ACCOUNT_HKD / C.USD_HKD
     if a.action == "open":
         if len(fills) and ((fills["ticker"] == a.ticker) & (fills["close_date"] == "")).any():
             sys.exit(f"❌ {a.ticker} 已經有未平倉記錄")
         flags = []
+        n_open = int((fills["close_date"] == "").sum()) if len(fills) else 0
+        if n_open >= C.MAX_POSITIONS:
+            flags.append(f"S2:已有{n_open}倉(最多{C.MAX_POSITIONS})")
         notional = a.price * a.shares
         pct = notional / acct_usd * 100
         if pct > C.CAP_A_PCT + 1e-9:
@@ -117,15 +122,25 @@ def cmd_fill(a, folder):
         sig = read(folder, "signals.csv", SIGNAL_COLS)
         src = "none"
         if len(sig):
-            prior = sig[(sig["ticker"] == a.ticker) & (sig["bar_date"] < today)]
-            if len(prior):
-                last_bar = prior["bar_date"].max()
-                pl = prior[prior["bar_date"] == last_bar]
+            # Tom 2026-11-24:要睇「你上一次掃描嗰條 bar」(全部股票計),唔係「呢隻股最後一次有訊號」——
+            # 否則幾日前嘅 live 訊號會令一筆今日冇訊號嘅交易過關。
+            before = sig[sig["bar_date"] < today]
+            last_bar = before["bar_date"].max() if len(before) else None
+            pl = before[(before["ticker"] == a.ticker) & (before["bar_date"] == last_bar)] if last_bar else before.iloc[0:0]
+            if not len(pl) and last_bar and (before["ticker"] == a.ticker).any():
+                src = f"stale:上次掃描{last_bar}冇呢隻"
+            if len(pl):
                 src = "live" if (pl["live"] == "True").any() else "scan_only"
+                lv = pl[pl["live"] == "True"]
+                if len(lv) and not (lv["guard_ok"] == "True").any():
+                    # Tom 2026-11-24:交易路徑有訊號,但被護欄擋咗(財報/止蝕過闊)—— 唔係「可以交易」
+                    flags.append(f"S2:護欄擋咗({lv['guard_reason'].iloc[0]})")
                 if (pl["live"] == "True").any():
                     rk = pd.to_numeric(pl[pl["live"] == "True"]["rank"], errors="coerce").min()
-                    if pd.notna(rk) and rk > C.MAX_POSITIONS:
-                        flags.append(f"留意:揀咗第{int(rk)}名")
+                    # 空位 = 2 − 今日之前已開嘅倉(同日開兩筆唔會誤報)
+                    n_before = int(((fills["close_date"] == "") & (fills["open_date"] < today)).sum()) if len(fills) else 0
+                    if pd.notna(rk) and rk > C.MAX_POSITIONS - n_before:
+                        flags.append(f"留意:揀咗第{int(rk)}名(當時得{max(C.MAX_POSITIONS - n_before, 0)}個空位)")
         if src != "live":
             flags.append(f"S2:冇 live 訊號({src})")
         row = {"fill_id": f"{today}_{a.ticker}", "ticker": a.ticker, "engine": a.engine, "source_path": src,

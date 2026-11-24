@@ -45,7 +45,8 @@ POOL = set(R.TICKERS)
 HOME = os.path.expanduser("~")
 TOKEN_FILE = os.environ.get("SWING_BOT_TOKEN_FILE", os.path.join(HOME, ".swing_bot_token"))
 ALLOW_FILE = os.environ.get("SWING_BOT_ALLOWED_FILE", os.path.join(HOME, ".swing_bot_allowed"))
-_TOKEN_RE = re.compile(r"\d{6,12}:[A-Za-z0-9_-]{20,}")
+# Tom 2026-11-24:冒號有時會被 URL 編碼成 %3A
+_TOKEN_RE = re.compile(r"\d{6,12}(?::|%3[Aa])[A-Za-z0-9_-]{20,}")
 
 
 # ============================================================
@@ -66,8 +67,9 @@ def load_token():
     if not tok or tok == PLACEHOLDER:
         raise SystemExit("❌ 未設定 token。將新 token 存入 " + TOKEN_FILE +
                          "(或設環境變數 SWING_BOT_TOKEN)。唔好寫入任何 .py 檔。")
-    if os.path.abspath(os.path.dirname(TOKEN_FILE)) == os.path.abspath(HERE):
-        raise SystemExit("❌ token 檔唔可以放喺 V6.6 資料夾入面(會被一齊複製/上載)。")
+    tf, here = os.path.abspath(TOKEN_FILE), os.path.abspath(HERE)
+    if os.path.commonpath([tf, here]) == here:       # Tom 2026-11-24:子資料夾(例如 ledger/)都唔得
+        raise SystemExit("❌ token 檔唔可以放喺 V6.6 資料夾(或者佢嘅子資料夾)入面(會被一齊複製/上載)。")
     return tok
 
 
@@ -200,6 +202,13 @@ def main():
     import requests
     C.check_config()
     token = load_token()
+
+    def _redacting_hook(t, v, tb):
+        # Tom 2026-11-24:任何冇被捉到嘅錯誤(包括喺 except 入面撳 Ctrl+C 帶出嘅「連鎖」錯誤)
+        # 都會印出原本嘅 URL(/bot<token>/...)。全部經 redact 先印。
+        import traceback
+        sys.stderr.write(redact("".join(traceback.format_exception(t, v, tb)), token))
+    sys.excepthook = _redacting_hook
     allowed = load_allowed()
     api = f"https://api.telegram.org/bot{token}"
     print("=" * 50)

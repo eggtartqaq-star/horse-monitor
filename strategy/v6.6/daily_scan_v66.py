@@ -121,7 +121,8 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
         print("熊市:系統停手,今日唔搵做多訊號。"); return {"bull": False, "rows": []}
 
     held = set(L.open_fills(ledger_dir)["ticker"])
-    rows, live, shadow_only, blocked = [], [], [], []
+    mode = Z.live_mode()          # Tom 2026-11-24:交易清單用 config 嘅模式(而家 = A);以前寫死 "A",開 B′ 都唔會生效
+    rows, live, shadow_only, blocked, held_sigs = [], [], [], [], []
     for tk in R.TICKERS:
         df = data.get(tk)
         if df is None or len(df) < 100:
@@ -165,13 +166,18 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
                 "size_D": d_["shares"], "rank": "", "held": tk in held, "partial_bar": partial,
                 "version": C.VERSION, "fingerprint": C.fingerprint(),
             }
+            lv = bp if mode == "B_PRIME" else a_
+            rec["size_live"], rec["notional_live"] = lv["shares"], lv["notional"]   # 只供顯示;記錄簿欄位不變
             rows.append(rec)
             if path == C.LIVE_PATH:
                 if not g["ok"]:
                     blocked.append((tk, sg["engine"], g["reason"]))
-                elif a_["shares"] < 1:
-                    why = f"10% 上限/1%風險下買唔起1股(${close * f:.0f})"
+                elif lv["shares"] < 1:
+                    why = f"{'10% 上限' if mode == 'A' else 'B′'}/1%風險下買唔起1股(${close * f:.0f})"
                     blocked.append((tk, sg["engine"], why))
+                elif tk in held:
+                    # Tom 2026-11-24:lab.simulate 會跳過已持倉嘅股,所以佢唔可以佔排名
+                    held_sigs.append(rec)
                 else:
                     live.append((S.rank_key(sg), rec))
         if per_path.get("scan") and not per_path.get(C.LIVE_PATH):
@@ -182,30 +188,38 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
         rec["rank"] = k
 
     if not quiet:
-        _print(live, shadow_only, blocked, held, ledger_dir, data)
-    if not dry_run:
+        _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs)
+    if partial and not dry_run:
+        # Tom 2026-11-24:記錄簿係「同一 (日期,代號,路徑) 只寫第一次」—— 未收市嘅數一寫入,
+        # 收市後嘅正確數就永遠寫唔入。所以開市期間一律唔寫。
+        print("\n⚠️ 今日條 bar 未收市 → 唔寫影子記錄簿。收市後再跑一次。")
+    elif not dry_run:
         n = L.append_signals(rows, ledger_dir)
         print(f"\n影子記錄簿:新增 {n} 行 → {os.path.join(ledger_dir, 'signals.csv')}")
     return {"bull": True, "rows": rows, "live": [r for _, r in live], "shadow_only": shadow_only,
-            "blocked": blocked, "bar_date": bar_date}
+            "blocked": blocked, "held_signals": held_sigs, "bar_date": bar_date}
 
 
-def _print(live, shadow_only, blocked, held, ledger_dir, data):
+def _line(rec, rank_txt, tag=""):
+    if rec["engine"] == "E2":
+        return (f" {rank_txt} 引擎二 {rec['ticker']:5} 評分{rec['score']:.3f}  收市${rec['close']:.2f}  "
+                f"初始止蝕${rec['stop']:.2f}(-{rec['risk_pct']:.1f}%)  股數 {rec['size_live']}(${rec['notional_live']:.0f})  "
+                f"距財報 {rec['days_er']}  {rec['spec_flag']} {tag}")
+    return (f" {rank_txt} 引擎一 {rec['ticker']:5} [{rec['tier']}] 評分{rec['score']:.3f}  收市${rec['close']:.2f}  "
+            f"止蝕${rec['stop']:.2f} 止盈${rec['target']:.2f} R{rec['r']}  股數 {rec['size_live']}(${rec['notional_live']:.0f})  "
+            f"距財報 {rec['days_er']}  {rec['spec_flag']} {tag}")
+
+
+def _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs=()):
     print("\n" + "=" * 64)
     print("① 交易清單(回測驗證版)—— 按排名揀,最多 2 倉(扣返現有持倉)")
     print("=" * 64)
     if not live:
         print("今日冇訊號。空手係一種倉位。")
     for _, rec in live:
-        tag = "持倉中" if rec["held"] else ""
-        if rec["engine"] == "E2":
-            print(f" #{rec['rank']} 引擎二 {rec['ticker']:5} 評分{rec['score']:.3f}  收市${rec['close']:.2f}  "
-                  f"初始止蝕${rec['stop']:.2f}(-{rec['risk_pct']:.1f}%)  股數 {rec['size_A']}(${rec['notional_A']:.0f})  "
-                  f"距財報 {rec['days_er']}  {rec['spec_flag']} {tag}")
-        else:
-            print(f" #{rec['rank']} 引擎一 {rec['ticker']:5} [{rec['tier']}] 評分{rec['score']:.3f}  收市${rec['close']:.2f}  "
-                  f"止蝕${rec['stop']:.2f} 止盈${rec['target']:.2f} R{rec['r']}  股數 {rec['size_A']}(${rec['notional_A']:.0f})  "
-                  f"距財報 {rec['days_er']}  {rec['spec_flag']} {tag}")
+        print(_line(rec, f"#{rec['rank']}"))
+    for rec in held_sigs:
+        print(_line(rec, " — ", "持倉中(唔計排名,唔好加注)"))
     if live:
         print("  落單:聽日開市;開市價偏離收市 >1% → 重計 R/風險,唔達標放棄。成交後即刻設止蝕單。")
         print("  落單後記錄:python ledger_v66.py fill open --ticker X --price P --shares N --stop S --engine E2")
