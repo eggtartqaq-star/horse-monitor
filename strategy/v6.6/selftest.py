@@ -14,6 +14,7 @@ import config_v66 as C          # noqa: E402
 import signals_v66 as S         # noqa: E402
 import sizing_v66 as Z          # noqa: E402
 import guardrails_v66 as G      # noqa: E402
+import ledger_v66 as L          # noqa: E402
 
 FAILS = []
 EXPECTED_SYNTH_HASH = "c76849eb6539"   # 由 V6.6.0 第一次跑出嚟;改規則/模擬器 = 要人手更新 + 寫原因
@@ -186,6 +187,38 @@ def main():
     import hashlib
     h = hashlib.sha256(repr(sig_list).encode()).hexdigest()[:12]
     check(f"合成數據交易清單回歸指紋 {h} == {EXPECTED_SYNTH_HASH}", h == EXPECTED_SYNTH_HASH)
+
+    # 8) 影子記錄簿:冪等、BOM 只寫一次、S1/S3 偵測
+    import io, contextlib
+    tmpL = tempfile.mkdtemp()
+    try:
+        row = {c: "" for c in L.SIGNAL_COLS}
+        row.update(bar_date="2026-01-05", ticker="AAA", path="bt", live=True, engine="E2", score=0.8,
+                   close=50, stop=46, guard_ok=True, size_A=2, size_Bp=2, size_D=3)
+        n1 = L.append_signals([row], tmpL); n2 = L.append_signals([row], tmpL)
+        row2 = dict(row, ticker="BBB"); n3 = L.append_signals([row2], tmpL)
+        raw = open(os.path.join(tmpL, "signals.csv"), "rb").read()
+        check("記錄簿:同一 (日期,代號,路徑) 唔會寫兩次", (n1, n2, n3) == (1, 0, 1))
+        check("記錄簿:UTF-8 BOM 只喺檔頭出現一次", raw.count(b"\xef\xbb\xbf") == 1 and raw.startswith(b"\xef\xbb\xbf"))
+        acct = C.ACCOUNT_HKD / C.USD_HKD
+        fills = [
+            {"fill_id": "1", "ticker": "EXC", "engine": "E2", "open_date": "2026-02-02", "open_px": 180,
+             "shares": 1, "init_stop": 168, "open_fees": 0, "close_date": "2026-02-10", "close_px": 150,
+             "close_fees": 0, "flags": "B'例外", "notional_pct": 14.0},
+            {"fill_id": "2", "ticker": "BIG", "engine": "E1", "open_date": "2026-02-03", "open_px": 60,
+             "shares": 2, "init_stop": 50, "open_fees": 0, "close_date": "2026-02-20",
+             "close_px": 60 - 0.10 * acct / 2, "close_fees": 0, "flags": "", "notional_pct": 9.4},
+            {"fill_id": "3", "ticker": "EX2", "engine": "E2", "open_date": "2026-02-04", "open_px": 150,
+             "shares": 1, "init_stop": 140, "open_fees": 0, "close_date": "", "close_px": "",
+             "close_fees": "", "flags": "B'例外", "notional_pct": 11.7},
+        ]
+        L._append_rows(tmpL, "fills.csv", L.FILL_COLS, fills)
+        with contextlib.redirect_stdout(io.StringIO()):
+            rv = L.review(tmpL, today="2026-03-01")
+        check("review:例外倉蝕 >2% 戶口 → S1", any(b.startswith("S1") for b in rv["breaches"]))
+        check("review:月熔斷時有例外倉 → S3", any(b.startswith("S3") for b in rv["breaches"]))
+    finally:
+        shutil.rmtree(tmpL, ignore_errors=True)
 
     print(f"\n{'全部通過' if not FAILS else f'{len(FAILS)} 項失敗'}")
     sys.exit(1 if FAILS else 0)

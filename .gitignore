@@ -4,3 +4,4 @@ strategy/v6.6/data/
 strategy/v6.6/ledger/
 *.token
 telegram_token.txt
+selftest_last.log
