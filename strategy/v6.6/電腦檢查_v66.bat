@@ -16,7 +16,7 @@ exit /b 0
 
 :FAILED
 echo.
-echo [X] 有項目唔過 —— 今日唔好用 V6.6 交易。
+echo [X] 有項目唔過 —— 今日唔好交易,修好之前唔好用任何版本落單;券商已有嘅止蝕單照留。
 echo     將上面寫住嘅 pc_report 檔傳畀 AI;冇 pc_report 檔就將呢個視窗影相傳畀 AI。
 pause
 exit /b 1

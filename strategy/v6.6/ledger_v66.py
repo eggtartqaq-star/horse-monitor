@@ -200,8 +200,36 @@ def uncleared_s2(folder=DEFAULT_DIR):
     return [f"{r.fill_id}({r.ticker})" for r in bad.itertuples()]
 
 
-def _valid_cro_note(note):
-    return bool(re.search(r"\d{4}-\d{2}-\d{2}", note or "")) and "reports/risk/" in (note or "")
+def _valid_cro_note(note, not_before=None, today=None):
+    """CRO N-25(V6.6.5):要有 reports/risk/….md 路徑同一個真日期;日期唔可以早過嗰筆交易、唔可以係將來。
+    (CRO 每次檢討會逐個對返真文件 —— 呢度只係擋明顯作假,唔係證明文件存在。)"""
+    note = note or ""
+    if not re.search(r"reports/risk/\S+\.md", note):
+        return False
+    dates = re.findall(r"\d{4}-\d{2}-\d{2}", note)
+    if not dates:
+        return False
+    try:
+        ds = [pd.Timestamp(d) for d in dates]
+    except Exception:
+        return False
+    today = pd.Timestamp(today or pd.Timestamp.now(tz="America/New_York").strftime("%Y-%m-%d"))
+    if any(d > today for d in ds):
+        return False
+    if not_before is not None and max(ds) < pd.Timestamp(not_before):
+        return False
+    return True
+
+
+def _valid_date(d):
+    """CRO N-24(V6.6.5):--date 一定要係 YYYY-MM-DD 嘅真日期,而且唔可以係將來(紐約日期)。"""
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d or ""):
+        return False
+    try:
+        ts = pd.Timestamp(d)
+    except Exception:
+        return False
+    return ts <= pd.Timestamp(pd.Timestamp.now(tz="America/New_York").strftime("%Y-%m-%d"))
 
 
 def cmd_s2_clear(a, folder):
@@ -214,8 +242,9 @@ def cmd_s2_clear(a, folder):
         sys.exit(f"❌ {a.fill_id} 冇 S2,唔使 clear")
     if a.fill_id not in [x.split("(")[0] for x in uncleared_s2(folder)]:
         sys.exit(f"❌ {a.fill_id} 已經 clear 咗")
-    if not _valid_cro_note(a.cro_note):
-        sys.exit("❌ --cro-note 要寫 CRO 文件路徑(reports/risk/...)同日期(YYYY-MM-DD)")
+    if not _valid_cro_note(a.cro_note, not_before=row["open_date"].iloc[0]):
+        sys.exit("❌ --cro-note 要寫 CRO 文件路徑(reports/risk/….md)同日期(YYYY-MM-DD);"
+                 "日期唔可以早過嗰筆交易,亦唔可以係將來")
     _append_rows(folder, "s2_clearances.csv", CLEAR_COLS, [{
         "fill_id": a.fill_id, "cleared_at": datetime.now().strftime("%Y-%m-%d %H:%M"), "cro_note": a.cro_note,
         "version": C.VERSION, "fingerprint": C.fingerprint()}])
@@ -230,14 +259,20 @@ def cmd_fill(a, folder):
     fills = read(folder, "fills.csv", FILL_COLS)
     # Tom 2026-11-24:預設用「紐約日期」。bar_date 係紐約日期;你喺香港朝早(紐約前一晚)記錄,
     # 用香港日期會將開倉日記遲一日 → 移動止損漏咗入場日,訊號來源亦會對錯 bar。
-    today = a.date or pd.Timestamp.now(tz="America/New_York").strftime("%Y-%m-%d")
+    if a.date and not _valid_date(a.date):
+        sys.exit(f"❌ --date {a.date} 唔啱:要係 YYYY-MM-DD(紐約日期),而且唔可以係將來")
+    ny_today = pd.Timestamp.now(tz="America/New_York").strftime("%Y-%m-%d")
+    today = a.date or ny_today
     acct_usd = C.ACCOUNT_HKD / C.USD_HKD
     if a.action == "open":
         if len(fills) and ((fills["ticker"] == a.ticker) & (fills["close_date"] == "")).any():
             sys.exit(f"❌ {a.ticker} 已經有未平倉記錄")
         legacy = bool(getattr(a, "legacy", False))
-        if legacy and C.SWITCH_DATE and today >= C.SWITCH_DATE:
-            sys.exit(f"❌ --legacy 只限轉用日({C.SWITCH_DATE})之前開嘅倉;之後開嘅倉要用正常 fill")
+        if legacy and C.SWITCH_DATE and (today >= C.SWITCH_DATE or ny_today >= C.SWITCH_DATE):
+            # CRO N-24:轉用日之後一律唔准再用 --legacy(就算 --date 填返轉用前都唔得,防倒填日期)
+            sys.exit(f"❌ --legacy 只限轉用日({C.SWITCH_DATE})之前記錄、之前開嘅倉;之後開嘅倉要用正常 fill")
+        if legacy and not a.date:
+            sys.exit("❌ --legacy 一定要用 --date 填返買入日(YYYY-MM-DD)")
         hold = [] if legacy else uncleared_s2(folder)     # 記錄舊倉唔算「開新倉」
         flags = []
         if hold:

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """V6.6 自我測試 —— 合成數據,唔使上網。改完代碼一定要跑:python selftest.py"""
 import os
+import re
 import sys
 
 import numpy as np
@@ -43,6 +44,23 @@ def main():
     # 2026-11-25:selftest 一律用臨時空記錄簿 —— 唔讀、唔寫你真嘅 ledger/(否則你真有未解釋 S2 嗰陣,
     # bot 測試會失敗,.bat 會叫你「今日唔好交易」,同 N-1 一樣係假警報)
     import tempfile as _tf
+    # 審計 X-1(2026-11-25):你嘅設定先做一次自檢(設定錯 = 真問題,唔係假警報)……
+    try:
+        C.check_config()
+        cfg_ok, cfg_msg = True, ""
+    except AssertionError as e:                      # ConfigError 係 AssertionError 嘅子類
+        cfg_ok, cfg_msg = False, f"({e})"
+    check(f"你嘅 owner_settings.json 通過設定自檢{cfg_msg}", cfg_ok)
+    # ……然後所有測試用預設設定跑:預期數係按 HK$10,000、上限 A 寫嘅。
+    # 唔咁做,你照 CRO C-7 將 account_hkd 改做真實淨值,自我測試就會日日失敗,.bat 日日叫你「今日唔好交易」。
+    keep = {k: getattr(C, k) for k in ("ACCOUNT_HKD", "CAP_MODE", "B_PRIME_ENABLED", "_B_PRIME_RAW",
+                                        "B_PRIME_CRO_NOTE", "SWITCH_DATE")}
+    keep_gates, keep_fee = dict(C.GATES), dict(C.REAL_FEE)
+    C.ACCOUNT_HKD = float(C.DEFAULT_SETTINGS["account_hkd"])
+    C.CAP_MODE, C.B_PRIME_ENABLED, C._B_PRIME_RAW = "A", False, False
+    C.B_PRIME_CRO_NOTE, C.SWITCH_DATE = "", None
+    C.GATES.clear(); C.GATES.update(C.DEFAULT_SETTINGS["gates"])
+    C.REAL_FEE.clear(); C.REAL_FEE.update(C.DEFAULT_SETTINGS["real_fee"])
     real_ledger = L.DEFAULT_DIR
     L.DEFAULT_DIR = _tf.mkdtemp(prefix="selftest_ledger_")
     try:
@@ -51,6 +69,10 @@ def main():
         import shutil as _sh
         _sh.rmtree(L.DEFAULT_DIR, ignore_errors=True)
         L.DEFAULT_DIR = real_ledger
+        for k, v in keep.items():
+            setattr(C, k, v)
+        C.GATES.clear(); C.GATES.update(keep_gates)
+        C.REAL_FEE.clear(); C.REAL_FEE.update(keep_fee)
     print(f"\n{'全部通過' if not FAILS else f'{len(FAILS)} 項失敗'}")
     sys.exit(1 if FAILS else 0)
 
@@ -606,6 +628,7 @@ def _main_body():
         with contextlib.redirect_stdout(buf):
             D._print([((0,), rec_h)], [], [], set(), d_ok, {})
         check("N-11 / N-15:冇 S2 → ① 照常顯示股數同限價上限", "股數 2" in buf.getvalue() and "限價上限 $50.50" in buf.getvalue())
+        check("N-26:① 落單指示有「開市價 ≤ 系統止蝕 → 唔買」(CRO C-8 修訂)", "開市價 ≤ 系統止蝕 → 唔買" in buf.getvalue())
 
         # bot:有未解釋 S2 → 唔顯示計劃(對照:同一隻、同一日,冇 S2 就顯示)
         bot_hold = bot_free = None
@@ -624,6 +647,7 @@ def _main_body():
                     bot_free = t_free
                     bot_hold = B.analyze(tk, fetch=f_, earnings="off", now=ny, ledger_dir=d11)
                     break
+        check("N-26:bot 計劃有「開市價 ≤ 止蝕 → 唔買」", bot_free is not None and "開市價 ≤ 止蝕" in bot_free)
         check("N-11:bot —— 有未解釋 S2 → 唔顯示計劃同股數;冇就顯示(連限價上限)",
               bot_free is not None and "限價上限" in bot_free and bot_hold is not None
               and "建議股數(" not in bot_hold and "停開新倉" in bot_hold)
@@ -674,6 +698,55 @@ def _main_body():
         d15b = led([("2026-03-03", True)], [srow11("2026-03-03", "LIM", close=42.5, stop=41, size_A=3)])
         f_over = fill11(d15b, "LIM", 42.74, 3, 41.0, "2026-03-04")
         check("N-15:喺限價上限成交 → 冇 S2;高一仙 → S2(上限 / 股數)", "S2" not in f_at["flags"] and "S2" in f_over["flags"])
+
+        # ---- V6.6.5:CRO N-24(日期)、N-25(s2-clear 文件)、N-28(測試檔指紋)----
+        def fill_raw(d, **kw):
+            base = dict(action="open", ticker="DTX", price=50.0, shares=2, stop=46.0, engine="E2", date=None,
+                        fees=0.0, reason=None, target=None, legacy=False)
+            base.update(kw)
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    L.cmd_fill(types.SimpleNamespace(**base), d)
+                return "ok"
+            except SystemExit as e:
+                return f"refused:{e}"
+        d24 = led([("2026-03-03", True)], [srow11("2026-03-03", "DTX")])
+        sw_keep = C.SWITCH_DATE
+        C.SWITCH_DATE = "2026-03-01"                       # 已經過咗(而家係 2026-11 之後)
+        r_back = fill_raw(d24, ticker="OLDX", legacy=True, engine=None, date="2026-02-01")
+        C.SWITCH_DATE = sw_keep
+        check("N-24:--date 格式錯 / 將來日子 / --legacy 冇日期 / 轉用之後倒填日期 → 全部拒絕",
+              fill_raw(d24, date="2026/03/04").startswith("refused")
+              and fill_raw(d24, date="2099-01-01").startswith("refused")
+              and fill_raw(d24, ticker="LGX", legacy=True, engine=None, date=None).startswith("refused")
+              and r_back.startswith("refused") and fill_raw(d24, date="2026-03-04") == "ok")
+        d25 = led([("2026-03-03", True)], [])
+        r25 = fill11(d25, "NOSIG", 50, 2, 46, "2026-03-04")          # 冇訊號 → S2
+        def clear(note):
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    L.cmd_s2_clear(types.SimpleNamespace(fill_id=r25["fill_id"], cro_note=note), d25)
+                return True
+            except SystemExit:
+                return False
+        check("N-25:s2-clear 拒絕:日期早過交易、將來日期、冇 .md 文件路徑;接受:交易之後嘅真日期",
+              not clear("reports/risk/2026-03-01-x.md 2026-03-01") and not clear("reports/risk/2099-01-01-x.md 2099-01-01")
+              and not clear("reports/risk/ 2026-03-06") and clear("reports/risk/2026-03-06-nosig.md 2026-03-06"))
+        check("N-28:電腦檢查報告有三個測試檔嘅指紋",
+              re.fullmatch(r"tests selftest\.py=[0-9a-f]{12} parity_check\.py=[0-9a-f]{12} pc_check\.py=[0-9a-f]{12}",
+                           P.test_hashes()) is not None)
+
+        # ---- 審計 X-1:非預設戶口金額(HK$4,497 = 11-25 唯讀讀取嘅淨值)—— 倉位、限價上限、fill 檢查都跟住變 ----
+        acct_keep = C.ACCOUNT_HKD
+        C.ACCOUNT_HKD = 4497.0
+        try:
+            sm = (Z.size(50, 46, "E2")["shares"], Z.size(60, 57, "E2")["shares"], Z.max_limit(50, 46, 1, "E2"))
+            dx = led([("2026-03-03", True)], [srow11("2026-03-03", "SML", size_A=1)])
+            fx = fill11(dx, "SML", 50.0, 2, 46.0, "2026-03-04")
+        finally:
+            C.ACCOUNT_HKD = acct_keep
+        check("X-1:戶口 HK$4,497 → $50/$46 得 1 股、$60 股 0 股、限價上限 $50.50;買 2 股 → S2(超上限 / 股數)",
+              sm == (1, 0, 50.5) and "S2" in fx["flags"])
 
         # ---- N-16:只信 live 心跳 / 訊號 ----
         dc = led([("2026-03-03", True, "csv")], [srow11("2026-03-03", "PFE")])

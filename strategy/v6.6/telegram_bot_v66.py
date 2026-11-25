@@ -187,6 +187,7 @@ def analyze(user_input, fetch=None, earnings="lookup", now=None, ledger_dir=None
                           any_sig["target"] if any_sig["engine"] == "E1" else None, Z.live_mode(), ccy)
         if lim:
             plan_lines.append(f"限價上限: ${lim:.2f}(用限價單;開市高過就唔買,唔好加價)")   # CRO N-15
+            plan_lines.append(f"開市價 ≤ 止蝕 ${any_sig['stop']} → 唔買(CRO C-8 修訂)")      # CRO N-26
         if not g["ok"]:
             blocks.append(f"❌ {g['reason']}")
         if sz["shares"] < 1:

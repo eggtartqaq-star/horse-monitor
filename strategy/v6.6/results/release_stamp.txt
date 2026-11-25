@@ -1,1 +1,2 @@
-V6.6.4 2026-11-25 0eb54f8e5872
+V6.6.5 2026-11-25 847d34621a5f
+tests selftest.py=41e14cc0ae09 parity_check.py=7123f842f1fd pc_check.py=732817026a4d

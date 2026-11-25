@@ -17,6 +17,7 @@ V6.6 電腦檢查 —— 喺你部電腦雙擊「電腦檢查_v66.bat」
   - 報告入面你電腦嘅用戶路徑會變成 ~
 """
 import glob
+import hashlib
 import importlib
 import os
 import platform
@@ -33,6 +34,22 @@ if hasattr(sys.stdout, "reconfigure"):
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOKEN_RE = re.compile(r"\d{6,}(:|%3A)[A-Za-z0-9_-]{25,}")
+TEST_FILES = ("selftest.py", "parity_check.py", "pc_check.py")   # CRO N-28:報告要證明用咗邊個版本嘅測試
+
+
+def test_hashes(folder=None):
+    """測試檔嘅 SHA-256(頭 12 位,行尾統一做 LF,同規則指紋一樣)。"""
+    folder = folder or HERE
+    out = []
+    for fn in TEST_FILES:
+        p = os.path.join(folder, fn)
+        if os.path.exists(p):
+            with open(p, "rb") as f:
+                h = hashlib.sha256(f.read().replace(b"\r\n", b"\n")).hexdigest()[:12]
+        else:
+            h = "冇檔"
+        out.append(f"{fn}={h}")
+    return "tests " + " ".join(out)
 
 
 def redact(text, home=None):
@@ -59,18 +76,22 @@ def versions():
 def stamp():
     sys.path.insert(0, HERE)
     import config_v66 as C
-    exp = ""
+    exp, exp_tests = "", ""
     p = os.path.join(HERE, "results", "release_stamp.txt")
     if os.path.exists(p):
-        exp = open(p, encoding="utf-8").read().strip()
+        lines = [ln.strip() for ln in open(p, encoding="utf-8").read().splitlines() if ln.strip()]
+        exp = lines[0] if lines else ""
+        exp_tests = lines[1] if len(lines) > 1 else ""
     got = f"{C.VERSION} {C.RELEASE_DATE} {C.fingerprint()}"
+    got_tests = test_hashes()
     try:
         C.check_config()
         cfg = "✅ 設定自檢通過"
     except BaseException as e:              # ConfigError / SystemExit 都要報
         cfg = f"❌ 設定自檢唔過:{e}"
-    return {"got": got, "expected": exp, "match": bool(exp) and got == exp, "config": cfg,
-            "settings": C.settings_line()}
+    return {"got": got, "expected": exp, "got_tests": got_tests, "expected_tests": exp_tests,
+            "match": bool(exp) and got == exp and (not exp_tests or got_tests == exp_tests),
+            "config": cfg, "settings": C.settings_line()}
 
 
 def ledger_inventory(folder):
@@ -126,6 +147,8 @@ def main():
     st = stamp()
     say(f"  而家:{st['got']}")
     say(f"  應該:{st['expected'] or '(冇 results/release_stamp.txt)'}")
+    say(f"  測試檔而家:{st['got_tests']}")
+    say(f"  測試檔應該:{st['expected_tests'] or '(stamp 冇記錄)'}")
     say(f"  {'✅ 一致' if st['match'] else '❌ 唔一致 —— 代碼唔係呢個版本,先問 AI'}")
 
     say("\n【3】設定(owner_settings.json)")
@@ -191,7 +214,8 @@ def main():
         f.write(text + "\n")
     print(text)
     print(f"\n報告已寫入:{redact(path)}  —— 將呢個檔傳畀 AI。")
-    return 0 if (v2 and st["match"]) else 1
+    # 審計 CD-2:對照測試或者試掃描「做咗但唔過」都要當失敗(未做 = None,唔算失敗)
+    return 0 if (v2 and st["match"] and v3 is not False and scan_ok is not False) else 1
 
 
 if __name__ == "__main__":

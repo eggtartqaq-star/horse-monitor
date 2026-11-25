@@ -281,6 +281,7 @@ def _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs=()):
         print(_line(rec, " — ", "持倉中(唔計排名,唔好加注)", hide=True))
     if live and not hold:
         print("  落單:聽日開市,用**限價單**,限價唔可以高過「限價上限」;開市價高過就唔買,唔好加價、唔好加股(CRO C-8、N-15)。")
+        print("  開市價 ≤ 系統止蝕 → 唔買。萬一成交咗,即刻沽,用 fill open + fill close 記錄,S2 交 CRO(CRO C-8 修訂,N-26)。")
         print("  成交後即刻設系統止蝕單(唔准自己收緊,永不下移)。")
         print("  落單後記錄:python ledger_v66.py fill open --ticker X --price P --shares N --stop S --engine E2")
     print("\n② 舊掃描器版先有嘅訊號 —— 只記錄,唔交易")
