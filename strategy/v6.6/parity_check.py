@@ -12,7 +12,8 @@ V6.6 對照測試(關卡 V-3)—— 喺你部電腦跑(要有 yfinance + ta)
   A. 第250條bar之後:|ΔADX|、|ΔDI+|、|ΔDI−| 最大值 < 0.01;|ΔRSI14|、|ΔRSI2| < 0.01;ATR 相對差 < 0.01%
   B. 「有訊號嘅日子」(兩邊任何一邊有訊號)一致率 ≥ 98%,兩條路徑分開計
      (舊版計「所有日子」—— 大部分日子冇訊號,99% 都可以藏住 7% 嘅訊號日唔同)
-全部過關 → 喺 config_v66.py 將 GATES["V3_對照測試"] 改做 True,並將輸出畀 AI / CRO 睇。
+全部過關 → 喺 owner_settings.json 將 "V3_對照測試" 改做 true(唔好加引號),並將輸出畀 AI / CRO 睇。
+唔好改 config_v66.py(會改規則指紋,而且冇作用)。
 """
 import sys
 import warnings
@@ -112,7 +113,7 @@ def main():
             print("  ", x)
     verdict = ok_a and ok_b
     if verdict:
-        print('\n✅ V-3 過關 —— 可以將 config_v66.py 入面 GATES["V3_對照測試"] 改做 True')
+        print('\n✅ V-3 過關 —— 喺 owner_settings.json 將 "V3_對照測試" 改做 true(唔好加引號)。唔好改 config_v66.py。')
     else:
         print("\n❌ V-3 未過 —— 唔好信 V6.6 回測同掃描,將呢個輸出畀 AI 睇")
     sys.exit(0 if verdict else 1)
