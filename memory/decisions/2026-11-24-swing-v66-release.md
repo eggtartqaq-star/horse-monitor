@@ -199,3 +199,14 @@ switch condition 1 in the previous update.
     88 entries the new rule skips.
   - CRO: at a US$0.35 minimum fee per side, OOS net EV is about +0.008% per trade. This is an
     estimate; V-1 is the economic gate.
+
+**Correction 2026-11-25 (CRO D-1; append-only, so the line above stays):**
+- The G-1 line above ("Cure the debit **and** turn margin off or convert to cash. If uncured, the
+  CRO recommends selling AVGO before 9 Dec") is ambiguous.
+- Per the CRO's ruling, **only a USD debit still uncured at the 16:00 ET close on 3 Dec triggers
+  the recommendation to sell AVGO before 9 Dec.**
+- Turning margin off or converting to cash is required for the account to be eligible for V6.6
+  (C-6). It is not a sell trigger.
+- **V6.6.5 CRO verification:** PASS, no new code findings. Code side of the switch clear; risk 76;
+  B′ OFF (`reports/risk/2026-11-25-v66-5-verification.md`). Switch condition 1 is therefore
+  **DONE** for V6.6.5 / `847d34621a5f`.
