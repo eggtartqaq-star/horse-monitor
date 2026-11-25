@@ -1,12 +1,14 @@
-# Swing V6.6.1 — 用法手冊
+# Swing V6.6.2 — 用法手冊
 
-> ## ⛔ 狀態(2026-11-24):**未可以轉用。** 繼續用 V6.4.2 做模擬交易,直到下面四樣全部完成。
+> ## ⛔ 狀態(2026-11-25):**未可以轉用。** 繼續用 V6.4.2 做模擬交易(唔好落真錢),直到下面四樣全部完成。
+> 而家 SPY 收市喺 200 日線下面(2026-11-19 起),系統本身都停手 —— 等都冇損失。
 > 1. **你部電腦:**
->    - `python selftest.py` 全過(65 項);
+>    - 雙擊 `掃描_v66.bat` 一次(測試 .bat 本身),再跑 `python selftest.py` 全過(82 項);
 >    - `python parity_check.py` 過關(關卡 V-3);
 >    - 喺 `owner_settings.json` 將 V2、V3 改做 `true`。
 > 2. **微牛成交單據(關卡 V-1):** 確認真實收費。
-> 3. **CRO 重新核對**佢嘅放行條件 C-1 至 C-5。
+> 3. **CRO 核對 V6.6.2 修正:** 2026-11-25 佢重新核對(C-5)嘅結果係 PARTIAL,要先修 C-4r、N-1、N-5。
+>    V6.6.2 已經修好,等 CRO 確認。
 > 4. **戶口(CRO 條件 C-6 / C-7):**
 >    - 孖展戶口有欠款 → 唔准開新倉;
 >    - `owner_settings.json` 嘅 `account_hkd` 要改做你**真正**嘅短線資金。
@@ -44,7 +46,7 @@
    cd %USERPROFILE%\Desktop\v6.6
    python selftest.py
    ```
-   要見到「全部通過」(65 項)。之後喺 `owner_settings.json` 將 `"V2_代碼測試"` 改做 `true`。
+   要見到「全部通過」(82 項)。之後喺 `owner_settings.json` 將 `"V2_代碼測試"` 改做 `true`。
 4. **對照測試(關卡 V-3):**
    ```cmd
    copy ..\dual_engine_v6_4.py .
@@ -74,15 +76,19 @@
 ### 睇頂部印章
 
 ```
-Swing V6.6.1  規則指紋 c3f24ad80b06  |  ...
+Swing V6.6.2  規則指紋 0b05757d0076  |  ...
 交易路徑: bt(回測驗證版)  影子路徑: scan(只記錄)
 名義上限: A(10% 一律)  B′ 關  |  每筆風險 1.0%  最多 2 倉
 設定: 戶口 HK$10,000  上限 A  B′ 關  關卡 G1/V1/V2/V3 = ✓✗✗✗
 ```
 
-- **規則指紋唔係 `c3f24ad80b06`** = 代碼唔係呢個版本 → 先問清楚先好交易。
+- **規則指紋唔係 `0b05757d0076`** = 代碼唔係呢個版本 → 先問清楚先好交易。
 - **「美股開緊市」警告** = 今日條 bar 未收市;呢次唔會寫入記錄簿,收市後再跑。
 - **「下載失敗」列表** = 嗰幾隻今日冇訊號,唔係冇事。
+- **「[X] 掃描出錯」** = 今日唔好交易,將錯誤訊息畀 AI 睇。
+
+**每個交易日都要跑一次**,熊市日都要。掃描器每次會寫一行「心跳」去 `ledger/runs.csv`;
+記錄交易(fill)嗰陣,系統靠佢判斷訊號係咪「今日有效」。漏跑一日,之前嘅訊號就當過期。
 
 ### 四個區
 
@@ -109,10 +115,12 @@ python ledger_v66.py fill close --ticker PFE --price 28.40 --reason 移動止損
 - 名義值超上限
 - 每筆風險 > 1%
 - 冇 live 訊號、或者只係舊掃描器路徑
-- 訊號太舊
+- 訊號太舊:上次掃描冇呢隻、上次掃描係熊市,或者上次掃描之後漏咗交易日
+- 冇掃描記錄(`ledger/runs.csv`)
 - 護欄擋咗(例如財報)
 - 系統 A 倉位係 0(買唔起)
-- 止蝕高過系統止蝕(自訂收緊)
+- 止蝕高過系統止蝕超過 1 仙(自訂收緊)
+- 股數多過系統用「你嘅成交價 + 系統止蝕」計出嚟嘅股數
 
 另外,揀咗排名超過空位數嘅訊號會標「留意」(唔算違規,但 review 會列出)。
 
@@ -150,9 +158,10 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 2. V-1 真實收費已核(而且 S4 過)
 3. V-2 自我測試
 4. V-3 對照測試
-5. CRO 書面確認
+5. CRO 書面確認,**而且** CRO 將批准文件加入 `config_v66.py` 嘅 `APPROVED_BPRIME_NOTES`。
+   呢一步係改代碼,會令規則指紋改變,CRO 要重新核對。淨係改設定檔開唔到 B′。
 
-**開法:** 喺 `owner_settings.json` 改:
+**開法:** 喺 `owner_settings.json` 改(`true` / `false` **唔好加引號**;加咗引號,掃描器會拒絕啟動):
 - `"cap_mode": "B_PRIME"`
 - `"b_prime_enabled": true`
 - `"b_prime_cro_note": "reports/risk/<CRO批准文件>.md YYYY-MM-DD"`
@@ -170,6 +179,7 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 4. 打代號(`AAPL` / 港股 `700`):
    - 交易路徑訊號、而且護欄全過 → 先會顯示交易計劃同股數;
    - 舊掃描器訊號、被擋訊號、港股 → 只講原因。
+   - 美股開緊市(今日條 bar 未收市)→ 只講「未收市,收市後再查」,唔顯示計劃同股數。
 
 ## 六、TradingView(`pine/swing_v66.pine`)
 
@@ -213,8 +223,8 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 |---|---|
 | 每日用 | `掃描_v66.bat`、`daily_scan_v66.py`、`ledger_v66.py`、`telegram_bot_v66.py`、`pine/` |
 | 你嘅設定(唔計指紋) | `owner_settings.json` |
-| 規則指紋涵蓋 | `config_v66.py`、`rules_v642.py`、`indicators.py`、`signals_v66.py`、`sizing_v66.py`、`guardrails_v66.py`、`daily_scan_v66.py`、`ledger_v66.py`、`telegram_bot_v66.py` |
-| 研究 | `lab.py`、`selftest.py`、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py` |
+| 規則指紋涵蓋 | `config_v66.py`、`rules_v642.py`、`indicators.py`、`signals_v66.py`、`sizing_v66.py`、`guardrails_v66.py`、`daily_scan_v66.py`、`ledger_v66.py`、`telegram_bot_v66.py`、`lab.py`(resolve 用佢計結果) |
+| 研究 | `selftest.py`、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py` |
 
 `ledger/`(你嘅記錄)同 `data/`(歷史數據)唔會上載 GitHub。
 

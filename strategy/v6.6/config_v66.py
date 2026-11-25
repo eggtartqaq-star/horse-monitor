@@ -17,8 +17,8 @@ import json
 import os
 import re
 
-VERSION = "V6.6.1"
-RELEASE_DATE = "2026-11-24"
+VERSION = "V6.6.2"
+RELEASE_DATE = "2026-11-25"
 HERE = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_FILE = os.path.join(HERE, "owner_settings.json")
 
@@ -37,6 +37,11 @@ E1_LIVE = "as_backtested"        # 引擎一:評分≥0.55 + R≥2,所有級別
 CAP_A_PCT = 10.0
 CAP_BPRIME_PCT = 15.0
 CAP_D_PCT = 15.0                 # D = 15% 一律(只係影子記錄,未批准)
+
+# ---- B′ 批准文件(CRO B-4,2026-11-25)----
+# 開 B′ 要 owner_settings.json 嘅 b_prime_cro_note 等於下面其中一個。
+# 呢個係代碼 → 加入 = 改規則指紋 → CRO 要重新核對。淨係改設定檔開唔到 B′。
+APPROVED_BPRIME_NOTES = ()
 
 # ---- 你嘅設定(預設值;實際由 owner_settings.json 讀) ----
 DEFAULT_SETTINGS = {
@@ -76,15 +81,17 @@ def _load_settings():
 _S = _load_settings()
 ACCOUNT_HKD = float(_S["account_hkd"])
 CAP_MODE = _S["cap_mode"]
-B_PRIME_ENABLED = bool(_S["b_prime_enabled"])
+_B_PRIME_RAW = _S["b_prime_enabled"]
+B_PRIME_ENABLED = _B_PRIME_RAW is True          # CRO N-7:"false"(有引號)唔可以當開
 B_PRIME_CRO_NOTE = _S["b_prime_cro_note"]
 GATES = dict(_S["gates"])
 REAL_FEE = dict(_S["real_fee"])
 
 # 規則指紋涵蓋嘅檔(唔包括 owner_settings.json)
+# CRO B-11(2026-11-25):加入 lab.py —— ledger resolve 用佢嘅 simulate 計結果
 CORE_FILES = ("rules_v642.py", "indicators.py", "signals_v66.py", "sizing_v66.py",
               "guardrails_v66.py", "config_v66.py", "daily_scan_v66.py", "ledger_v66.py",
-              "telegram_bot_v66.py")
+              "telegram_bot_v66.py", "lab.py")
 
 
 def fingerprint(folder=None) -> str:
@@ -108,7 +115,7 @@ def settings_line() -> str:
 
 
 def gates_outstanding():
-    return [k for k, v in GATES.items() if not v]
+    return [k for k, v in GATES.items() if v is not True]
 
 
 def _fail(msg):
@@ -127,6 +134,12 @@ def check_config():
         _fail("倉位數/每筆風險係鎖死參數")
     if not (1000 <= ACCOUNT_HKD <= 10_000_000):
         _fail(f"account_hkd 唔合理:{ACCOUNT_HKD}")
+    # CRO N-7:開關同關卡一定要係 JSON 嘅 true/false(冇引號)。"false" 係文字,唔係「關」。
+    if not isinstance(_B_PRIME_RAW, bool):
+        _fail(f"owner_settings.json 嘅 b_prime_enabled 要寫 true 或 false(唔好加引號),而家係 {_B_PRIME_RAW!r}")
+    bad = {k: v for k, v in GATES.items() if not isinstance(v, bool)}
+    if bad:
+        _fail(f"owner_settings.json 嘅關卡要寫 true 或 false(唔好加引號):{bad}")
     if CAP_MODE == "B_PRIME" or B_PRIME_ENABLED:
         if not (B_PRIME_ENABLED and CAP_MODE == "B_PRIME"):
             _fail("B′ 要 cap_mode 同 b_prime_enabled 一齊改")
@@ -135,6 +148,8 @@ def check_config():
         note = str(B_PRIME_CRO_NOTE or "")
         if not (re.search(r"\d{4}-\d{2}-\d{2}", note) and "reports/risk/" in note):
             _fail("b_prime_cro_note 要寫 CRO 批准文件路徑(reports/risk/...)同日期(YYYY-MM-DD)")
+        if note not in APPROVED_BPRIME_NOTES:
+            _fail("b_prime_cro_note 唔喺 config_v66.APPROVED_BPRIME_NOTES —— CRO 批准要經代碼改動(會改指紋)")
     if LIVE_PATH != "bt":
         _fail("交易路徑必須係回測驗證版(bt)")
     return True

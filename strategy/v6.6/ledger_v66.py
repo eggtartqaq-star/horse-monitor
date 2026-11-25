@@ -6,6 +6,7 @@ V6.6 影子記錄簿(shadow ledger)
   signals.csv  每日掃描自動寫入:每個訊號、兩條路徑、A/B′/D 三種倉位。只會加,唔會改。
   fills.csv    你真正落嘅單(用 fill 指令記,唔好用 Excel 改)
   results.csv  resolve 每次由頭計:每個訊號「如果做咗」嘅結果(用回測同一套出場規則)
+  runs.csv     每次正式掃描嘅「心跳」(包括熊市、冇訊號嘅日子)—— fill 用嚟判斷訊號係咪今日有效
 
 指令:
   python ledger_v66.py fill open  --ticker PFE --price 27.10 --shares 4 --stop 25.30 --engine E2 [--target X] [--date YYYY-MM-DD] [--fees 0]
@@ -33,6 +34,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import config_v66 as C        # noqa: E402
 import rules_v642 as R        # noqa: E402
+import sizing_v66 as Z        # noqa: E402
 
 DEFAULT_DIR = os.path.join(HERE, "ledger")
 
@@ -42,7 +44,9 @@ SIGNAL_COLS = ["logged_at", "bar_date", "ticker", "path", "live", "engine", "tie
                "size_D", "rank", "held", "partial_bar", "version", "fingerprint"]
 FILL_COLS = ["fill_id", "ticker", "engine", "source_path", "open_date", "open_px", "shares", "init_stop",
              "target", "open_fees", "close_date", "close_px", "close_fees", "close_reason",
-             "notional_pct", "flags", "version", "fingerprint"]
+             "notional_pct", "flags", "version", "fingerprint", "logged_at"]
+# CRO C-4r(2026-11-25):每次正式掃描都寫一行,熊市/冇訊號都寫 —— 否則「上次掃描」會停喺舊日子
+RUN_COLS = ["logged_at", "bar_date", "bull", "live_path", "source", "n_failed", "version", "fingerprint"]
 
 
 # ============================================================
@@ -89,6 +93,41 @@ def append_signals(rows, folder=DEFAULT_DIR):
     return len(fresh)
 
 
+def append_run(row, folder=DEFAULT_DIR):
+    """掃描心跳。冪等:同一 bar_date 只寫第一次。"""
+    have = read(folder, "runs.csv", RUN_COLS)
+    if len(have) and str(row["bar_date"]) in set(have["bar_date"]):
+        return 0
+    _append_rows(folder, "runs.csv", RUN_COLS, [row])
+    return 1
+
+
+def _nyse_calendar():
+    from pandas.tseries.holiday import (AbstractHolidayCalendar, GoodFriday, Holiday, USLaborDay,
+                                        USMartinLutherKingJr, USMemorialDay, USPresidentsDay,
+                                        USThanksgivingDay, nearest_workday, sunday_to_monday)
+
+    class NYSE(AbstractHolidayCalendar):
+        rules = [Holiday("NewYear", month=1, day=1, observance=sunday_to_monday),
+                 USMartinLutherKingJr, USPresidentsDay, GoodFriday, USMemorialDay,
+                 Holiday("Juneteenth", month=6, day=19, start_date="2022-06-19", observance=nearest_workday),
+                 Holiday("July4", month=7, day=4, observance=nearest_workday),
+                 USLaborDay, USThanksgivingDay,
+                 Holiday("Christmas", month=12, day=25, observance=nearest_workday)]
+    return NYSE()
+
+
+def nyse_sessions_between(d0, d1):
+    """d0 同 d1 之間(兩邊都唔計)有幾多個 NYSE 交易日。
+    只計固定假期;臨時休市(例如國殤日)會當交易日計 → 只會多報「過期」,唔會漏報。"""
+    a = pd.Timestamp(d0) + pd.Timedelta(days=1)
+    b = pd.Timestamp(d1) - pd.Timedelta(days=1)
+    if b < a:
+        return 0
+    cbd = pd.offsets.CustomBusinessDay(calendar=_nyse_calendar())
+    return len(pd.date_range(a, b, freq=cbd))
+
+
 def open_fills(folder=DEFAULT_DIR):
     f = read(folder, "fills.csv", FILL_COLS)
     return f[f["close_date"] == ""] if len(f) else f
@@ -120,40 +159,56 @@ def cmd_fill(a, folder):
         if (a.price - a.stop) * a.shares > C.ACCOUNT_HKD * C.RISK_PCT / 100 / C.USD_HKD * 1.05:
             flags.append("S2:風險>1%")
         sig = read(folder, "signals.csv", SIGNAL_COLS)
+        runs = read(folder, "runs.csv", RUN_COLS)
         src = "none"
-        if len(sig):
-            # Tom 2026-11-24:要睇「你上一次掃描嗰條 bar」(全部股票計),唔係「呢隻股最後一次有訊號」——
-            # 否則幾日前嘅 live 訊號會令一筆今日冇訊號嘅交易過關。
-            before = sig[sig["bar_date"] < today]
-            last_bar = before["bar_date"].max() if len(before) else None
-            pl = before[(before["ticker"] == a.ticker) & (before["bar_date"] == last_bar)] if last_bar else before.iloc[0:0]
-            if not len(pl) and last_bar and (before["ticker"] == a.ticker).any():
-                src = f"stale:上次掃描{last_bar}冇呢隻"
-            if len(pl):
-                src = "live" if (pl["live"] == "True").any() else "scan_only"
-                lv = pl[pl["live"] == "True"]
-                if len(lv) and not (lv["guard_ok"] == "True").any():
-                    # Tom 2026-11-24:交易路徑有訊號,但被護欄擋咗(財報/止蝕過闊)—— 唔係「可以交易」
-                    flags.append(f"S2:護欄擋咗({lv['guard_reason'].iloc[0]})")
-                if len(lv):
-                    # Tom 2026-11-24(CRO C-4b):系統話 A 買唔起,或者自己將止蝕收緊去「造」出股數 → 違規
-                    if (lv["size_A"] == "0").all() and "B'例外" not in flags:
-                        flags.append("S2:系統A倉位=0(買唔起)")
-                    sys_stop = pd.to_numeric(lv["stop"], errors="coerce").max()
-                    if pd.notna(sys_stop) and a.stop > sys_stop + max(0.01, 0.005 * a.price):
-                        flags.append(f"S2:止蝕{a.stop}高過系統止蝕{sys_stop}(自訂收緊)")
-                if (pl["live"] == "True").any():
-                    rk = pd.to_numeric(pl[pl["live"] == "True"]["rank"], errors="coerce").min()
-                    # 空位 = 2 − 今日之前已開嘅倉(同日開兩筆唔會誤報)
-                    n_before = int(((fills["close_date"] == "") & (fills["open_date"] < today)).sum()) if len(fills) else 0
-                    if pd.notna(rk) and rk > C.MAX_POSITIONS - n_before:
-                        flags.append(f"留意:揀咗第{int(rk)}名(當時得{max(C.MAX_POSITIONS - n_before, 0)}個空位)")
+        # CRO C-4r(2026-11-25):「上次掃描」由 runs.csv(心跳)決定,唔再由 signals.csv 估。
+        # 熊市日、冇訊號日、冇跑掃描嘅日子 signals.csv 都冇行 → 舊方法會將幾日前嘅訊號當今日有效。
+        prior = runs[runs["bar_date"] < today] if len(runs) else runs
+        last_bar = prior["bar_date"].max() if len(prior) else None
+        pl = sig.iloc[0:0] if len(sig) else sig
+        if last_bar is None:
+            src = "none:冇掃描記錄(runs.csv),要先跑 daily_scan_v66"
+        elif not (prior[prior["bar_date"] == last_bar]["bull"] == "True").any():
+            src = f"bear:上次掃描{last_bar}係熊市,系統停手"
+        elif nyse_sessions_between(last_bar, today) >= 1:
+            src = f"stale:上次掃描{last_bar},之後漏咗{nyse_sessions_between(last_bar, today)}個交易日"
+        elif len(sig):
+            pl = sig[(sig["ticker"] == a.ticker) & (sig["bar_date"] == last_bar)]
+            if not len(pl):
+                had = ((sig["ticker"] == a.ticker) & (sig["bar_date"] < today)).any()
+                src = f"{'stale' if had else 'none'}:上次掃描{last_bar}冇呢隻"
+        if len(pl):
+            src = "live" if (pl["live"] == "True").any() else "scan_only"
+            lv = pl[pl["live"] == "True"]
+            if len(lv) and not (lv["guard_ok"] == "True").any():
+                # Tom 2026-11-24:交易路徑有訊號,但被護欄擋咗(財報/止蝕過闊)—— 唔係「可以交易」
+                flags.append(f"S2:護欄擋咗({lv['guard_reason'].iloc[0]})")
+            if len(lv):
+                # Tom 2026-11-24(CRO C-4b):系統話 A 買唔起,或者自己將止蝕收緊去「造」出股數 → 違規
+                if (lv["size_A"] == "0").all() and "B'例外" not in flags:
+                    flags.append("S2:系統A倉位=0(買唔起)")
+                sys_stop = pd.to_numeric(lv["stop"], errors="coerce").max()
+                # CRO C-4r:容差 1 仙(以前係 max(1仙, 0.5%),會令自訂收緊止蝕「造」多一股)
+                if pd.notna(sys_stop) and a.stop > sys_stop + 0.01 + 1e-9:
+                    flags.append(f"S2:止蝕{a.stop}高過系統止蝕{sys_stop}(自訂收緊)")
+                # CRO C-4r:股數唔可以多過「成交價 + 系統止蝕」按現行模式計出嚟嘅股數
+                if pd.notna(sys_stop) and not (lv["size_A"] == "0").all():
+                    sys_sh = Z.size(a.price, sys_stop, lv["engine"].iloc[0], Z.live_mode())["shares"]
+                    if a.shares > sys_sh:
+                        flags.append(f"S2:股數{a.shares:g}多過系統{sys_sh}股(按成交價${a.price}、系統止蝕${sys_stop}計)")
+            if (pl["live"] == "True").any():
+                rk = pd.to_numeric(pl[pl["live"] == "True"]["rank"], errors="coerce").min()
+                # 空位 = 2 − 今日之前已開嘅倉(同日開兩筆唔會誤報)
+                n_before = int(((fills["close_date"] == "") & (fills["open_date"] < today)).sum()) if len(fills) else 0
+                if pd.notna(rk) and rk > C.MAX_POSITIONS - n_before:
+                    flags.append(f"留意:揀咗第{int(rk)}名(當時得{max(C.MAX_POSITIONS - n_before, 0)}個空位)")
         if src != "live":
             flags.append(f"S2:冇 live 訊號({src})")
         row = {"fill_id": f"{today}_{a.ticker}", "ticker": a.ticker, "engine": a.engine, "source_path": src,
                "open_date": today, "open_px": a.price, "shares": a.shares, "init_stop": a.stop,
                "target": a.target or "", "open_fees": a.fees, "notional_pct": round(pct, 2),
-               "flags": ";".join(flags), "version": C.VERSION, "fingerprint": C.fingerprint()}
+               "flags": ";".join(flags), "version": C.VERSION, "fingerprint": C.fingerprint(),
+               "logged_at": datetime.now().strftime("%Y-%m-%d %H:%M")}     # CRO N-10:--date 補記都睇到幾時記
         _append_rows(folder, "fills.csv", FILL_COLS, [row])
         print(f"✅ 已記錄開倉 {a.ticker} {a.shares}股 @ {a.price}(名義 {pct:.1f}%)" +
               (f"  ⚠️ {';'.join(flags)}" if flags else ""))
@@ -213,6 +268,10 @@ def cmd_resolve(a, folder):
     if not len(sig):
         print("ledger 未有訊號。"); return None
     sig = sig[(sig["guard_ok"] == "True") & (sig["partial_bar"] != "True")]   # Tom:未收市嘅舊行唔計
+    if not getattr(a, "include_asof", False):
+        sig = sig[sig["days_er"] != "off"]      # CRO C-3r:歷史重跑行唔計(只有測試用記錄簿先會有)
+    if not len(sig):
+        print("ledger 未有可計嘅訊號。"); return None
     data = _load_prices(sorted(set(sig["ticker"])) + ["SPY"], a.source, a.data)
     first = pd.Timestamp(sig["bar_date"].min())
     rows = []
@@ -245,6 +304,8 @@ def cmd_resolve(a, folder):
 def review(folder, today=None):
     today = pd.Timestamp(today or datetime.now().strftime("%Y-%m-%d"))
     sig = read(folder, "signals.csv", SIGNAL_COLS)
+    if len(sig):
+        sig = sig[sig["days_er"] != "off"]      # CRO C-3r:歷史重跑行唔計入時鐘同點數
     res = read(folder, "results.csv", [])
     fills = read(folder, "fills.csv", FILL_COLS)
     out = {"breaches": [], "notes": []}

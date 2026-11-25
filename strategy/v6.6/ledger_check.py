@@ -25,7 +25,13 @@ with contextlib.redirect_stdout(io.StringIO()):
 n2=len(L.read(T,'signals.csv',L.SIGNAL_COLS)); print('after rerun',n2)
 if n2!=len(s): FAIL.append('rerun changed row count')
 # resolve
-class A: source='csv'; data='data'
+class A: source='csv'; data='data'; include_asof=False
+# CRO C-3r:預設 resolve 唔計歷史重跑行(days_er=off)—— 呢個測試記錄簿全部係歷史重跑,所以應該得返 None
+with contextlib.redirect_stdout(io.StringIO()):
+    res0=L.cmd_resolve(A,T)
+print('default resolve excludes as-of rows', res0 is None)
+if res0 is not None: FAIL.append('resolve counted as-of rows')
+A.include_asof=True     # 測試專用:明確要求計歷史重跑行,先可以同 lab 逐筆比較
 with contextlib.redirect_stdout(io.StringIO()):
     res=L.cmd_resolve(A,T)
 # reference: lab precompute with signals restricted to logged dates

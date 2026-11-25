@@ -100,8 +100,17 @@ def _yf_fetch(tk, period="2y"):
     return df[["Open", "High", "Low", "Close", "Volume"]]
 
 
-def analyze(user_input, fetch=None, earnings="lookup"):
-    """回傳畀 Telegram 嘅文字。fetch(ticker) -> DataFrame;earnings="lookup" 或 Timestamp/None/"off"。"""
+def bar_still_open(last_bar, market, now=None):
+    """CRO N-5:最後一條 bar 係「今日」而當地未到 16:00(平日)→ 未收市,訊號未成立。"""
+    tz = "America/New_York" if market == "美股" else "Asia/Hong_Kong"
+    now = now if now is not None else pd.Timestamp.now(tz=tz)
+    now = now.tz_convert(tz) if now.tzinfo is not None else now
+    return now.weekday() < 5 and pd.Timestamp(last_bar).date() == now.date() and now.hour < 16
+
+
+def analyze(user_input, fetch=None, earnings="lookup", now=None):
+    """回傳畀 Telegram 嘅文字。fetch(ticker) -> DataFrame;earnings="lookup" 或 Timestamp/None/"off"。
+    now:測試用(有時區嘅 Timestamp);預設 = 而家。"""
     fetch = fetch or _yf_fetch
     ticker, market = normalize_ticker(user_input)
     idx_tk, idx_name = ("SPY", "SPY") if market == "美股" else ("^HSI", "恒生指數")
@@ -127,6 +136,9 @@ def analyze(user_input, fetch=None, earnings="lookup"):
     row["bull"] = bool(is_bull)
     close = float(row["Close"])
     lines.append(f"現價: ${close:.2f}  (數據至 {ind.index[-1].date()})")
+    still_open = bar_still_open(ind.index[-1], market, now)
+    if still_open:
+        lines.append("⚠️ 今日條 bar 未收市 —— 數值會變")
     if pd.notna(row["ADX"]):
         route = R.classify(row)
         lines.append(f"ADX: {row['ADX']:.1f}  " + {"MR": "(橫盤→引擎一)", "TREND_UP": "(升勢→引擎二)",
@@ -144,6 +156,9 @@ def analyze(user_input, fetch=None, earnings="lookup"):
         blocks.append("❌ 港股:系統以美股回測,未經驗證,唔做")
     if not is_bull:
         blocks.append("❌ 熊市(或無法判斷)→ 系統停手")
+    if still_open:
+        # CRO N-5:未收市嘅「訊號」唔係收市 bar 嘅訊號 → 唔顯示交易計劃同股數(同 C-2 一樣)
+        blocks.append("❌ 未收市,收市後再查")
 
     plan_lines = []
     if any_sig:

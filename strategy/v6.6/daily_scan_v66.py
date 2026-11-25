@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-V6.6 每日掃描(取代 daily_strong_signals.py;舊檔留低做後備)
-==============================================================
+V6.6 每日掃描(取代 daily_strong_signals.py;舊檔留低做參考,唔好再用嚟揀股)
+==========================================================================
 同 V6.4.2 嘅分別:
   1. 交易清單 = 回測驗證版規則(引擎二要「今日高 ≥ 20日高」,手冊第三節條件3)
   2. 舊掃描器版訊號照列出,但標明「只記錄,唔交易」
   3. 頂部印版本、指紋、路徑、名義上限模式 —— 一眼睇到跑緊邊個版本
   4. 每個訊號自動寫入影子記錄簿(ledger/signals.csv)
   5. 下載失敗會列出,唔會靜靜雞跳過
-  6. 美股開市期間跑 → 警告「今日條 bar 未收市」
+  6. 美股開市期間跑 → 警告「今日條 bar 未收市」,唔寫記錄簿
+  7. 每次正式掃描(包括熊市日)寫一行心跳去 ledger/runs.csv;fill 靠佢判斷訊號係咪今日有效
 
 用法:
   python daily_scan_v66.py                         # 每日(收市後)
@@ -100,10 +101,37 @@ def raw_factor(tk, d, source):
     return lab.raw_factor(tk, d)
 
 
+def _same_dir(a, b):
+    """CRO C-3r:用 realpath + normcase 比較 —— symlink、大細楷(Windows)、x/../ 都兜唔過。"""
+    return os.path.normcase(os.path.realpath(a)) == os.path.normcase(os.path.realpath(b))
+
+
+def _ledger_write(source, asof_mode, ledger_dir, partial, dry_run):
+    """回傳 (寫唔寫, 唔寫嘅原因)。正式記錄簿只收「今日、收咗市、live 數據」嘅掃描。"""
+    if dry_run:
+        return False, None
+    if asof_mode and _same_dir(ledger_dir, L.DEFAULT_DIR):
+        # Tom 2026-11-24 / CRO C-3r:歷史重跑(--asof 或 --source csv)唔可以寫入正式記錄簿
+        return False, "ℹ️ 歷史重跑(--asof / --source csv)唔寫正式記錄簿。要測試請加 --ledger 其他資料夾。"
+    if partial:
+        # Tom 2026-11-24:記錄簿係「同一 (日期,代號,路徑) 只寫第一次」—— 未收市嘅數一寫入,
+        # 收市後嘅正確數就永遠寫唔入。所以開市期間一律唔寫。
+        return False, "⚠️ 今日條 bar 未收市 → 唔寫影子記錄簿。收市後再跑一次。"
+    return True, None
+
+
+def _run_row(bar_date, is_bull, source, failed):
+    return {"logged_at": datetime.now().strftime("%Y-%m-%d %H:%M"), "bar_date": bar_date.strftime("%Y-%m-%d"),
+            "bull": is_bull, "live_path": C.LIVE_PATH, "source": source, "n_failed": len(failed),
+            "version": C.VERSION, "fingerprint": C.fingerprint()}
+
+
 def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_run=False, quiet=False):
     asof_ts = pd.Timestamp(asof) if asof else None
-    asof_mode = asof_ts is not None
+    # CRO C-3r:CSV(歷史數據)一律當歷史重跑:唔查財報、唔寫正式記錄簿
+    asof_mode = asof_ts is not None or source == "csv"
     partial = (not asof_mode and source == "yf" and partial_bar_warning())
+    can_write, why_not = _ledger_write(source, asof_mode, ledger_dir, partial, dry_run)
     data, failed = load(R.TICKERS + ["SPY"], source, data_dir, asof_ts)
     if failed:
         print(f"⚠️ 下載失敗 {len(failed)} 隻(今日唔會出佢哋嘅訊號):{', '.join(failed)}")
@@ -119,7 +147,12 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
     gap = (s["Close"] - s["MA200"]) / s["MA200"] * 100
     print(f"\n市場環境({bar_date.date()}): {'牛市' if is_bull else '熊市'}(SPY 對 MA200 {gap:+.1f}%)")
     if not is_bull:
-        print("熊市:系統停手,今日唔搵做多訊號。"); return {"bull": False, "rows": []}
+        print("熊市:系統停手,今日唔搵做多訊號。")
+        if can_write:
+            L.append_run(_run_row(bar_date, False, source, failed), ledger_dir)   # CRO C-4r:熊市日都要有心跳
+        elif why_not:
+            print(why_not)
+        return {"bull": False, "rows": [], "bar_date": bar_date}
 
     held = set(L.open_fills(ledger_dir)["ticker"])
     mode = Z.live_mode()          # Tom 2026-11-24:交易清單用 config 嘅模式(而家 = A);以前寫死 "A",開 B′ 都唔會生效
@@ -190,16 +223,12 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
 
     if not quiet:
         _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs)
-    if asof_mode and not dry_run and os.path.abspath(ledger_dir) == os.path.abspath(L.DEFAULT_DIR):
-        # Tom 2026-11-24(CRO C-3):歷史重跑唔可以寫入正式記錄簿(會污染 6 個月時鐘同 resolve)
-        print("\nℹ️ 歷史重跑(--asof)唔寫正式記錄簿。要測試請加 --ledger 其他資料夾。")
-    elif partial and not dry_run:
-        # Tom 2026-11-24:記錄簿係「同一 (日期,代號,路徑) 只寫第一次」—— 未收市嘅數一寫入,
-        # 收市後嘅正確數就永遠寫唔入。所以開市期間一律唔寫。
-        print("\n⚠️ 今日條 bar 未收市 → 唔寫影子記錄簿。收市後再跑一次。")
-    elif not dry_run:
+    if can_write:
         n = L.append_signals(rows, ledger_dir)
+        L.append_run(_run_row(bar_date, True, source, failed), ledger_dir)
         print(f"\n影子記錄簿:新增 {n} 行 → {os.path.join(ledger_dir, 'signals.csv')}")
+    elif why_not:
+        print("\n" + why_not)
     return {"bull": True, "rows": rows, "live": [r for _, r in live], "shadow_only": shadow_only,
             "blocked": blocked, "held_signals": held_sigs, "bar_date": bar_date}
 
@@ -271,7 +300,8 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     stamp(a.source if not a.asof else f"{a.source} asof {a.asof}")
-    scan(a.source, a.data, a.asof, a.ledger, a.dry_run)
+    out = scan(a.source, a.data, a.asof, a.ledger, a.dry_run)
+    sys.exit(0 if out is not None else 1)      # CRO N-10:冇 SPY / 數據不足 → .bat 會顯示「掃描出錯」
 
 
 if __name__ == "__main__":
