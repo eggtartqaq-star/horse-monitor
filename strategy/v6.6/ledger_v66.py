@@ -18,6 +18,7 @@ V6.6 影子記錄簿(shadow ledger)
 import argparse
 import csv
 import os
+import shutil
 import sys
 from datetime import datetime
 
@@ -65,10 +66,30 @@ def read(folder, name, cols):
     return pd.read_csv(p, encoding="utf-8-sig", dtype=str, keep_default_na=False)
 
 
+def _migrate_header(p, cols):
+    """CRO N-12(2026-11-25):舊版寫嘅檔欄位少過而家(例如 V6.6.1 嘅 fills.csv 冇 logged_at)。
+    唔處理嘅話,新一行會多一欄 → 之後每次讀都死,掃描器每個牛市日都話「掃描出錯」。
+    做法:先備份,再補空欄,之後先加新行。有唔識嘅欄位 → 唔郁,停低。"""
+    with open(p, encoding="utf-8-sig", newline="") as f:
+        header = next(csv.reader(f), [])
+    if header == list(cols):
+        return
+    extra = [c for c in header if c not in cols]
+    if extra:
+        raise SystemExit(f"❌ {p} 有唔識嘅欄位 {extra} —— 冇改動。將呢個檔畀 AI 睇。")
+    backup = f"{p}.bak-{datetime.now():%Y%m%d-%H%M%S}"
+    shutil.copy2(p, backup)
+    old = pd.read_csv(p, encoding="utf-8-sig", dtype=str, keep_default_na=False)
+    _rewrite(os.path.dirname(p), os.path.basename(p), cols, old)
+    print(f"ℹ️ {os.path.basename(p)} 由舊版格式升級(加咗 {[c for c in cols if c not in header]});備份:{backup}")
+
+
 def _append_rows(folder, name, cols, rows):
     p = _path(folder, name)
-    new = not os.path.exists(p)
-    with open(p, "a", encoding="utf-8-sig" if new else "utf-8", newline="") as f:
+    new = not os.path.exists(p) or os.path.getsize(p) == 0
+    if not new:
+        _migrate_header(p, cols)
+    with open(p, "w" if new else "a", encoding="utf-8-sig" if new else "utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         if new:
             w.writeheader()

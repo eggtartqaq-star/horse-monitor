@@ -327,6 +327,29 @@ def main():
         d6 = fresh([("2026-03-03", True)], [srow("2026-03-03", "RBD", close=20, stop=17.8, size_A=5, size_Bp=5, engine="E1")])
         fl6 = fill("RBD", 20.0, 6, 17.8, "2026-03-04", d6)
         check("fill:股數多過系統(按成交價同系統止蝕計 5 股,買咗 6 股)→ S2(CRO F6)", "S2:股數6多過系統5股" in fl6)
+
+        # CRO N-12:舊版(V6.6.0/6.6.1)fills.csv 冇 logged_at → 新版記錄要先升級表頭,唔可以變成「18 欄表頭 + 19 欄資料」
+        d7 = fresh([("2026-03-03", True)], [srow("2026-03-03", "PFE")])
+        old_cols = [c for c in L.FILL_COLS if c != "logged_at"]
+        with open(os.path.join(d7, "fills.csv"), "w", encoding="utf-8-sig", newline="") as fo:
+            fo.write(",".join(old_cols) + "\n")
+            fo.write(",".join({"fill_id": "old1", "ticker": "AVGO", "engine": "E2", "open_date": "2026-02-02",
+                               "open_px": "150", "shares": "2", "close_date": ""}.get(c, "") for c in old_cols) + "\n")
+        fill("PFE", 50.0, 2, 46.0, "2026-03-04", d7)
+        f7 = L.read(d7, "fills.csv", L.FILL_COLS)
+        check("記錄簿:舊版 fills.csv(冇 logged_at)自動升級,有備份,舊行保留,新行讀得返(CRO N-12)",
+              list(f7.columns) == L.FILL_COLS and len(f7) == 2 and f7["ticker"].tolist() == ["AVGO", "PFE"]
+              and f7["logged_at"].iloc[0] == "" and f7["logged_at"].iloc[1] != ""
+              and any(n.startswith("fills.csv.bak-") for n in os.listdir(d7)) and len(L.open_fills(d7)) == 2)
+        d8 = fresh([], [])
+        with open(os.path.join(d8, "fills.csv"), "w", encoding="utf-8-sig", newline="") as fo:
+            fo.write("fill_id,ticker,mystery\nx,AAA,1\n")
+        try:
+            L._append_rows(d8, "fills.csv", L.FILL_COLS, [{"fill_id": "y", "ticker": "BBB"}]); refused = False
+        except SystemExit:
+            refused = True
+        check("記錄簿:檔案有唔識嘅欄位 → 拒絕寫入,檔案唔郁",
+              refused and open(os.path.join(d8, "fills.csv"), encoding="utf-8-sig").read() == "fill_id,ticker,mystery\nx,AAA,1\n")
     finally:
         shutil.rmtree(tmpF, ignore_errors=True)
 
@@ -489,6 +512,17 @@ def main():
             rv = L.review(tmpE, today="2026-03-25")
         check("review:持倉期內有財報 → 記錄(CRO §5)", any("財報喺持倉期內" in n for n in rv["notes"]))
         check("review:V-1 未做 → S4 pending(唔會誤報)", rv["s4"]["state"] == "pending")
+        # CRO N-18:review 唔計歷史重跑行(days_er=off)
+        bp_row = dict({c: "" for c in L.SIGNAL_COLS}, bar_date="2026-03-04", path="bt", live=True, engine="E2",
+                      guard_ok=True, size_A=0, size_Bp=1)
+        L._append_rows(tmpE, "signals.csv", L.SIGNAL_COLS, [dict(bp_row, ticker="OFF", days_er="off")])
+        with contextlib.redirect_stdout(io.StringIO()):
+            rv1 = L.review(tmpE, today="2026-03-25")
+        L._append_rows(tmpE, "signals.csv", L.SIGNAL_COLS, [dict(bp_row, ticker="LIV", days_er="9")])
+        with contextlib.redirect_stdout(io.StringIO()):
+            rv2 = L.review(tmpE, today="2026-03-25")
+        check("review:歷史重跑行(off)唔計入 B′ 點數;live 行先計(CRO N-18)",
+              rv1["bprime_only_signals"] == 0 and rv2["bprime_only_signals"] == 1)
     finally:
         shutil.rmtree(tmpE, ignore_errors=True)
 

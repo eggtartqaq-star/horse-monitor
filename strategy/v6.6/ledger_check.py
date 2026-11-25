@@ -69,4 +69,5 @@ with contextlib.redirect_stdout(io.StringIO()) as o: out=L.review(T, today='2025
 print('breaches',out['breaches']); print('notes',out['notes'])
 if not any('COST' in b and '超上限' in b for b in out['breaches']): FAIL.append('S2 over-cap fill not flagged')
 print('LEDGER CHECK', 'PASS' if not FAIL else f'FAIL {FAIL}')
+shutil.rmtree(T, ignore_errors=True)   # CRO N-17:唔好留低臨時資料夾
 sys.exit(1 if FAIL else 0)
