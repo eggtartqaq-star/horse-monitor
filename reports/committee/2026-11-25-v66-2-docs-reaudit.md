@@ -17,6 +17,8 @@
 - I computed the SPY 200-day MA by hand from `data/SPY.csv`, rows 1002–1201. The sum of (close − 730) over the 200 closes is +94.27, so MA200 = 730.47. I re-added every group pairwise to check the arithmetic.
 - I could not compute SHA-256. The fingerprint, the 82/82 pass result, equivalence 0/85,120 at V6.6.2, ledger_check, and "baseline unchanged" are therefore **claims by the author (CEO run)**. The CRO's V6.6.2 re-check is still pending.
 
+**Update:** the corrections landed at `20b781d`. The diff-check is in §9; both documents now **PASS**.
+
 ---
 
 ## 0. Verdicts
@@ -405,3 +407,76 @@ Text for 腦大裝草 to append to `memory/decisions/2026-11-24-swing-v66-releas
 I will diff-check items 1–4 when they land. No full re-audit is needed unless the text changes beyond these fixes.
 
 *Static audit only: I executed no code. Research and decision support; not financial advice. No agent of this firm places orders.*
+
+---
+
+## 9. Diff-check 2026-11-25 (commit `20b781d`)
+
+**Scope:** A-1, A-2, A-3 and X-1, plus a scan for LOW items applied wrongly. This is not a full re-audit. Line numbers below refer to the files at `20b781d`.
+
+**Method:**
+- The branch head is `20b781d` (`.git/refs/heads/claude/ai-agent-management-bw44yc`; `.git/logs/HEAD:70`, "Apply docs re-audit corrections …").
+- I had no shell, so I did **not** run `git diff`. Instead I read four files in the working tree at that head and compared each with its fix text in §3:
+  - `strategy/v6.6/README.md`
+  - `reports/quant/2026-11-25-v66-release.md`
+  - `strategy/v6.6/parity_check.py`
+  - `strategy/v6.6/results/release_stamp.txt` (it is in the index)
+- If the working tree differs from the commit, I would not see the difference.
+- I also could not confirm that the commit left every `CORE_FILES` file untouched. The coordinator's diff list names only the four files above.
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| **A-1** (HIGH) | **PASS** | - README:13-15 (banner item 4) and README:76-77 (§一.6) carry the §3 fix text. The CRO's 11-25 condition is there: a cash account or margin disabled, no debit, shown by statement or read-only pull, and the 13 Nov account does not qualify.<br>- I grepped both documents for 還清, 先還, "Clear any" and "margin debit". The only hit is README:15, 「淨係還清欠款唔夠」, which states the correct rule.<br>- Release note:126-131 now has the same condition, including "Repaying the debit alone is not enough". |
+| **A-2** | **PASS** | - README:16-17 (banner) and README:74-75 (§一.6) cover real equity, the monthly and after-withdrawal re-check, and recording existing positions such as AVGO.<br>- Release note:132-135 matches.<br>- The note to Tom on how to record a legacy position (`--engine`) is still open. It is a code item, not a documentation item. |
+| **A-3** | **PASS** | - `parity_check.py:15-16` (docstring) and `:116` (the success message) now point to `owner_settings.json` and say not to edit `config_v66.py`.<br>- I grepped `strategy/v6.6/*.{py,bat,pine,md,json}` for `GATES[` and for "config_v66.py … 改/True". No other edit-config instruction remains; the only other hits are test code (`selftest.py:148, 178`).<br>- The file is outside `CORE_FILES`. |
+| **X-1** | **PASS for both documents. The decision-record append is OPEN; deferring it is accepted, with a condition.** | - README:3 says 「五樣」; README:10 is V-1 with the S4 consequence; README:18 is item 5; README:20 says 「五樣」.<br>- Release note:3-12 lists the same five conditions. It says §4 items 5-8 do not block the switch, and records V-1/V-3 as the CEO's choice.<br>- Release note:83 shows the re-audit with "diff-check pending".<br>- The decision record still carries the V6.6.1 list (`memory/decisions/2026-11-24-swing-v66-release.md:47-57`).<br>- **Condition on the deferral:** waiting for the CRO's V6.6.2 result before appending §6 is reasonable. The append must still land before the banner comes down. README:20 already ties removing the banner to writing the record. |
+
+**Follow-up for this result:**
+- Banner item 5 (README:18, 「等審計員核對」) is now satisfied, and so is the "diff-check pending" note in release note:83.
+- Change both to read "diff-check PASS 2026-11-25".
+- That one-line edit does not need another check from me.
+
+**LOW items:** all 15 are applied as written; none was applied wrongly.
+
+| Item | Where it now sits |
+|---|---|
+| X-2 | `results/release_stamp.txt`, plus release note:14-15 and :110 |
+| X-3 | README:225-226; release note:64-68 |
+| X-4 | README:29-31; release note:29-35 |
+| A-4 | README:138 |
+| A-5 | README:129 |
+| A-6 | README:63-64 |
+| A-7 | README:27 |
+| A-8 | README:210-211 |
+| A-9 | README:4-5 |
+| A-10 | README:113-114 and :161 |
+| A-11 | README:176 and :181 |
+| A-12 | README:44, :58, :61, :68, :82, :123-124, :190 |
+| B-1 | Release note:82 |
+| B-2 | Release note:100-104 |
+| B-3 | Release note:16-18 |
+
+**Two notes:**
+1. **README:68, a nit caused by my own fix text.** The line ends with a colon, so the `feecheck` command block below it (69-71) reads as if it were the way to set V1. This is optional, but a better wording is: `…你喺 owner_settings.json 填好;下面嘅 feecheck 過咗(淨 EV > 0)先將 "V1_真實收費已核" 改做 true。指令:`.
+2. **X-2:** `release_stamp.txt` reads `V6.6.2 2026-11-25 0b05757d0076`, which matches README:89 and :95 and release note:14. It is still the author's run, and I cannot compute SHA-256, so the CRO's V6.6.2 check must still repeat K-6. No change is requested.
+
+**Text the coordinator added beyond my fixes:**
+- **README:202, the Pine 「短線資金(HKD)」 setting must equal `account_hkd`:** VERIFIED. The input exists at `pine/swing_v66.pine:20` (`ACCOUNT_HKD = input.float(10000, "短線資金(HKD)")`), and so do the related cap and risk inputs (:21-23). This is a correct and useful addition, found by applying pattern (b).
+- **Release note:126-131, the C-6 rewrite:** correct. **It also corrects a miss in my 11-25 audit.**
+  - The original release note line 109, "Clear any margin debit before any new entry", stated the weaker condition right next to the CRO's full one (lines 111-113).
+  - That was an internal contradiction, and I scored the release note's C-6 as complete (§2.2 #22; §5 table).
+  - I record this against my own flag coverage. The lesson for 床狗 matches pattern (a): when checking a constraint, check **every** line that restates it, not only the strongest.
+
+**Updated verdicts (after the diff-check):**
+
+| Document | Verdict |
+|---|---|
+| `strategy/v6.6/README.md` | **PASS.** The blocking corrections A-1, A-2, A-3 and X-1 are verified. |
+| `reports/quant/2026-11-25-v66-release.md` | **PASS** |
+
+**What still gates the switch, outside these two documents:**
+- the CRO's V6.6.2 re-check, including K-6;
+- the §6 append to the decision record;
+- the Owner's items in the banner.
+
+*Static diff-check only: I executed no code.*

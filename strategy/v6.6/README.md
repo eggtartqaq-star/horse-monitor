@@ -15,7 +15,7 @@
 >      11 月 13 日讀到嘅微牛孖展戶口(USD −12.06)**唔合格**,淨係還清欠款唔夠。未證明之前,V6.6 唔准開任何新倉;
 >    - `owner_settings.json` 嘅 `account_hkd` 改做嗰個戶口**真正**嘅淨值(唔計借貸),每月同每次提款後再核對;
 >    - 戶口入面現有嘅持倉(例如 2 股 AVGO)要記入記錄簿(點樣記由 AI 話你知;會被標 S2,係預期)。
-> 5. **AI 審計:** 2026-11-25 文件重新審計(`reports/committee/2026-11-25-v66-2-docs-reaudit.md`)要求嘅修正已經改好,等審計員核對。
+> 5. **AI 審計:** 2026-11-25 文件重新審計(`reports/committee/2026-11-25-v66-2-docs-reaudit.md`)要求嘅修正已經改好;審計員 diff-check PASS(2026-11-25)。✅
 >
 > 五樣都完成之後,呢個方框會刪除,並寫入決策紀錄。
 
@@ -65,7 +65,7 @@
    - **過關標準:** 指標差 < 0.01;有訊號日子一致率 ≥ 98%。
    - **過關之後:** 喺 `owner_settings.json` 將 `"V3_對照測試"` 改做 `true`,並將輸出畀 AI 睇。
 5. **真實收費(關卡 V-1):** 喺微牛搵一張成交單據(佣金、平台費、SEC/TAF、匯兌),影相畀 AI。
-   AI 會話你 `real_fee` 填咩數;你喺 `owner_settings.json` 填好,feecheck 過咗(淨 EV > 0)先將 `"V1_真實收費已核"` 改做 `true`:
+   AI 會話你 `real_fee` 填咩數;你喺 `owner_settings.json` 填好;下面嘅 feecheck 過咗(淨 EV > 0)先將 `"V1_真實收費已核"` 改做 `true`。指令:
    ```cmd
    python lab.py --mode feecheck --fee-min 每邊最低收費 --fee-bp 每邊bp
    ```
