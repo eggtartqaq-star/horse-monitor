@@ -7,10 +7,15 @@ V6.6 影子記錄簿(shadow ledger)
   fills.csv    你真正落嘅單(用 fill 指令記,唔好用 Excel 改)
   results.csv  resolve 每次由頭計:每個訊號「如果做咗」嘅結果(用回測同一套出場規則)
   runs.csv     每次正式掃描嘅「心跳」(包括熊市、冇訊號嘅日子)—— fill 用嚟判斷訊號係咪今日有效
+  s2_clearances.csv  已經向 CRO 解釋咗嘅 S2(未解釋嘅 S2 → 停開新倉,Owner 2026-11-25 決定,CRO N-11)
 
 指令:
   python ledger_v66.py fill open  --ticker PFE --price 27.10 --shares 4 --stop 25.30 --engine E2 [--target X] [--date YYYY-MM-DD] [--fees 0]
   python ledger_v66.py fill close --ticker PFE --price 28.40 [--date YYYY-MM-DD] [--fees 0] [--reason 移動止損]
+  python ledger_v66.py fill open --legacy --ticker AVGO --price 353.16 --shares 2 --stop 270 --date 2026-10-01
+                                         # 轉用之前已經持有嘅倉(CRO N-13)
+  python ledger_v66.py s2-clear --fill-id 2026-12-01_PFE --cro-note "reports/risk/2026-12-02-xxx.md 2026-12-02"
+                                         # 向 CRO 解釋咗之後先記(CRO N-11)
   python ledger_v66.py resolve  [--source yf|csv --data DIR]
   python ledger_v66.py review
   python ledger_v66.py show
@@ -18,6 +23,7 @@ V6.6 影子記錄簿(shadow ledger)
 import argparse
 import csv
 import os
+import re
 import shutil
 import sys
 from datetime import datetime
@@ -42,12 +48,18 @@ DEFAULT_DIR = os.path.join(HERE, "ledger")
 SIGNAL_COLS = ["logged_at", "bar_date", "ticker", "path", "live", "engine", "tier", "score", "close",
                "stop", "target", "r", "risk_pct", "breakout", "rsi2", "guard_ok", "guard_reason",
                "spec_flag", "days_er", "earnings_date", "size_A", "notional_A", "size_Bp", "rule_Bp",
-               "size_D", "rank", "held", "partial_bar", "version", "fingerprint"]
+               "size_D", "rank", "held", "partial_bar", "version", "fingerprint",
+               "source", "asof", "account_hkd", "cap_mode", "gates"]          # CRO N-16、N-6(V6.6.4)
 FILL_COLS = ["fill_id", "ticker", "engine", "source_path", "open_date", "open_px", "shares", "init_stop",
              "target", "open_fees", "close_date", "close_px", "close_fees", "close_reason",
-             "notional_pct", "flags", "version", "fingerprint", "logged_at"]
+             "notional_pct", "flags", "version", "fingerprint", "logged_at",
+             "account_hkd", "cap_mode", "gates"]                                 # CRO N-6(V6.6.4)
 # CRO C-4r(2026-11-25):每次正式掃描都寫一行,熊市/冇訊號都寫 —— 否則「上次掃描」會停喺舊日子
-RUN_COLS = ["logged_at", "bar_date", "bull", "live_path", "source", "n_failed", "version", "fingerprint"]
+RUN_COLS = ["logged_at", "bar_date", "bull", "live_path", "source", "n_failed", "version", "fingerprint",
+            "asof", "account_hkd", "cap_mode", "gates"]                          # CRO N-16、N-6(V6.6.4)
+CLEAR_COLS = ["fill_id", "cleared_at", "cro_note", "version", "fingerprint"]   # CRO N-11(V6.6.4)
+# CRO N-14:臨時休市(唔喺固定假期表)。2025-01-09 = 卡特總統國殤日;用 data/SPY.csv 核對過,1,200 個交易日只差呢一日。
+NYSE_ADHOC_CLOSURES = ("2025-01-09",)
 
 
 # ============================================================
@@ -61,17 +73,20 @@ def _path(folder, name, create=True):
 
 def read(folder, name, cols):
     p = _path(folder, name, create=False)
-    if not os.path.exists(p):
-        return pd.DataFrame(columns=cols)
-    return pd.read_csv(p, encoding="utf-8-sig", dtype=str, keep_default_na=False)
+    if not os.path.exists(p) or os.path.getsize(p) == 0 or not _header(p):
+        return pd.DataFrame(columns=cols)                 # CRO N-21:空檔 / 淨係 BOM 都當冇資料
+    df = pd.read_csv(p, encoding="utf-8-sig", dtype=str, keep_default_na=False)
+    for c in cols:                                        # 舊版檔(未升級)讀落嚟都有齊欄位,冇嘅當空
+        if c not in df.columns:
+            df[c] = ""
+    return df
 
 
 def _migrate_header(p, cols):
     """CRO N-12(2026-11-25):舊版寫嘅檔欄位少過而家(例如 V6.6.1 嘅 fills.csv 冇 logged_at)。
     唔處理嘅話,新一行會多一欄 → 之後每次讀都死,掃描器每個牛市日都話「掃描出錯」。
     做法:先備份,再補空欄,之後先加新行。有唔識嘅欄位 → 唔郁,停低。"""
-    with open(p, encoding="utf-8-sig", newline="") as f:
-        header = next(csv.reader(f), [])
+    header = _header(p)
     if header == list(cols):
         return
     extra = [c for c in header if c not in cols]
@@ -81,14 +96,32 @@ def _migrate_header(p, cols):
     shutil.copy2(p, backup)
     old = pd.read_csv(p, encoding="utf-8-sig", dtype=str, keep_default_na=False)
     _rewrite(os.path.dirname(p), os.path.basename(p), cols, old)
-    print(f"ℹ️ {os.path.basename(p)} 由舊版格式升級(加咗 {[c for c in cols if c not in header]});備份:{backup}")
+    added = [c for c in cols if c not in header]
+    what = f"加咗 {added}" if added else "重新排列欄位"          # CRO N-23
+    print(f"ℹ️ {os.path.basename(p)} 由舊版格式升級({what});備份:{backup}")
+
+
+def _header(p):
+    with open(p, encoding="utf-8-sig", newline="") as f:
+        return [h for h in next(csv.reader(f), []) if h.strip()]
 
 
 def _append_rows(folder, name, cols, rows):
     p = _path(folder, name)
     new = not os.path.exists(p) or os.path.getsize(p) == 0
+    if not new and not _header(p):
+        # CRO N-21:有內容但冇表頭(例如淨係 BOM / 空行)→ 備份,當新檔
+        shutil.copy2(p, f"{p}.bak-{datetime.now():%Y%m%d-%H%M%S}")
+        new = True
     if not new:
         _migrate_header(p, cols)
+        with open(p, "rb") as f:
+            f.seek(-1, os.SEEK_END)
+            last = f.read(1)
+        if last != b"\n":
+            # CRO N-20:最後一行冇換行(例如人手改過)→ 先補換行,否則新行會黐埋舊行,舊行靜靜雞唔見
+            with open(p, "ab") as f:
+                f.write(b"\r\n")
     with open(p, "w" if new else "a", encoding="utf-8-sig" if new else "utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         if new:
@@ -146,12 +179,48 @@ def nyse_sessions_between(d0, d1):
     if b < a:
         return 0
     cbd = pd.offsets.CustomBusinessDay(calendar=_nyse_calendar())
-    return len(pd.date_range(a, b, freq=cbd))
+    days = pd.date_range(a, b, freq=cbd)
+    adhoc = {pd.Timestamp(d) for d in NYSE_ADHOC_CLOSURES}
+    return int(sum(1 for d in days if d not in adhoc))
 
 
 def open_fills(folder=DEFAULT_DIR):
     f = read(folder, "fills.csv", FILL_COLS)
     return f[f["close_date"] == ""] if len(f) else f
+
+
+def uncleared_s2(folder=DEFAULT_DIR):
+    """CRO N-11(Owner 2026-11-25 決定):有 S2 而未向 CRO 解釋(未 s2-clear)嘅交易 → 停開新倉。"""
+    f = read(folder, "fills.csv", FILL_COLS)
+    if not len(f):
+        return []
+    clr = read(folder, "s2_clearances.csv", CLEAR_COLS)
+    done = set(clr["fill_id"]) if len(clr) else set()
+    bad = f[f["flags"].str.contains("S2", regex=False) & ~f["fill_id"].isin(done)]
+    return [f"{r.fill_id}({r.ticker})" for r in bad.itertuples()]
+
+
+def _valid_cro_note(note):
+    return bool(re.search(r"\d{4}-\d{2}-\d{2}", note or "")) and "reports/risk/" in (note or "")
+
+
+def cmd_s2_clear(a, folder):
+    """記錄「呢筆 S2 已經向 CRO 解釋咗」。要寫 CRO 文件路徑同日期;唔會刪除 S2 標記(歷史照留)。"""
+    f = read(folder, "fills.csv", FILL_COLS)
+    row = f[f["fill_id"] == a.fill_id] if len(f) else f
+    if not len(row):
+        sys.exit(f"❌ 搵唔到 fill_id {a.fill_id}(用 python ledger_v66.py show 睇)")
+    if "S2" not in row["flags"].iloc[0]:
+        sys.exit(f"❌ {a.fill_id} 冇 S2,唔使 clear")
+    if a.fill_id not in [x.split("(")[0] for x in uncleared_s2(folder)]:
+        sys.exit(f"❌ {a.fill_id} 已經 clear 咗")
+    if not _valid_cro_note(a.cro_note):
+        sys.exit("❌ --cro-note 要寫 CRO 文件路徑(reports/risk/...)同日期(YYYY-MM-DD)")
+    _append_rows(folder, "s2_clearances.csv", CLEAR_COLS, [{
+        "fill_id": a.fill_id, "cleared_at": datetime.now().strftime("%Y-%m-%d %H:%M"), "cro_note": a.cro_note,
+        "version": C.VERSION, "fingerprint": C.fingerprint()}])
+    left = uncleared_s2(folder)
+    print(f"✅ 已記錄:{a.fill_id} 嘅 S2 已向 CRO 解釋。" + (f" 仲有未解釋:{', '.join(left)}" if left else " 冇其他未解釋 S2,可以再開新倉。"))
 
 
 # ============================================================
@@ -166,7 +235,13 @@ def cmd_fill(a, folder):
     if a.action == "open":
         if len(fills) and ((fills["ticker"] == a.ticker) & (fills["close_date"] == "")).any():
             sys.exit(f"❌ {a.ticker} 已經有未平倉記錄")
+        legacy = bool(getattr(a, "legacy", False))
+        if legacy and C.SWITCH_DATE and today >= C.SWITCH_DATE:
+            sys.exit(f"❌ --legacy 只限轉用日({C.SWITCH_DATE})之前開嘅倉;之後開嘅倉要用正常 fill")
+        hold = [] if legacy else uncleared_s2(folder)     # 記錄舊倉唔算「開新倉」
         flags = []
+        if hold:
+            flags.append(f"S2:未解釋 S2 期間開新倉({', '.join(hold)})")
         n_open = int((fills["close_date"] == "").sum()) if len(fills) else 0
         if n_open >= C.MAX_POSITIONS:
             flags.append(f"S2:已有{n_open}倉(最多{C.MAX_POSITIONS})")
@@ -181,13 +256,20 @@ def cmd_fill(a, folder):
             flags.append("S2:風險>1%")
         sig = read(folder, "signals.csv", SIGNAL_COLS)
         runs = read(folder, "runs.csv", RUN_COLS)
+        if len(runs):
+            # CRO N-16:只信 live(yfinance)而唔係歷史重跑嘅心跳
+            runs = runs[(runs["source"] == "yf") & (runs["asof"] != "True")]
+        if len(sig):
+            sig = sig[(sig["asof"] != "True") & (sig["days_er"] != "off")]
         src = "none"
         # CRO C-4r(2026-11-25):「上次掃描」由 runs.csv(心跳)決定,唔再由 signals.csv 估。
         # 熊市日、冇訊號日、冇跑掃描嘅日子 signals.csv 都冇行 → 舊方法會將幾日前嘅訊號當今日有效。
         prior = runs[runs["bar_date"] < today] if len(runs) else runs
         last_bar = prior["bar_date"].max() if len(prior) else None
         pl = sig.iloc[0:0] if len(sig) else sig
-        if last_bar is None:
+        if legacy:
+            src = "legacy"                                # CRO N-13:轉用前已持有;唔查訊號,但照查名義同風險
+        elif last_bar is None:
             src = "none:冇掃描記錄(runs.csv),要先跑 daily_scan_v66"
         elif not (prior[prior["bar_date"] == last_bar]["bull"] == "True").any():
             src = f"bear:上次掃描{last_bar}係熊市,系統停手"
@@ -223,13 +305,16 @@ def cmd_fill(a, folder):
                 n_before = int(((fills["close_date"] == "") & (fills["open_date"] < today)).sum()) if len(fills) else 0
                 if pd.notna(rk) and rk > C.MAX_POSITIONS - n_before:
                     flags.append(f"留意:揀咗第{int(rk)}名(當時得{max(C.MAX_POSITIONS - n_before, 0)}個空位)")
-        if src != "live":
+        if legacy:
+            flags.append("legacy")
+        elif src != "live":
             flags.append(f"S2:冇 live 訊號({src})")
-        row = {"fill_id": f"{today}_{a.ticker}", "ticker": a.ticker, "engine": a.engine, "source_path": src,
+        row = {"fill_id": f"{today}_{a.ticker}", "ticker": a.ticker, "engine": a.engine or "LEGACY", "source_path": src,
                "open_date": today, "open_px": a.price, "shares": a.shares, "init_stop": a.stop,
                "target": a.target or "", "open_fees": a.fees, "notional_pct": round(pct, 2),
                "flags": ";".join(flags), "version": C.VERSION, "fingerprint": C.fingerprint(),
-               "logged_at": datetime.now().strftime("%Y-%m-%d %H:%M")}     # CRO N-10:--date 補記都睇到幾時記
+               "logged_at": datetime.now().strftime("%Y-%m-%d %H:%M"),     # CRO N-10:--date 補記都睇到幾時記
+               **C.settings_record()}                                          # CRO N-6
         _append_rows(folder, "fills.csv", FILL_COLS, [row])
         print(f"✅ 已記錄開倉 {a.ticker} {a.shares}股 @ {a.price}(名義 {pct:.1f}%)" +
               (f"  ⚠️ {';'.join(flags)}" if flags else ""))
@@ -290,7 +375,7 @@ def cmd_resolve(a, folder):
         print("ledger 未有訊號。"); return None
     sig = sig[(sig["guard_ok"] == "True") & (sig["partial_bar"] != "True")]   # Tom:未收市嘅舊行唔計
     if not getattr(a, "include_asof", False):
-        sig = sig[sig["days_er"] != "off"]      # CRO C-3r:歷史重跑行唔計(只有測試用記錄簿先會有)
+        sig = sig[(sig["days_er"] != "off") & (sig["asof"] != "True")]   # CRO C-3r / N-16:歷史重跑行唔計
     if not len(sig):
         print("ledger 未有可計嘅訊號。"); return None
     data = _load_prices(sorted(set(sig["ticker"])) + ["SPY"], a.source, a.data)
@@ -326,9 +411,11 @@ def review(folder, today=None):
     today = pd.Timestamp(today or datetime.now().strftime("%Y-%m-%d"))
     sig = read(folder, "signals.csv", SIGNAL_COLS)
     if len(sig):
-        sig = sig[sig["days_er"] != "off"]      # CRO C-3r:歷史重跑行唔計入時鐘同點數
+        sig = sig[(sig["days_er"] != "off") & (sig["asof"] != "True")]   # CRO C-3r / N-16:唔計入時鐘同點數
     res = read(folder, "results.csv", [])
     fills = read(folder, "fills.csv", FILL_COLS)
+    clr = read(folder, "s2_clearances.csv", CLEAR_COLS)
+    cleared = set(clr["fill_id"]) if len(clr) else set()
     out = {"breaches": [], "notes": []}
     print("=" * 64)
     print(f"V6.6 影子記錄檢討  |  {C.VERSION}  指紋 {C.fingerprint()}")
@@ -376,7 +463,10 @@ def review(folder, today=None):
             if "B'例外" in fl and pd.notna(x.pnl) and x.pnl < -0.02 * acct:
                 out["breaches"].append(f"S1:{x.ticker} 例外倉蝕 {x.pnl:.2f}(>{0.02 * acct:.2f})")
             if "S2" in fl:
-                out["breaches"].append(f"S2:{x.ticker} {fl}")
+                if x.fill_id in cleared:
+                    out["notes"].append(f"S2(已向 CRO 解釋):{x.ticker} {fl}")
+                else:
+                    out["breaches"].append(f"S2:{x.ticker} {fl}")
         closed = f[f["close_date"] != ""].copy()
         if len(closed):
             closed["month"] = closed["close_date"].str[:7]
@@ -411,7 +501,10 @@ def review(folder, today=None):
     if any(b.startswith("S4") for b in out["breaches"]):
         print("\n  ★ S4:真實收費食晒優勢 → 呢個戶口規模下,任何名義上限都唔應該交易。通知 CRO。")
     elif out["breaches"]:
-        print("\n  ★ 有違規 → 即刻返去 A(10%),通知 CRO。測試期內唔可以爭拗。")
+        # CRO N-11(Owner 2026-11-25 決定):A 之下「返去 A」冇作用 → 停開新倉,直至向 CRO 解釋
+        back = "即刻返去 A(10%)," if Z.live_mode() != "A" else ""
+        print(f"\n  ★ 有違規 → {back}停開新倉,通知 CRO。向 CRO 解釋之後用 "
+              "python ledger_v66.py s2-clear --fill-id … --cro-note … 記錄,先可以再開新倉。")
     elif len(fills):
         print("  ✅ 冇違規")
     return out
@@ -451,12 +544,14 @@ def s4_status(sig, res):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["fill", "resolve", "review", "show"])
+    ap.add_argument("cmd", choices=["fill", "resolve", "review", "show", "s2-clear"])
     ap.add_argument("action", nargs="?", choices=["open", "close"])
     ap.add_argument("--ledger", default=DEFAULT_DIR)
     ap.add_argument("--ticker"); ap.add_argument("--price", type=float); ap.add_argument("--shares", type=float)
     ap.add_argument("--stop", type=float); ap.add_argument("--target", type=float)
     ap.add_argument("--engine", choices=["E1", "E2"]); ap.add_argument("--date")
+    ap.add_argument("--legacy", action="store_true", help="轉用前已持有嘅倉(CRO N-13)")
+    ap.add_argument("--fill-id"); ap.add_argument("--cro-note")
     ap.add_argument("--fees", type=float, default=0.0); ap.add_argument("--reason")
     ap.add_argument("--source", choices=["yf", "csv"], default="yf")
     ap.add_argument("--data", default=os.path.join(HERE, "data"))
@@ -465,10 +560,14 @@ def main():
     if a.cmd == "fill":
         if a.action is None or not a.ticker or a.price is None:
             sys.exit("用法:fill open|close --ticker X --price P [...]")
-        if a.action == "open" and (a.shares is None or a.stop is None or a.engine is None):
-            sys.exit("開倉要 --shares --stop --engine")
+        if a.action == "open" and (a.shares is None or a.stop is None or (a.engine is None and not a.legacy)):
+            sys.exit("開倉要 --shares --stop --engine(舊倉用 --legacy,唔使 --engine;止蝕用你自己嘅)")
         a.ticker = a.ticker.upper()
         cmd_fill(a, a.ledger)
+    elif a.cmd == "s2-clear":
+        if not a.fill_id or not a.cro_note:
+            sys.exit("用法:s2-clear --fill-id YYYY-MM-DD_TICKER --cro-note \"reports/risk/... YYYY-MM-DD\"")
+        cmd_s2_clear(a, a.ledger)
     elif a.cmd == "resolve":
         cmd_resolve(a, a.ledger)
     elif a.cmd == "review":
@@ -476,6 +575,8 @@ def main():
     else:
         print(read(a.ledger, "signals.csv", SIGNAL_COLS).tail(30).to_string())
         print(read(a.ledger, "fills.csv", FILL_COLS).to_string())
+        hold = uncleared_s2(a.ledger)
+        print(f"\n未向 CRO 解釋嘅 S2:{', '.join(hold) if hold else '冇'}" + ("  → 停開新倉(CRO N-11)" if hold else ""))
 
 
 if __name__ == "__main__":

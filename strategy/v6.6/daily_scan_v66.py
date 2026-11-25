@@ -71,6 +71,13 @@ def partial_bar_warning():
     return False
 
 
+def _bar_open_warning(bar_date):
+    if G.bar_still_open(bar_date, "美股"):
+        print("⚠️ 最後一條 bar 係今日(紐約),但未到收市 —— 未收市數據,訊號會變。收市後再跑。")
+        return True
+    return False
+
+
 def load(tickers, source, data_dir, asof):
     data, failed = {}, []
     if source == "csv":
@@ -120,18 +127,17 @@ def _ledger_write(source, asof_mode, ledger_dir, partial, dry_run):
     return True, None
 
 
-def _run_row(bar_date, is_bull, source, failed):
+def _run_row(bar_date, is_bull, source, failed, asof_mode=False):
     return {"logged_at": datetime.now().strftime("%Y-%m-%d %H:%M"), "bar_date": bar_date.strftime("%Y-%m-%d"),
             "bull": is_bull, "live_path": C.LIVE_PATH, "source": source, "n_failed": len(failed),
-            "version": C.VERSION, "fingerprint": C.fingerprint()}
+            "version": C.VERSION, "fingerprint": C.fingerprint(), "asof": asof_mode,      # CRO N-16
+            **C.settings_record()}                                                        # CRO N-6
 
 
 def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_run=False, quiet=False):
     asof_ts = pd.Timestamp(asof) if asof else None
     # CRO C-3r:CSV(歷史數據)一律當歷史重跑:唔查財報、唔寫正式記錄簿
     asof_mode = asof_ts is not None or source == "csv"
-    partial = (not asof_mode and source == "yf" and partial_bar_warning())
-    can_write, why_not = _ledger_write(source, asof_mode, ledger_dir, partial, dry_run)
     data, failed = load(R.TICKERS + ["SPY"], source, data_dir, asof_ts)
     if failed:
         print(f"⚠️ 下載失敗 {len(failed)} 隻(今日唔會出佢哋嘅訊號):{', '.join(failed)}")
@@ -141,6 +147,9 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
     spy["MA200"] = spy["Close"].rolling(200).mean()
     s = spy.iloc[-1]
     bar_date = spy.index[-1]
+    # CRO N-19:同 bot 一樣 —— 開市時間 **或者** 最後一條 bar 係今日而未到 16:00(例如盤前數據)都當未收市
+    partial = (not asof_mode and source == "yf" and (partial_bar_warning() or _bar_open_warning(bar_date)))
+    can_write, why_not = _ledger_write(source, asof_mode, ledger_dir, partial, dry_run)
     if pd.isna(s["MA200"]):
         print("SPY MA200 數據不足,今日唔出訊號。"); return None
     is_bull = bool(s["Close"] > s["MA200"])
@@ -149,7 +158,7 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
     if not is_bull:
         print("熊市:系統停手,今日唔搵做多訊號。")
         if can_write:
-            L.append_run(_run_row(bar_date, False, source, failed), ledger_dir)   # CRO C-4r:熊市日都要有心跳
+            L.append_run(_run_row(bar_date, False, source, failed, asof_mode), ledger_dir)   # CRO C-4r:熊市日都要有心跳
         elif why_not:
             print(why_not)
         return {"bull": False, "rows": [], "bar_date": bar_date}
@@ -199,9 +208,13 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
                 "size_A": a_["shares"], "notional_A": a_["notional"], "size_Bp": bp["shares"], "rule_Bp": bp["rule"],
                 "size_D": d_["shares"], "rank": "", "held": tk in held, "partial_bar": partial,
                 "version": C.VERSION, "fingerprint": C.fingerprint(),
+                "source": source, "asof": asof_mode, **C.settings_record(),      # CRO N-16、N-6
             }
             lv = bp if mode == "B_PRIME" else a_
             rec["size_live"], rec["notional_live"] = lv["shares"], lv["notional"]   # 只供顯示;記錄簿欄位不變
+            # CRO N-15:限價上限(真實股價)—— 用呢個價做限價,成交價嘅名義/風險/股數一定過
+            rec["limit_max"] = Z.max_limit(close * f, sg["stop"] * f, lv["shares"], sg["engine"],
+                                           (sg["target"] * f) if sg["engine"] == "E1" else None, mode)
             rows.append(rec)
             if path == C.LIVE_PATH:
                 if not g["ok"]:
@@ -225,21 +238,30 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
         _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs)
     if can_write:
         n = L.append_signals(rows, ledger_dir)
-        L.append_run(_run_row(bar_date, True, source, failed), ledger_dir)
+        L.append_run(_run_row(bar_date, True, source, failed, asof_mode), ledger_dir)
         print(f"\n影子記錄簿:新增 {n} 行 → {os.path.join(ledger_dir, 'signals.csv')}")
     elif why_not:
         print("\n" + why_not)
     return {"bull": True, "rows": rows, "live": [r for _, r in live], "shadow_only": shadow_only,
+            "s2_hold": L.uncleared_s2(ledger_dir),
             "blocked": blocked, "held_signals": held_sigs, "bar_date": bar_date}
 
 
-def _line(rec, rank_txt, tag=""):
+def _size_txt(rec, hide):
+    if hide:
+        return "股數 —(停開新倉)"                          # CRO N-11:有未解釋 S2 → 唔顯示股數同限價
+    lim = rec.get("limit_max")
+    return (f"股數 {rec['size_live']}(${rec['notional_live']:.0f})  "
+            f"限價上限 {'$' + format(lim, '.2f') if lim else '—'}")
+
+
+def _line(rec, rank_txt, tag="", hide=False):
     if rec["engine"] == "E2":
         return (f" {rank_txt} 引擎二 {rec['ticker']:5} 評分{rec['score']:.3f}  收市${rec['close']:.2f}  "
-                f"初始止蝕${rec['stop']:.2f}(-{rec['risk_pct']:.1f}%)  股數 {rec['size_live']}(${rec['notional_live']:.0f})  "
+                f"初始止蝕${rec['stop']:.2f}(-{rec['risk_pct']:.1f}%)  {_size_txt(rec, hide)}  "
                 f"距財報 {rec['days_er']}  {rec['spec_flag']} {tag}")
     return (f" {rank_txt} 引擎一 {rec['ticker']:5} [{rec['tier']}] 評分{rec['score']:.3f}  收市${rec['close']:.2f}  "
-            f"止蝕${rec['stop']:.2f} 止盈${rec['target']:.2f} R{rec['r']}  股數 {rec['size_live']}(${rec['notional_live']:.0f})  "
+            f"止蝕${rec['stop']:.2f} 止盈${rec['target']:.2f} R{rec['r']}  {_size_txt(rec, hide)}  "
             f"距財報 {rec['days_er']}  {rec['spec_flag']} {tag}")
 
 
@@ -247,14 +269,19 @@ def _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs=()):
     print("\n" + "=" * 64)
     print("① 交易清單(回測驗證版)—— 按排名揀,最多 2 倉(扣返現有持倉)")
     print("=" * 64)
+    hold = L.uncleared_s2(ledger_dir)
+    if hold:
+        print(f"⛔ 有未向 CRO 解釋嘅 S2({', '.join(hold)})—— 停開新倉(Owner 2026-11-25 決定,CRO N-11)。")
+        print("   向 CRO 解釋之後:python ledger_v66.py s2-clear --fill-id … --cro-note \"reports/risk/… YYYY-MM-DD\"")
     if not live:
         print("今日冇訊號。空手係一種倉位。")
     for _, rec in live:
-        print(_line(rec, f"#{rec['rank']}"))
+        print(_line(rec, f"#{rec['rank']}", hide=bool(hold)))
     for rec in held_sigs:
-        print(_line(rec, " — ", "持倉中(唔計排名,唔好加注)"))
-    if live:
-        print("  落單:聽日開市;開市價偏離收市 >1% → 重計 R/風險,唔達標放棄。成交後即刻設止蝕單。")
+        print(_line(rec, " — ", "持倉中(唔計排名,唔好加注)", hide=True))
+    if live and not hold:
+        print("  落單:聽日開市,用**限價單**,限價唔可以高過「限價上限」;開市價高過就唔買,唔好加價、唔好加股(CRO C-8、N-15)。")
+        print("  成交後即刻設系統止蝕單(唔准自己收緊,永不下移)。")
         print("  落單後記錄:python ledger_v66.py fill open --ticker X --price P --shares N --stop S --engine E2")
     print("\n② 舊掃描器版先有嘅訊號 —— 只記錄,唔交易")
     print("   " + (", ".join(f"{r['ticker']}({r['engine']})" for r in shadow_only) if shadow_only else "冇"))
@@ -274,6 +301,10 @@ def trailing_line(x, data):
     if df is None:
         return f"{x.ticker}: 冇數據"
     stop = float(x.init_stop)
+    if x.engine == "LEGACY":
+        # CRO N-13:轉用前已持有嘅倉 —— 唔屬於系統,冇系統移動止損
+        return (f"{x.ticker} 舊倉(唔屬於系統)  入${float(x.open_px):.2f}  你自己嘅止蝕${stop:.2f}  "
+                f"收市 ${df['Close'].iloc[-1]:.2f}  —— 佔住一個倉位")
     if x.engine == "E2":
         ind = calc_indicators(df)
         since = ind[ind.index >= pd.Timestamp(x.open_date)]

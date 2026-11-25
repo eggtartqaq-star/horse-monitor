@@ -13,5 +13,6 @@
   "real_fee": {
     "min_per_side_usd": null,
     "bp_per_side": null
-  }
+  },
+  "switch_date": null
 }

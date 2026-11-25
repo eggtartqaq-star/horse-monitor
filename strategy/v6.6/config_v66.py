@@ -17,7 +17,7 @@ import json
 import os
 import re
 
-VERSION = "V6.6.3"
+VERSION = "V6.6.4"
 RELEASE_DATE = "2026-11-25"
 HERE = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_FILE = os.path.join(HERE, "owner_settings.json")
@@ -56,6 +56,7 @@ DEFAULT_SETTINGS = {
         "V3_對照測試": False,       # parity_check.py 喺你部電腦過關
     },
     "real_fee": {"min_per_side_usd": None, "bp_per_side": None},   # V-1 之後填
+    "switch_date": None,     # 正式轉用 V6.6 嗰日(YYYY-MM-DD);之前開嘅倉先可以用 fill --legacy 記錄(CRO N-13)
 }
 
 
@@ -86,6 +87,7 @@ B_PRIME_ENABLED = _B_PRIME_RAW is True          # CRO N-7:"false"(有引號)唔�
 B_PRIME_CRO_NOTE = _S["b_prime_cro_note"]
 GATES = dict(_S["gates"])
 REAL_FEE = dict(_S["real_fee"])
+SWITCH_DATE = _S.get("switch_date")
 
 # 規則指紋涵蓋嘅檔(唔包括 owner_settings.json)
 # CRO B-11(2026-11-25):加入 lab.py —— ledger resolve 用佢嘅 simulate 計結果
@@ -106,6 +108,13 @@ def fingerprint(folder=None) -> str:
             h.update(fn.encode())
             h.update(f.read().replace(b"\r\n", b"\n"))
     return h.hexdigest()[:12]
+
+
+def settings_record() -> dict:
+    """CRO N-6(2026-11-25):每行記錄都寫低當時嘅設定,將來對數唔使估。"""
+    g = ";".join(f"{k.split('_')[0]}={'1' if v is True else '0'}" for k, v in GATES.items())
+    mode = "B_PRIME" if (CAP_MODE == "B_PRIME" and B_PRIME_ENABLED) else "A"
+    return {"account_hkd": ACCOUNT_HKD, "cap_mode": mode, "gates": g}
 
 
 def settings_line() -> str:
@@ -150,6 +159,8 @@ def check_config():
             _fail("b_prime_cro_note 要寫 CRO 批准文件路徑(reports/risk/...)同日期(YYYY-MM-DD)")
         if note not in APPROVED_BPRIME_NOTES:
             _fail("b_prime_cro_note 唔喺 config_v66.APPROVED_BPRIME_NOTES —— CRO 批准要經代碼改動(會改指紋)")
+    if SWITCH_DATE is not None and not (isinstance(SWITCH_DATE, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", SWITCH_DATE)):
+        _fail(f"owner_settings.json 嘅 switch_date 要係 null 或者 \"YYYY-MM-DD\",而家係 {SWITCH_DATE!r}")
     if LIVE_PATH != "bt":
         _fail("交易路徑必須係回測驗證版(bt)")
     return True

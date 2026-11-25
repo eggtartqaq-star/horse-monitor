@@ -35,6 +35,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import config_v66 as C        # noqa: E402
 import guardrails_v66 as G    # noqa: E402
+import ledger_v66 as L        # noqa: E402
 import rules_v642 as R        # noqa: E402
 import signals_v66 as S       # noqa: E402
 import sizing_v66 as Z        # noqa: E402
@@ -100,15 +101,10 @@ def _yf_fetch(tk, period="2y"):
     return df[["Open", "High", "Low", "Close", "Volume"]]
 
 
-def bar_still_open(last_bar, market, now=None):
-    """CRO N-5:最後一條 bar 係「今日」而當地未到 16:00(平日)→ 未收市,訊號未成立。"""
-    tz = "America/New_York" if market == "美股" else "Asia/Hong_Kong"
-    now = now if now is not None else pd.Timestamp.now(tz=tz)
-    now = now.tz_convert(tz) if now.tzinfo is not None else now
-    return now.weekday() < 5 and pd.Timestamp(last_bar).date() == now.date() and now.hour < 16
+bar_still_open = G.bar_still_open      # CRO N-19:掃描器同 bot 用同一條規則(喺 guardrails_v66)
 
 
-def analyze(user_input, fetch=None, earnings="lookup", now=None):
+def analyze(user_input, fetch=None, earnings="lookup", now=None, ledger_dir=None):
     """回傳畀 Telegram 嘅文字。fetch(ticker) -> DataFrame;earnings="lookup" 或 Timestamp/None/"off"。
     now:測試用(有時區嘅 Timestamp);預設 = 而家。"""
     fetch = fetch or _yf_fetch
@@ -159,6 +155,10 @@ def analyze(user_input, fetch=None, earnings="lookup", now=None):
     if still_open:
         # CRO N-5:未收市嘅「訊號」唔係收市 bar 嘅訊號 → 唔顯示交易計劃同股數(同 C-2 一樣)
         blocks.append("❌ 未收市,收市後再查")
+    hold = L.uncleared_s2(ledger_dir or L.DEFAULT_DIR)
+    if hold:
+        # CRO N-11(Owner 2026-11-25 決定):有未向 CRO 解釋嘅 S2 → 停開新倉
+        blocks.append(f"❌ 有未向 CRO 解釋嘅 S2({', '.join(hold)})→ 停開新倉")
 
     plan_lines = []
     if any_sig:
@@ -183,6 +183,10 @@ def analyze(user_input, fetch=None, earnings="lookup", now=None):
                           f"初始止損: ${any_sig['stop']}  (-{any_sig['risk_pct']:.1f}%)",
                           "移動止損: 每日收市後 = 入場以嚟最高價 − 3×ATR,只升不降;冇固定止盈"]
         plan_lines.append(f"建議股數(上限 {Z.live_mode()}): {sz['shares']}股 (~{sz['notional']:.0f})")
+        lim = Z.max_limit(close, any_sig["stop"], sz["shares"], any_sig["engine"],
+                          any_sig["target"] if any_sig["engine"] == "E1" else None, Z.live_mode(), ccy)
+        if lim:
+            plan_lines.append(f"限價上限: ${lim:.2f}(用限價單;開市高過就唔買,唔好加價)")   # CRO N-15
         if not g["ok"]:
             blocks.append(f"❌ {g['reason']}")
         if sz["shares"] < 1:

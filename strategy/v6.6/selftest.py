@@ -40,6 +40,22 @@ def synth(n=600, seed=1, drift=0.0006, vol=0.018, start=50.0):
 
 def main():
     print("V6.6 selftest")
+    # 2026-11-25:selftest 一律用臨時空記錄簿 —— 唔讀、唔寫你真嘅 ledger/(否則你真有未解釋 S2 嗰陣,
+    # bot 測試會失敗,.bat 會叫你「今日唔好交易」,同 N-1 一樣係假警報)
+    import tempfile as _tf
+    real_ledger = L.DEFAULT_DIR
+    L.DEFAULT_DIR = _tf.mkdtemp(prefix="selftest_ledger_")
+    try:
+        _main_body()
+    finally:
+        import shutil as _sh
+        _sh.rmtree(L.DEFAULT_DIR, ignore_errors=True)
+        L.DEFAULT_DIR = real_ledger
+    print(f"\n{'全部通過' if not FAILS else f'{len(FAILS)} 項失敗'}")
+    sys.exit(1 if FAILS else 0)
+
+
+def _main_body():
     df = I.calc_indicators(synth())
     check("RSI 喺 0–100", df["RSI14"].dropna().between(0, 100).all())
     check("ATR 種子前 = 0,之後 > 0", (df["ATR"].iloc[:13] == 0).all() and (df["ATR"].iloc[14:] > 0).all())
@@ -283,7 +299,7 @@ def main():
                      guard_ok=True, size_A=2, size_Bp=2, size_D=3, rank=1)
             r.update(kw); return r
         def run(day, bull=True, folder=None):
-            L.append_run({"bar_date": day, "bull": bull, "live_path": "bt", "source": "test"}, folder or tmpF)
+            L.append_run({"bar_date": day, "bull": bull, "live_path": "bt", "source": "yf"}, folder or tmpF)
         L.append_signals([srow("2026-03-02", "OLD"), srow("2026-03-03", "NEW"),
                           srow("2026-03-03", "ERN", guard_ok=False, guard_reason="財報2日內"),
                           srow("2026-03-03", "EXP", close=126, stop=112, size_A=0, size_Bp=0)], tmpF)
@@ -526,8 +542,231 @@ def main():
     finally:
         shutil.rmtree(tmpE, ignore_errors=True)
 
-    print(f"\n{'全部通過' if not FAILS else f'{len(FAILS)} 項失敗'}")
-    sys.exit(1 if FAILS else 0)
+    # 11) V6.6.4 —— Owner 2026-11-25 決定(N-11 停開新倉、N-13 舊倉、N-15 限價上限)+ CRO N-6/N-14/N-16/N-19/N-20/N-21
+    import pc_check as P
+    tmp11 = tempfile.mkdtemp()
+    orig19 = (D.load, D.partial_bar_warning, D.G.bar_still_open, D.G.get_next_earnings, C.SWITCH_DATE)
+    try:
+        def srow11(day, tk, **kw):
+            r = {c: "" for c in L.SIGNAL_COLS}
+            r.update(bar_date=day, ticker=tk, path="bt", live=True, engine="E2", score=0.8, close=50, stop=46,
+                     guard_ok=True, size_A=2, size_Bp=2, size_D=3, rank=1, source="yf", asof=False)
+            r.update(kw); return r
+
+        def led(runs, rows):
+            d = tempfile.mkdtemp(dir=tmp11)
+            L.append_signals(rows, d)
+            for rn in runs:
+                day, bull = rn[0], rn[1]
+                L.append_run({"bar_date": day, "bull": bull, "live_path": "bt",
+                              "source": rn[2] if len(rn) > 2 else "yf", "asof": rn[3] if len(rn) > 3 else False}, d)
+            return d
+
+        def fill11(d, tk, px, sh, st, day, engine="E2", legacy=False):
+            a = types.SimpleNamespace(action="open", ticker=tk, price=px, shares=sh, stop=st, engine=engine,
+                                      date=day, fees=0.0, reason=None, target=None, legacy=legacy)
+            with contextlib.redirect_stdout(io.StringIO()):
+                L.cmd_fill(a, d)
+            f = L.read(d, "fills.csv", L.FILL_COLS)
+            return f[f["ticker"] == tk].iloc[-1]
+
+        # ---- N-11:未解釋 S2 → 停開新倉 ----
+        d11 = led([("2026-03-03", True), ("2026-03-04", True)], [srow11("2026-03-04", "BBB")])
+        r1 = fill11(d11, "OLD1", 50, 2, 46, "2026-03-04")                 # 冇訊號 → S2
+        r2 = fill11(d11, "BBB", 50, 2, 46, "2026-03-05")                  # 有 live 訊號,但有未解釋 S2
+        check("N-11:有未解釋 S2 → 下一筆開倉標 S2「未解釋 S2 期間開新倉」(訊號本身冇問題)",
+              "S2" in r1["flags"] and "未解釋 S2 期間開新倉" in r2["flags"] and "冇 live 訊號" not in r2["flags"])
+        hold1 = L.uncleared_s2(d11)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                L.cmd_s2_clear(types.SimpleNamespace(fill_id=r1["fill_id"], cro_note="explained"), d11)
+            refused = False
+        except SystemExit:
+            refused = True
+        with contextlib.redirect_stdout(io.StringIO()):
+            L.cmd_s2_clear(types.SimpleNamespace(fill_id=r1["fill_id"],
+                                                 cro_note="reports/risk/2026-03-06-s2-old1.md 2026-03-06"), d11)
+        hold2 = L.uncleared_s2(d11)
+        with contextlib.redirect_stdout(io.StringIO()):
+            rv11 = L.review(d11, today="2026-03-10")
+        check("N-11:s2-clear 要 CRO 文件路徑+日期;clear 咗嗰筆唔再擋,其他照擋;review 分開列",
+              refused and len(hold1) == 2 and hold2 == [f"{r2['fill_id']}(BBB)"]
+              and any(b.startswith("S2:BBB") for b in rv11["breaches"]) and not any(b.startswith("S2:OLD1") for b in rv11["breaches"])
+              and any("已向 CRO 解釋" in n and "OLD1" in n for n in rv11["notes"]))
+        rec_h = {"engine": "E2", "ticker": "ZZZ", "score": 0.8, "close": 50.0, "stop": 46.0, "risk_pct": 8.0,
+                 "size_live": 2, "notional_live": 100.0, "days_er": 9, "spec_flag": "✅", "rank": 1, "limit_max": 50.5}
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            D._print([((0,), rec_h)], [], [], set(), d11, {})
+        out_h = buf.getvalue()
+        check("N-11:掃描器 ① —— 有未解釋 S2 → 停開新倉,唔顯示股數同限價",
+              "停開新倉" in out_h and "股數 2" not in out_h and "限價上限 $" not in out_h)
+        d_ok = led([], [])
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            D._print([((0,), rec_h)], [], [], set(), d_ok, {})
+        check("N-11 / N-15:冇 S2 → ① 照常顯示股數同限價上限", "股數 2" in buf.getvalue() and "限價上限 $50.50" in buf.getvalue())
+
+        # bot:有未解釋 S2 → 唔顯示計劃(對照:同一隻、同一日,冇 S2 就顯示)
+        bot_hold = bot_free = None
+        for tk in R.TICKERS:
+            dfx = sig.get(tk)
+            if dfx is None or bot_free:
+                continue
+            for i in range(len(dfx) - 1, 200, -1):
+                if not S.on_path(S.evaluate(dfx.iloc[i]), "bt"):
+                    continue
+                cut = dfx.index[i]
+                f_ = lambda t, c=cut: None if data.get(t) is None else data[t][data[t].index <= c]
+                ny = pd.Timestamp(cut.date()).tz_localize("America/New_York") + pd.Timedelta(hours=17)
+                t_free = B.analyze(tk, fetch=f_, earnings="off", now=ny, ledger_dir=d_ok)
+                if "建議股數(" in t_free:
+                    bot_free = t_free
+                    bot_hold = B.analyze(tk, fetch=f_, earnings="off", now=ny, ledger_dir=d11)
+                    break
+        check("N-11:bot —— 有未解釋 S2 → 唔顯示計劃同股數;冇就顯示(連限價上限)",
+              bot_free is not None and "限價上限" in bot_free and bot_hold is not None
+              and "建議股數(" not in bot_hold and "停開新倉" in bot_hold)
+
+        # ---- N-13:--legacy 舊倉 ----
+        d13 = led([("2026-03-03", True)], [srow11("2026-03-03", "PFE")])
+        lg = fill11(d13, "AVGO", 293.69, 2, 270.0, "2026-02-02", engine=None, legacy=True)
+        check("N-13:--legacy → 唔標「冇 live 訊號」,標 legacy;超上限同風險照 S2(CRO 唔豁免)",
+              "legacy" in lg["flags"] and "冇 live 訊號" not in lg["flags"] and "超上限" in lg["flags"]
+              and "風險>1%" in lg["flags"] and lg["engine"] == "LEGACY" and lg["source_path"] == "legacy")
+        ko = fill11(d13, "KO", 60.0, 1, 57.0, "2026-02-03", engine=None, legacy=True)
+        pf = fill11(d13, "PFE", 50.0, 2, 46.0, "2026-03-04")
+        check("N-13:細嘅舊倉冇 S2、唔受停開新倉影響;舊倉佔倉位(之後開第3倉 → S2)",
+              ko["flags"] == "legacy" and "S2:已有2倉" in pf["flags"])
+        C.SWITCH_DATE = "2026-03-01"
+        try:
+            fill11(d13, "MSFT", 400.0, 1, 380.0, "2026-03-05", engine=None, legacy=True); blocked13 = False
+        except SystemExit:
+            blocked13 = True
+        C.SWITCH_DATE = orig19[4]
+        check("N-13:轉用日之後唔准用 --legacy", blocked13)
+        x_av = L.open_fills(d13).set_index("ticker").loc["AVGO"]
+        x_av = types.SimpleNamespace(ticker="AVGO", **x_av.to_dict())
+        check("N-13:④ 舊倉顯示「唔屬於系統」,唔計系統移動止損",
+              "舊倉(唔屬於系統)" in D.trailing_line(x_av, {"AVGO": synth(n=60)}))
+
+        # ---- N-15:限價上限 ----
+        check("N-15:限價上限 —— 收市+1% 封頂($50/$46/2股 → $50.50)", Z.max_limit(50, 46, 2, "E2") == 50.5)
+        check("N-15:限價上限 —— 10% 上限封頂($42.50/$41/3股 → $42.73)", Z.max_limit(42.5, 41, 3, "E2") == 42.73)
+        l1 = Z.max_limit(20, 18, 6, "E1", target=24.1)
+        check("N-15:引擎一限價上限保住 R ≥ 2($20/$18/止盈$24.10 → $20.03)",
+              l1 == 20.03 and (24.1 - l1) / (l1 - 18) >= 2)
+        grid_ok = True
+        for cl in (8.3, 19.9, 37.2, 55.0, 99.9, 127.0):
+            for sp in (0.02, 0.05, 0.09, 0.14):
+                st = round(cl * (1 - sp), 2)
+                n = Z.size(cl, st, "E2")["shares"]
+                if n < 1:
+                    continue
+                lm = Z.max_limit(cl, st, n, "E2")
+                if lm is None or Z.size(lm, st, "E2")["shares"] < n or lm > cl * 1.01 + 1e-9:
+                    grid_ok = False
+                elif lm < int(cl * 1.01 * 100) / 100 and Z.size(round(lm + 0.01, 2), st, "E2")["shares"] >= n:
+                    grid_ok = False                                       # 仲可以再高一仙 → 唔係最高
+        check("N-15:限價上限 = 「仲買得到同樣股數」嘅最高價(24 個組合)", grid_ok)
+        d15 = led([("2026-03-03", True)], [srow11("2026-03-03", "LIM", close=42.5, stop=41, size_A=3)])
+        f_at = fill11(d15, "LIM", 42.73, 3, 41.0, "2026-03-04")
+        d15b = led([("2026-03-03", True)], [srow11("2026-03-03", "LIM", close=42.5, stop=41, size_A=3)])
+        f_over = fill11(d15b, "LIM", 42.74, 3, 41.0, "2026-03-04")
+        check("N-15:喺限價上限成交 → 冇 S2;高一仙 → S2(上限 / 股數)", "S2" not in f_at["flags"] and "S2" in f_over["flags"])
+
+        # ---- N-16:只信 live 心跳 / 訊號 ----
+        dc = led([("2026-03-03", True, "csv")], [srow11("2026-03-03", "PFE")])
+        da = led([("2026-03-03", True, "yf", True)], [srow11("2026-03-03", "PFE")])
+        ds = led([("2026-03-03", True)], [srow11("2026-03-03", "PFE", asof=True)])
+        check("N-16:CSV 心跳、歷史重跑心跳、歷史重跑訊號 → 全部唔算(S2)",
+              "none:冇掃描記錄" in fill11(dc, "PFE", 50, 2, 46, "2026-03-04")["flags"]
+              and "none:冇掃描記錄" in fill11(da, "PFE", 50, 2, 46, "2026-03-04")["flags"]
+              and "冇 live 訊號" in fill11(ds, "PFE", 50, 2, 46, "2026-03-04")["flags"])
+
+        # ---- N-14:臨時休市 ----
+        check("N-14:2025-01-09(國殤日休市)唔當交易日:01-08 → 01-10 中間 0 日;01-07 → 01-10 中間 1 日",
+              L.nyse_sessions_between("2025-01-08", "2025-01-10") == 0
+              and L.nyse_sessions_between("2025-01-07", "2025-01-10") == 1)
+
+        # ---- N-19:掃描器用同 bot 一樣嘅「未收市」規則;N-6:記錄設定 ----
+        D.load = lambda t, s_, dd, a_: ({k: v for k, v in data.items()}, [])
+        D.partial_bar_warning = lambda: False
+        D.G.get_next_earnings = lambda tk: None
+        D.G.bar_still_open = lambda *a, **k: True
+        t19 = tempfile.mkdtemp(dir=tmp11)
+        with contextlib.redirect_stdout(io.StringIO()):
+            D.scan("yf", None, None, t19, dry_run=False, quiet=True)
+        D.G.bar_still_open = lambda *a, **k: False
+        t19b = tempfile.mkdtemp(dir=tmp11)
+        with contextlib.redirect_stdout(io.StringIO()):
+            D.scan("yf", None, None, t19b, dry_run=False, quiet=True)
+        rr19 = L.read(t19b, "runs.csv", L.RUN_COLS)
+        check("N-19:最後一條 bar 係今日而未收市(例如盤前)→ 唔寫記錄簿同心跳;收咗市就寫",
+              not os.path.exists(os.path.join(t19, "runs.csv")) and not os.path.exists(os.path.join(t19, "signals.csv"))
+              and len(rr19) == 1)
+        sg19 = L.read(t19b, "signals.csv", L.SIGNAL_COLS)
+        check("N-6 / N-16:掃描行記錄 source、asof、戶口金額、模式、關卡",
+              rr19["source"].iloc[0] == "yf" and rr19["asof"].iloc[0] == "False" and rr19["account_hkd"].iloc[0] != ""
+              and rr19["gates"].iloc[0].startswith("G1=") and (not len(sg19) or (sg19["account_hkd"] != "").all()))
+
+        # ---- N-20 / N-21:檔尾冇換行、淨係 BOM ----
+        d20 = tempfile.mkdtemp(dir=tmp11)
+        with open(os.path.join(d20, "fills.csv"), "w", encoding="utf-8-sig", newline="") as fo:
+            fo.write(",".join(L.FILL_COLS) + "\r\n"
+                     + ",".join({"fill_id": "x1", "ticker": "AVGO"}.get(c, "") for c in L.FILL_COLS))
+        L._append_rows(d20, "fills.csv", L.FILL_COLS, [{"fill_id": "x2", "ticker": "PFE"}])
+        check("N-20:檔尾冇換行 → 補換行先加,兩行都喺度",
+              L.read(d20, "fills.csv", L.FILL_COLS)["ticker"].tolist() == ["AVGO", "PFE"])
+        d21 = tempfile.mkdtemp(dir=tmp11)
+        with open(os.path.join(d21, "runs.csv"), "wb") as fo:
+            fo.write(b"\xef\xbb\xbf\r\n")
+        L.append_run({"bar_date": "2026-03-03", "bull": True, "source": "yf"}, d21)
+        rr21 = L.read(d21, "runs.csv", L.RUN_COLS)
+        check("N-21:淨係 BOM / 空行嘅檔 → 讀得、備份後當新檔",
+              len(rr21) == 1 and list(rr21.columns) == L.RUN_COLS and any(".bak-" in n for n in os.listdir(d21)))
+
+        # ---- N-6 升級:V6.6.3 格式嘅三個檔(L-010:用上一版嘅檔測)----
+        d6 = tempfile.mkdtemp(dir=tmp11)
+        newc = {"signals.csv": {"source", "asof", "account_hkd", "cap_mode", "gates"},    # V6.6.3 冇呢啲欄
+                "runs.csv": {"asof", "account_hkd", "cap_mode", "gates"},
+                "fills.csv": {"account_hkd", "cap_mode", "gates"}}
+        for name, cols, row in (
+                ("signals.csv", L.SIGNAL_COLS, srow11("2026-03-03", "OLDS")),
+                ("runs.csv", L.RUN_COLS, {"bar_date": "2026-03-04", "bull": "True", "source": "yf"}),
+                ("fills.csv", L.FILL_COLS, {"fill_id": "2026-02-02_OLDF", "ticker": "OLDF", "engine": "E2",
+                                            "open_date": "2026-02-02", "open_px": "20", "shares": "1",
+                                            "init_stop": "19", "close_date": "2026-02-10", "flags": ""})):
+            oc = [c for c in cols if c not in newc[name]]
+            with open(os.path.join(d6, name), "w", encoding="utf-8-sig", newline="") as fo:
+                fo.write(",".join(oc) + "\r\n" + ",".join(str(row.get(c, "")) for c in oc) + "\r\n")
+        L.append_signals([srow11("2026-03-04", "NEW")], d6)
+        nf = fill11(d6, "NEW", 50, 2, 46, "2026-03-05")      # 讀舊版 runs.csv(冇 asof 欄)都唔可以死
+        s6, f6 = L.read(d6, "signals.csv", L.SIGNAL_COLS), L.read(d6, "fills.csv", L.FILL_COLS)
+        check("N-6:V6.6.3 格式記錄簿 → 自動升級,舊行保留,新行有戶口金額同關卡,fill 照常判斷",
+              list(s6.columns) == L.SIGNAL_COLS and s6["ticker"].tolist() == ["OLDS", "NEW"]
+              and list(f6.columns) == L.FILL_COLS and f6["ticker"].tolist() == ["OLDF", "NEW"]
+              and nf["account_hkd"] == str(C.ACCOUNT_HKD) and nf["gates"].startswith("G1=") and "S2" not in nf["flags"])
+
+        # ---- 電腦檢查(pc_check.py):淨係測純函數,唔可以喺 selftest 入面再跑 selftest ----
+        home = os.path.expanduser("~")
+        red = P.redact(f"{home}{os.sep}Desktop{os.sep}v6.6 bot 123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ")
+        check("電腦檢查:報告將用戶路徑變 ~、遮住似 token 嘅字串",
+              home not in red and "~" in red and "AAEhBP0av18tR" not in red)
+        inv = P.ledger_inventory(d11)
+        check("電腦檢查:記錄簿清單(檔案、行數、未解釋 S2)",
+              ("fills.csv", 2) in inv["files"] and inv["uncleared_s2"] == hold2)
+        src_pc = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "pc_check.py"), encoding="utf-8").read()
+        check("電腦檢查:唔讀 token 檔、唔改設定檔", ".swing_bot_token" not in src_pc and "json.dump" not in src_pc
+              and "owner_settings.json\", \"w" not in src_pc)
+        bat2 = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "電腦檢查_v66.bat"), "rb").read().decode("utf-8")
+        check("電腦檢查_v66.bat:冇半形括號、失敗 goto 停、CRLF、冇 BOM",
+              "(" not in bat2 and ")" not in bat2 and "if errorlevel 1 goto FAILED" in bat2
+              and bat2.count("\r\n") == bat2.count("\n") and not bat2.startswith("﻿"))
+    finally:
+        D.load, D.partial_bar_warning, D.G.bar_still_open, D.G.get_next_earnings, C.SWITCH_DATE = orig19
+        shutil.rmtree(tmp11, ignore_errors=True)
+
 
 
 if __name__ == "__main__":

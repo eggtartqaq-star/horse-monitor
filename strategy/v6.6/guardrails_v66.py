@@ -42,6 +42,15 @@ def days_to(ts, today=None):
     return int((ts.normalize() - today).days)
 
 
+def bar_still_open(last_bar, market="美股", now=None):
+    """CRO N-5 / N-19:最後一條 bar 係「今日」而當地未到 16:00(平日)→ 未收市,訊號未成立。
+    掃描器同 Telegram bot 共用。now:測試用(有時區嘅 Timestamp);預設 = 而家。"""
+    tz = "America/New_York" if market == "美股" else "Asia/Hong_Kong"
+    now = now if now is not None else pd.Timestamp.now(tz=tz)
+    now = now.tz_convert(tz) if now.tzinfo is not None else now
+    return now.weekday() < 5 and pd.Timestamp(last_bar).date() == now.date() and now.hour < 16
+
+
 def is_speculative(df_upto) -> bool:
     try:
         return R.is_speculative(df_upto)
