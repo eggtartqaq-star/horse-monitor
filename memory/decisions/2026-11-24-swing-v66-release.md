@@ -70,3 +70,66 @@ Where you cannot run it (Windows batch, Pine), lint it statically and say so.
 
 - First forward review: ≥30 closed E2 trading-path signals **and** ≥6 months of ledger.
 - No cap return comparison before 100 trades.
+
+## Update 2026-11-25 — CRO C-5 re-check, V6.6.2/V6.6.3, docs re-audit (append-only)
+
+Recorded by the CEO, standing in for 腦大裝草. Based on the draft in the docs re-audit §6, updated
+with the CRO's later results.
+
+- **CRO C-5 re-check** at 7f74e2c / `c3f24ad80b06` (`reports/risk/2026-11-25-v66-c5-recheck.md`): PARTIAL.
+  - C-1, C-2 and C-5 PASS. C-3 accepted, with C-3r due before the first review.
+  - C-4 NOT closed: a stale fill across bear days was accepted (F1).
+  - Pre-switch fixes required: C-4r, N-1 (hermetic selftest), N-5 (bot intraday).
+  - B-4 failed: gates written as the string `"false"` passed.
+- **V6.6.2** at be74475 / `0b05757d0076`: lands C-4r, N-1, N-5, C-3r, part of B-4 (N-7), B-11 and N-10.
+  - CRO verification (`reports/risk/2026-11-25-v66-2-fix-verification.md`): **PASS**, all six items,
+    by running the code. One new condition, N-12.
+- **V6.6.3** at afa3b37 / `d293a03f7dad`: fixes N-12 (old-format ledger files are upgraded with a
+  backup; an unknown column is refused), N-17 and N-18.
+  - CRO (`reports/risk/2026-11-25-v66-3-n12-verification.md`): **N-12 PASS. The code side of the
+    switch to A is clear, with no conditions. Risk 76. B′ OFF.**
+  - selftest 85/85 (also under -O); equivalence 0/85,120; ledger_check PASS;
+    `baseline.json` byte-identical. Fingerprint in `strategy/v6.6/results/release_stamp.txt`.
+- **Docs re-audit** (Ai 管理層, `reports/committee/2026-11-25-v66-2-docs-reaudit.md`):
+  - All four HIGH findings from 11-24 are closed.
+  - First pass: README PASS WITH CORRECTIONS (A-1 HIGH: C-6 understated) and release note PASS WITH
+    CORRECTIONS.
+  - After corrections (20b781d): diff-check **PASS**. README PASS, release note PASS.
+- **Canonical switch conditions** (these supersede the open rows of the table above):
+  1. CRO code verification — **DONE** (V6.6.3 / `d293a03f7dad`).
+  2. On the Owner's PC: the .bat double-click shows a completed scan; selftest 85/85 → V2.
+  3. `parity_check` passes → V3.
+  4. V-1 contract note, then `lab.py --mode feecheck`: ALL and OOS net EV > 0. Otherwise S4: no
+     trading at any cap.
+  5. C-6 and C-7:
+     - C-6: the swing account must be cash or margin-disabled with no debit, shown by a statement
+       or a read-only pull. The account as read on 13 Nov (`INDIVIDUAL_MRGN`, USD −12.06) does not
+       qualify. CRO, 5th escalation.
+     - C-7: `account_hkd` = real net liquidation value, reconciled monthly; existing positions
+       (2 AVGO) recorded with `ledger fill`.
+  6. Docs re-audit corrections — **DONE**.
+
+  V-1 and V-3 are pre-switch by the CEO's choice. That is stricter than CRO sign-off §6.1, where
+  they are B′ gates.
+- **Interim:** the Owner continues V6.4.2 **in paper only**. CRO N-10: acceptable only as paper;
+  the instruction is deleted at the switch.
+- **Owner decisions pending:**
+  - N-11: under A, any S2 → no new entries until explained to the CRO.
+  - N-13: a `--legacy` flag for positions recorded under C-7.
+  - N-15: print a maximum limit price per signal.
+  - CRO 7.6: were orders placed from the 6 or 28 Sep scans?
+  - Telegram token revoke.
+- **Open before the first forward review (CRO):**
+  - N-20: a hand-edited file with no final newline loses its last row on the next append.
+  - N-16: the as-of marker is inferred.
+  - N-14: unscheduled NYSE closures.
+  - N-6: per-row settings recording (also needed before B′).
+- **Dissent carried:**
+  - CRO N-9: net EV crosses zero at a fixed charge of about US$0.25–0.40 per side. This is an
+    estimate from hypothetical fees; the Webull schedule has NOT been obtained.
+  - Tom: 2-slot results are path-fragile. A one-bar ADX slip moves OOS CAGR from +2.6% to −0.6%.
+- **Observation for the first forward review:** in the 2-slot book, E2 averages −1.03% (49 trades)
+  and E1 +1.85% (86 trades), while E2 holds slot priority. Test slot priority on forward data only.
+- **Status:** still OPEN. The code and docs gates are closed; the Owner's gates (2–5) are open.
+  SPY has been below its MA200 since 19 Nov (722.29 vs 730.47 at the 23 Nov close), so the system
+  would not trade in any case.
