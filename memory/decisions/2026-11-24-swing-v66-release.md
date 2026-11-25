@@ -133,3 +133,69 @@ with the CRO's later results.
 - **Status:** still OPEN. The code and docs gates are closed; the Owner's gates (2–5) are open.
   SPY has been below its MA200 since 19 Nov (722.29 vs 730.47 at the 23 Nov close), so the system
   would not trade in any case.
+
+## Update 2026-11-25 (evening) — Owner decisions, V6.6.4/V6.6.5, Webull snapshot, CRO rulings (append-only)
+
+Recorded by the CEO, standing in for 腦大裝草. Supersedes the "Owner decisions pending" line and
+switch condition 1 in the previous update.
+
+- **Owner decisions** (2026-11-25, in-session AskUserQuestion; the Owner's selections, verbatim):
+  - Work to continue: "One-click PC check + fixes (Recommended), Refresh Webull account
+    (read-only), Finish 6160.HK / MSFT research".
+  - **N-11:** "Stop new entries (Recommended)". Any uncleared S2 stops new entries until the trade
+    is explained to the CRO.
+  - **N-13 and N-15:** "--legacy flag (N-13), Max limit price (N-15)".
+  - To-do list format: "Cantonese checklist file". The file is `strategy/v6.6/電腦待辦清單.md`.
+- **V6.6.4** (c25f5ab / `0eb54f8e5872`):
+  - Implements N-11, N-13 and N-15, plus N-6, N-14, N-16, N-19, N-20 and N-21, and `pc_check.py`.
+  - **CRO: PASS** (`reports/risk/2026-11-25-v66-4-verification.md`). N-15 was partial.
+  - The CRO **amended C-8**: if the open is at or below the system stop, do not buy.
+  - Risk score 76.
+- **V6.6.5** (77c713e / `847d34621a5f`):
+  - CRO items N-24, N-25, N-26 and N-28.
+  - Audit X-1: the selftest was coupled to the account size; it now checks the Owner's settings,
+    then tests on defaults. CD-1 and CD-2.
+  - Author run: selftest 117/117; equivalence 0/85,120; ledger_check PASS; baseline unchanged.
+  - **CRO verification of the V6.6.5 diff: PENDING.**
+- **Webull read-only snapshot, 2026-11-25** (`reports/risk/2026-11-25-webull-readonly-snapshot.md`):
+  - one margin account; USD −12.06, unchanged since 13 Nov;
+  - net liquidation ≈ HK$4,497 (estimate);
+  - AVGO 2 shares, ≈ 102% of NLV.
+- **CRO rulings, 25 Nov:**
+  - **G-1 NOT MET:** deadline 16:00 ET Thu 3 Dec. Cure the debit **and** turn margin off or convert
+    to cash. If uncured, the CRO recommends selling AVGO before 9 Dec.
+  - **G-2:** conditions unchanged:
+    - AVGO ≤ 6.6% of LNW;
+    - 老詹's stop;
+    - a decision record;
+    - no adds.
+
+    Without LNW by the 3 Dec close, the CRO recommends exiting before 9 Dec. Risk score for the AVGO
+    hold as it stands: 25.
+  - **C-6 NOT MET.** The 24 Nov interim option no longer applies to V6.6.
+  - **C-7:** HK$4,497 is not approved; it would be a different, untested system. The Owner chooses:
+    - **(A)** a separate cash or margin-disabled account, holding only the swing sleeve, funded with
+      ≥ HK$12,500 of settled cash, with `account_hkd` 10,000 and `switch_date` set on the day; or
+    - **(B)** shadow-only.
+  - **N-11 self-certification:** accepted. The CRO matches each clearance against a real
+    `reports/risk/` file at every review. An unmatched clearance counts as a process breach, and the
+    hold is treated as never lifted.
+- **Docs audit of V6.6.4** (`reports/committee/2026-11-25-v66-4-docs-audit.md`):
+  - checklist and README: PASS WITH CORRECTIONS; HIGH findings X-1 and Q-1;
+  - release note: FAIL.
+  - All corrections are applied in 77c713e; the release note is rewritten. **Auditor diff-check
+    PENDING.**
+- **Canonical switch conditions** (these supersede the previous list):
+  1. CRO verifies the code: V6.6.4 PASS; **V6.6.5 diff pending**.
+  2. V-2 on the Owner's PC.
+  3. V-3.
+  4. V-1, without S4 triggered.
+  5. C-6 and C-7 per the 25 Nov ruling.
+  6. The docs-audit diff-check.
+- **Interim:** no real-money orders from V6.6 or V6.4.2. V6.4.2 is paper only; V6.6 is scan and log
+  only.
+- **Dissent carried:**
+  - CRO N-27: limit-price entries are more conservative than the backtest. The lab takes 83 of the
+    88 entries the new rule skips.
+  - CRO: at a US$0.35 minimum fee per side, OOS net EV is about +0.008% per trade. This is an
+    estimate; V-1 is the economic gate.
