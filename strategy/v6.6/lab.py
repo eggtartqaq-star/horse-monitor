@@ -112,7 +112,8 @@ class Cfg:
     entry_rule: str = "deviation"    # "deviation" = 手冊 1% 重計(舊);"limit" = 實盤:限價 ≤ 限價上限、開市 ≤ 止蝕唔買(CRO C-8、N-15、N-26)
     capital_hkd: Optional[float] = None    # 戶口實際資金;None = 同 account_hkd(倉位基數)一樣。CRO C-7:12,500 資金、10,000 基數
     cash_yield: Optional[object] = None    # pd.Series:T-bill 指數(按日);閒置現金按佢嘅日回報收息
-    cash_reserve_pct: float = 0.0          # 唔收息嘅現金(倉位基數嘅 %);20 = 「兩倉 × 10%」留現金,其餘放 T-bill
+    cash_reserve_pct: float = 0.0          # 已交收現金(倉位基數嘅 %),唔收息;買入用呢筆錢(Tom F-2)。CRO R-1:30
+    entry_tif: str = "open"                # 限價單有效期(Tom F-3):"open" = 開市冇成交即取消(C-8 字面);"day" = 全日有效
     # 敏感度測試用(預設 = V6.4.2 鎖死值)
     trend_score_min: float = R.TREND_SCORE_MIN
     trail_mult: float = R.ATR_TRAIL_MULT
@@ -333,20 +334,32 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
             close_trade(p, d, c, "滿60日"); return True
         return False
 
-    def open_position(tk, s, d, px, sig_date, atr_sig):
+    def open_position(tk, s, d, px, sig_date, atr_sig, low=None):
         stop = s["stop"]
         if cfg.entry_rule == "limit" and not unlimited:
             # 實盤做法:限價單 ≤ 限價上限(收市計好);開市高過限價 → 冇成交;開市 ≤ 止蝕 → 唔買
             lim = s.get("limit_adj")
-            if lim is None or px > lim + 1e-9:
+            if lim is None:
                 rejects["limit"] += 1; return None
+
+            def pos_at(price):
+                q = Pos()
+                q.tk, q.engine, q.entry, q.stop, q.target = tk, s["engine"], price, stop, s.get("target")
+                # Tom F-8:股數用訊號日嘅拆股因子(訊號同入場之間拆股,券商會按比例調整掛單)
+                q.shares, q.edate, q.days, q.highest, q.atr, q.sig_date = (s["sh0_raw"] * s["f0"], d, 0, price,
+                                                                           atr_sig, sig_date)
+                return q
             if px <= stop:
-                rejects["floor"] += 1; return None
-            f = raw_factor(tk, d)
-            p = Pos()
-            p.tk, p.engine, p.entry, p.stop, p.target = tk, s["engine"], px, stop, s.get("target")
-            p.shares, p.edate, p.days, p.highest, p.atr, p.sig_date = s["sh0_raw"] * f, d, 0, px, atr_sig, sig_date
-            return p
+                rejects["floor"] += 1
+                if cfg.entry_tif == "day":
+                    # 全日單:開市 ≤ 限價即成交,買完即刻設嘅止蝕單都即刻觸發 → 開市價買、開市價走(淨蝕成本)
+                    close_trade(pos_at(px), d, px, "開市低過止蝕")
+                return None
+            if px > lim + 1e-9:
+                if cfg.entry_tif == "day" and low is not None and low <= lim + 1e-9:
+                    return pos_at(lim)                     # 全日單:盤中跌到限價成交
+                rejects["limit"] += 1; return None
+            return pos_at(px)
         if cfg.fill == "next_open" and cfg.deviation_pct is not None:
             dev = abs(px - s["sig_close"]) / s["sig_close"] * 100
             if dev > cfg.deviation_pct:
@@ -389,7 +402,7 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
                 if k is None:
                     continue
                 row = arr[tk].iloc[k]
-                p = open_position(tk, s, d, row["Open"], sig_date, atr_sig)
+                p = open_position(tk, s, d, row["Open"], sig_date, atr_sig, low=row["Low"])
                 if p is not None:
                     open_pos.append(p)
                     if manage(p, row, d):          # 入場當日都可以觸發止蝕
@@ -450,7 +463,7 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
                 if sh0 <= 0:
                     rejects["scan_0_shares"] += 1; continue
                 if cfg.entry_rule == "limit":
-                    s["sh0_raw"] = sh0
+                    s["sh0_raw"], s["f0"] = sh0, f0
                     s["limit_adj"] = _max_limit_adj(s, f0, sh0, cfg)
             if not unlimited and len(open_pos) + len(pending) >= cfg.max_positions:
                 rejects["no_slot"] += 1; continue
@@ -471,8 +484,8 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
                     mtm += (arr[p.tk]["Close"].iloc[k] - p.entry) * p.shares
             if cy is not None:
                 r_d = cy_ret.get(d, 0.0)
-                cash = cap_usd + realized + interest - cost_basis
-                interest += max(0.0, cash - reserve_usd) * r_d
+                # Tom F-2:買入用已交收現金(留底)支付;留底夠就唔使賣 T-bill → 收息嘅錢 = 總值 − max(留底, 持倉成本)
+                interest += max(0.0, cap_usd + realized + interest - max(reserve_usd, cost_basis)) * r_d
             equity.append((d, cap_usd + realized + interest + mtm, len(open_pos)))
 
     # 數據結束:強制平倉(Tom 2026-11-24:用期間最後一日,唔係成份數據最後一日)
@@ -675,12 +688,14 @@ def trade_hash(tr) -> str:
     return hashlib.sha256(t.to_csv(index=False).encode()).hexdigest()[:16]
 
 
-def run_feecheck(sig, first, last, is_end, fee_min, fee_bp):
-    """CRO V-1 / S4:用你真實嘅收費重跑交易路徑(2倉、10%)。淨 EV ≤ 0 → 呢個戶口規模下唔應該交易。"""
+def run_feecheck(sig, first, last, is_end, fee_min, fee_bp, tif="open"):
+    """CRO V-1 / S4:用你真實嘅收費重跑交易路徑(2倉、10%)。淨 EV ≤ 0 → 呢個戶口規模下唔應該交易。
+    CRO N-29(2026-11-26):用實盤入場規則(限價上限、開市 ≤ 止蝕唔買),唔係舊嘅「偏離 1% 重計」。"""
     BROKERS["real"] = Broker(f"真實收費 US${fee_min}/邊最低 + {fee_bp}bp/邊", fee_min, 0.0, fee_bp)
+    print(f"入場規則:實盤限價(CRO N-29),限價單有效期 = {tif}")
     rows = {}
     for per, (s, e) in periods(first, last, is_end).items():
-        tr, eq, _ = simulate(sig, replace(AS_TRADED, broker="real"), s, e)
+        tr, eq, _ = simulate(sig, replace(AS_TRADED, broker="real", entry_rule="limit", entry_tif=tif), s, e)
         r = summarize(tr, eq)
         rows[per] = r
         print(f"  {per:4} 交易 {r['trades']:4}  每筆淨EV {r.get('EV_net%', float('nan')):+.3f}%  "
@@ -718,6 +733,7 @@ def main():
     ap.add_argument("--mode", choices=["ab", "sens", "caps", "baseline", "feecheck"], default="ab")
     ap.add_argument("--fee-min", type=float, default=0.0, help="feecheck:每邊最低收費 US$")
     ap.add_argument("--fee-bp", type=float, default=10.0, help="feecheck:每邊差價+滑價+收費(bp)")
+    ap.add_argument("--tif", choices=["open", "day"], default="open", help="feecheck:限價單有效期(CRO 定)")
     ap.add_argument("--path", choices=["all", "bt", "scan"], default="all",
                     help="ab/caps 只跑一條路徑(預設兩條都跑)")
     ap.add_argument("--out", default=os.path.join(HERE, "results"))
@@ -739,7 +755,7 @@ def main():
     if a.mode == "ab":
         run_ab(sig, data, first, last, is_end, a.out, a.path)
     elif a.mode == "feecheck":
-        run_feecheck(sig, first, last, is_end, a.fee_min, a.fee_bp)
+        run_feecheck(sig, first, last, is_end, a.fee_min, a.fee_bp, a.tif)
     elif a.mode == "baseline":
         run_baseline(sig, first, last, a.out)
     elif a.mode == "sens":

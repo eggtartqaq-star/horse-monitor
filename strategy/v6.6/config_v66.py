@@ -17,7 +17,7 @@ import json
 import os
 import re
 
-VERSION = "V6.6.6"
+VERSION = "V6.6.7"
 RELEASE_DATE = "2026-11-26"
 HERE = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_FILE = os.path.join(HERE, "owner_settings.json")

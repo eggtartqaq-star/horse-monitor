@@ -190,6 +190,55 @@ def _main_body():
         it += (cap66 + it - cb) * r66
     check("V6.6.6:持倉嘅錢唔收息(現金 = 資金 − 成本)",
           e_pos["n_pos"].iloc[-1] == 1 and abs(e_pos["equity"].iloc[-1] - (cap66 + it + (50.0 - 49.0) * sh66)) < 1e-9)
+    # ---- V6.6.7(Tom F-2 / F-3 / F-8、CRO N-29)----
+    _, e_cov, _ = lab.simulate(chp(49.0), lab.replace(LIM66, capital_hkd=12500, cash_yield=cy66, cash_reserve_pct=30.0))
+    want_cov = 0.3 * base66 + (cap66 - 0.3 * base66) * (1 + r66) ** (len(idx2) - 1) + (50.0 - 49.0) * sh66
+    check("V6.6.7(Tom F-2):買入用留底現金支付 → 持倉細過留底,收息嘅錢唔變(唔重複扣)",
+          e_cov["n_pos"].iloc[-1] == 1 and abs(e_cov["equity"].iloc[-1] - want_cov) < 1e-9)
+
+    def chp2(open1, low1):
+        f = chp(open1)
+        f["CHP"].loc[idx2[1], "Low"] = low1
+        return f
+    DAY66 = lab.replace(LIM66, entry_tif="day")
+    t_d1, _, _ = lab.simulate(chp2(round(lim66 + 0.30, 2), round(lim66 - 0.05, 2)), DAY66)
+    t_d0, _, r_d0 = lab.simulate(chp2(round(lim66 + 0.30, 2), round(lim66 + 0.05, 2)), DAY66)
+    t_o1, _, r_o1 = lab.simulate(chp2(round(lim66 + 0.30, 2), round(lim66 - 0.05, 2)), LIM66)
+    check("V6.6.7(Tom F-3):全日單 —— 盤中跌到限價 → 以限價成交;跌唔到 → 冇成交;開市取消版照舊唔成交",
+          len(t_d1) == 1 and abs(t_d1["entry"].iloc[0] - lim66) < 1e-9 and len(t_d0) == 0 and r_d0["limit"] == 1
+          and len(t_o1) == 0 and r_o1["limit"] == 1)
+    t_df, _, r_df = lab.simulate(chp(47.0), DAY66)
+    check("V6.6.7(Tom F-3):全日單開市 ≤ 止蝕 → 開市買、即刻開市走,淨蝕成本",
+          len(t_df) == 1 and t_df["reason"].iloc[0] == "開市低過止蝕" and t_df["gross_pct"].iloc[0] == 0
+          and t_df["pnl_usd"].iloc[0] < 0 and r_df["floor"] == 1)
+
+    idx_s = pd.bdate_range("2024-08-06", periods=4)              # MSTR 2024-08-08 10 拆 1:訊號 08-07、入場 08-08
+    e_s = {"kind": "MR", "score": 0.9, "close": 5.0, "atr": 0.1, "low10": 4.75, "ma50": 6.5, "h60": 7.0,
+           "plan": {"stop": 4.72, "target": 6.5}}
+    f_s = pd.DataFrame({"Open": 5.0, "High": 5.005, "Low": 4.995, "Close": 5.0, "Volume": 1e6, "ATR": 0.1,
+                        "mom_126": 0.0}, index=idx_s)
+    f_s["sig"] = [{"route": "SKIP"}, e_s, {"route": "SKIP"}, {"route": "SKIP"}]
+    t_s, _, _ = lab.simulate({"MSTR": f_s}, LIM66)
+    sh_raw = R.position_plan(50.0, 47.2, account_hkd=10000)[0]
+    check(f"V6.6.7(Tom F-8):訊號同入場之間拆股 → 股數用訊號日因子({sh_raw} 股 × 10)",
+          len(t_s) == 1 and t_s["shares"].iloc[0] == sh_raw * 10)
+
+    import contextlib as _cl
+    import io as _io
+    seen29, orig_sim = [], lab.simulate
+
+    def rec29(sg, c, s=None, e=None):
+        seen29.append((c.entry_rule, c.broker))
+        return orig_sim(sg, c, s, e)
+    lab.simulate = rec29
+    try:
+        with _cl.redirect_stdout(_io.StringIO()):
+            lab.run_feecheck(sig, eq.index[0], eq.index[-1], eq.index[len(eq.index) // 2], 0.35, 10.0)
+    finally:
+        lab.simulate = orig_sim
+    check("V6.6.7(CRO N-29):feecheck(關卡 V-1 / S4)用實盤入場規則", len(seen29) == 3
+          and all(r == "limit" and b == "real" for r, b in seen29))
+
     cfg_cap = lab.replace(lab.AS_TRADED, capital_hkd=10000)
     cfg_zero = lab.replace(lab.AS_TRADED, cash_yield=pd.Series(1.0, index=eq.index))
     same = all(np.array_equal(lab.simulate(sig, c)[1]["equity"].values, eq["equity"].values) for c in (cfg_cap, cfg_zero))
