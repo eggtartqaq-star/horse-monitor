@@ -153,7 +153,7 @@
 | 2026-04-27 | **Exclusivity ended.** OpenAI may sell on any cloud. Microsoft stops paying a revenue share. OpenAI's revenue share to Microsoft continues through 2030 under a cap (US$38B per the firm's news report) | Microsoft blog; OpenAI; The Register [S]; [F] |
 
 **Assessment:**
-- **Microsoft has no board seat, no observer and no exclusivity** at a company that is its largest single equity-method investee and the source of most of the +84% RPO headline (ex-OpenAI RPO was +25%) [F moat].
+- **Microsoft has no board seat, no observer and no exclusivity** at a company that is its largest single equity-method investee and the source of most of the RPO step-up (commercial RPO US$677B, +73% YoY at Q1 FY27 and flat QoQ [F financials §3]; +84%, with ex-OpenAI +25%, at the August moat report's date [F moat]).
 - **Governance tools are now contractual only.** The equity-method marks swing GAAP EPS (+$0.67 in FY26 [P]), but management excludes them from non-GAAP. That is clean, and I credit it.
 - **Anthropic** is a second investee-customer: up to $5B invested, $30B committed to Azure [F]. It has now hired Microsoft's former AI Platform president.
 - **The OpenAI + Anthropic web is a related-party-like concentration, even though it is not related-party in the legal sense.** The board's oversight of it is not disclosed in anything I could read.
@@ -245,3 +245,5 @@
 
 ---
 *Research and decision support only, not financial advice. The Committee and the Owner decide.*
+
+*Corrections applied 2026-11-26 by the CEO per `reports/committee/2026-11-26-6160hk-msft-audit.md` (MM-1).*

@@ -199,7 +199,7 @@ All three come from search snippets. I could not open any of the pages.
 |---|---|---|
 | 12 Nov 2026 | **HK$255.80**, +4.00 (+1.589%) | etnet quote snapshot timestamped "12/11/2026 16:33" (after the close) |
 | 19 Nov 2026 | **HK$242.60** | Derived: the 20 Nov print plus its stated HK$11.80 fall |
-| 20 Nov 2026 | **HK$230.80**, −11.80 (−4.9%) | Halo Technologies quote page. The page fetch failed, so I could not confirm it against a second source. |
+| 20 Nov 2026 | **HK$230.80**, −11.80 (−4.9%) | Halo Technologies quote page. The page fetch failed, so I could not confirm it against a second source. Second source: the news refresh cites a Longbridge weekly recap with the same HK$230.80 (−4.86%, −7.46% on the week; `reports/news/2026-11-25-6160hk-msft-news-refresh.md:75`). |
 
 **Excluded as unreliable:**
 - Investing.com's "HK$244.20 on 8 Nov 2026": 8 Nov 2026 is a Sunday.
@@ -276,7 +276,7 @@ The HK close (16:00 HKT) is at 03:00 ET. That is **after** the previous ONC clos
 
 **Not recommended: a stop near the Owner's cost of HK$219.60** (US$364.13 equivalent). Cost basis is not a chart level (L-003 logic; see the 2026-08-14 report §8).
 
-**Sizing arithmetic for Zac:** at the 385.00 stop, 1% portfolio risk (`config/risk-limits.yaml` `max_risk_per_trade: 0.01`) allows at most about **13.6% of portfolio notional**. That is before the concentration limits, which are Zac's and John's to apply.
+**Sizing note for Zac:** the naive figure (1% ÷ 7.37% stop distance ≈ 13.6% of notional) is **not a cap**. The firm sizes for the gap tail (CRO 2026-11-16 A.4: cap = 1% ÷ (1 − stop × (1 − one-year worst day) ÷ entry)), and `max_single_position` (10%) binds first. ONC's one-year worst day was not computed here; John sets the cap (CRO pre-review 2026-11-26: ≤ 4.7% of LNW with the stop committed).
 
 ### Confirms the trend
 
@@ -363,3 +363,5 @@ Charts describe probabilities, not certainties.
 
 *Research and decision support only, not financial advice. No orders placed or proposed for
 execution by this desk; the Owner alone executes (standing rules 1–2).*
+
+*Corrections applied 2026-11-26 by the CEO per `reports/committee/2026-11-26-6160hk-msft-audit.md` (T6-1, T6-2).*

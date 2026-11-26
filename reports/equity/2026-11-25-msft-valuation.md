@@ -142,6 +142,7 @@ US$B. Fiscal years end in June.
 - **Consistency:** EBITDA (A4) **excludes** the rent these leases will carry once they commence, so the capacity's cost is charged once, as debt. The revenue that capacity produces is inside the growth path.
 - Treating the nominal US$329B as debt (bear) costs a further **−4%**; 50% PV (bull) gives **+2%**.
 - If finance leases at 30 Sep were ~US$69.7B (June plus Q1 additions, before repayments), that is **−US$1.0/share**.
+- **Possible double count (audit 2026-11-26):** the US$329.1B of signed-but-not-commenced leases covers operating **and** finance leases; the split is NOT OBTAINED. Leases that commence as finance leases also enter A5's "capex incl. finance leases" (the FY27 base already carries ~US$28B of finance-lease additions), so deducting their PV here charges them twice. Illustration [C]: if one-third of the pool is finance leases, the base rises by ~US$10/share (0.65 × ~US$110B ÷ 7,446M). The fair-value range and the conclusion (price above every central estimate) are unchanged.
 - **Including the uncommenced PV, EV/EBITDA rises from 17.9× to 19.3×** (§7).
 
 ### 4.3 OpenAI: revenue concentration (10.8%) and the equity stake
@@ -401,9 +402,9 @@ MoS = (fair value − price) / fair value.
 
 **Anti-anchoring disclosure (L-003):**
 - This is the first MSFT valuation, with no position and no prior verdict. The exposures were the sell-side's ~US$632 average with zero Sells, and the firm's own negative AAPL/6160 calls this month (an "everything is expensive" habit risk).
-- **Bearish-leaning choices:** FY27 EPS ~2–4% below consensus (§5); uncommenced leases at 65% PV; the OpenAI stake haircut 25% below the last closed round. Together roughly **−8%**.
+- **Bearish-leaning choices:** FY27 EPS ~2–4% below consensus (§5); uncommenced leases at 65% PV; the OpenAI stake haircut 25% below the last closed round; the uncommenced-lease deduction may double-count future finance leases (up to ~+US$10/share at a one-third finance share; audit VM-1). Together roughly **−8% to −11%**.
 - **Bullish-leaning choices:** WACC rounded down from 9.07% to 9.0% (+1%); finance leases at the stale June figure (+US$1).
-- **Removing every bearish choice gives a base of ~US$375, still 24% below the price.**
+- **Removing every bearish choice gives a base of ~US$375–385, still ~22–24% below the price.**
 
 ---
 
@@ -738,3 +739,5 @@ for v in (345,400,450,564):
     print(f"  value ${v}: MoS {(v-P)/v:+.0%}")
 print(f"Required 20% MoS -> buy below ${0.8*400:.0f}")
 ```
+
+*Corrections applied 2026-11-26 by the CEO per `reports/committee/2026-11-26-6160hk-msft-audit.md` (VM-1, VM-2).*

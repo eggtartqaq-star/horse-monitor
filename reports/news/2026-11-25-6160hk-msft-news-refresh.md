@@ -478,7 +478,7 @@ Covered in A2.
 - The circularity concern from August is now **partly quantified (about 45% of RPO in December 2025)**.
 - It is **partly diluted**, since non-AI-lab commitments drove growth from July onward.
 - It is **newly mark-to-market**: Anthropic is listed, and an OpenAI listing is in prospect.
-- Microsoft's AI-lab exposure is now **three things**: about 27% of OpenAI, the Anthropic stakes (up to US$5bn from Nov 2025 plus about US$1bn in the placement), and both labs' Azure commitments.
+- Microsoft's AI-lab exposure is now **three things**: about 24–27% of OpenAI (conflicting: ~27% from the Mar 2026 10-Q via secondary; ~24% as-converted from the Q1 FY27 10-Q via secondary, financials §7), the Anthropic stakes (up to US$5bn from Nov 2025 plus about US$1bn in the placement), and both labs' Azure commitments.
 - **Dept 6 should still treat OpenAI plus Anthropic as one concentrated counterparty exposure.**
 
 ### B3.3 Copilot monetisation: MEDIUM-HIGH, and disclosure regressed
@@ -664,3 +664,5 @@ Covered in A2.
 Research only. No recommendation is made or implied. Committee and Owner decide. Every figure carries
 a source and a date. Estimates and my own inferences are labelled. Where sources conflict, the conflict
 is shown and not resolved. tradingkey.com was not used.*
+
+*Corrections applied 2026-11-26 by the CEO per `reports/committee/2026-11-26-6160hk-msft-audit.md` (NW-1 at :481; the auditor's :470 anchor ("Microsoft owns about 27%") was not present in the file).*
