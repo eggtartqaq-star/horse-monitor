@@ -6,7 +6,7 @@
   - Tom's review (`reports/quant/2026-11-26-v66-income-study-review.md`: VALIDATED WITH CONCERNS, F-1 to F-8);
   - the CRO's rulings R-1 to R-4 and N-29 (`reports/risk/2026-11-26-v66-6-verification.md`).
 - **CRO, V6.6.7:** PASS, with a ruling on order duration (§1.4).
-- **Pending:** the audit of the Owner-facing text (§9).
+- **Audit of the Owner-facing text:** PASS WITH CORRECTIONS, all applied (`reports/committee/2026-11-26-v66-income-audit.md`).
 
 **The Owner's question (2026-11-26):** "evaluate is it possible to run it long-term — although it cannot beat the market I will take this as providing some extra return for my living."
 
@@ -30,7 +30,7 @@
 | US$1 minimum + 10 bp | DAY order | −250 | +424 | **+174** | +600 | **−426** (−247) |
 
 **Plain words:**
-- **Where the money comes from.** On HK$12,500, the account would have made about **HK$430–770 a year (HK$36–64 a month)** at the zero-commission and US$0.35 fee levels. **Most of it is the T-bill interest** (about HK$440–470). The trading itself added **−HK$9 to +HK$295 a year**, or −HK$340 at the US$1 stress fee.
+- **Where the money comes from.** On HK$12,500, the account would have made about **HK$430–770 a year (HK$36–64 a month)** at the zero-commission and US$0.35 fee levels, across both order types. The lowest is US$0.35 with cancel-at-open, which fails S4; the highest is zero commission with DAY orders. **Most of it is the T-bill interest** (about HK$440–470). The trading itself added **−HK$9 to +HK$295 a year**, or −HK$340 at the US$1 stress fee.
 - **Chance of doing worse than plain T-bills over five years** (bootstrap with uncertainty in the mean, §2.5): **28% to 75%**, depending on the fee and order type. That is roughly a coin flip, worse at the CRO's fee estimate. In no case is the average monthly excess statistically different from zero (t between −0.91 and +0.84).
 - **The fee gate is decisive, not informative (CRO N-29).** At the CRO's US$0.35 fee estimate, with orders cancelled at the open as C-8 literally reads, the live rule's net expected value per trade is **−0.066%** over the full period. That is **S4: no new entries at any cap.** V-1, a real contract note, decides whether the system may be used at all.
 - **Bigger capital does not reliably help** (§2.3). At HK$100,000 the result is −HK$191 to −HK$367 a year with cancel-at-open. With DAY orders it is +HK$401 to +HK$586 over the full period, but −HK$1,318 to −HK$1,521 out of sample.
@@ -86,6 +86,8 @@
 | 0 + 10 bp | DAY | +1.087% | +0.678% | +1.240% | pass |
 | US$0.35 + 10 bp | DAY | +0.367% | −0.020% | +0.501% | pass |
 
+The 0 + 10 bp DAY row is the CEO's feecheck run at `a496ba4` (`python lab.py --mode feecheck --fee-min 0 --fee-bp 10 --tif day`). It is not in committed output and was not reproduced by the CRO. The other three rows are CRO-reproduced (verification §1 and §3.1).
+
 - With a DAY order, the full-period skip count falls from 43 to 7 (`income_scenarios.csv`). The trade path also changes, so these are not the same 43 signals. Holding the cancel-at-open trades fixed, Tom measured 25 of the 43 skips filling intraday at the limit.
 - **Caveat on the DAY rows:** on an intraday fill, the lab's E2 trailing-stop update uses the whole day's high, including the part before the fill. That is slightly optimistic.
 - **CRO ruling (F-3, 26 Nov):**
@@ -93,7 +95,15 @@
   - **If the broker cannot attach a stop to the entry order, (b) is not approved.** The Owner must then watch the open and cancel, which is option (a).
   - **V-1 uses the order type the Owner will actually use, declared in writing before the contract note is read.** `--tif day` only with written confirmation that the broker attaches a stop to a DAY limit buy for US stocks in the C-6 account; otherwise `--tif open`, which at the US$0.35 estimate means S4.
   - **The S4 test is not re-tuned after the fact:** ALL > 0 and OOS > 0.
-  - **Before (b) can be used, N-30 must land:** scanner ①, the bot plan and README must print the CRO's 26 Nov C-8 wording (DAY limit with an attached sell-stop at the system stop; expires unfilled at the close, no re-entry; an open at or below the stop means fill and immediate stop-out, recorded the same day and sent to the CRO as S2). Until then, the printed cancel-at-open text governs.
+  - **Before (b) can be used, N-30 must land:** scanner ①, the bot plan and README must print the CRO's 26 Nov C-8 wording (the CRO's 26 Nov C-8, quoted below). Until then, the printed cancel-at-open text governs, **and V-1 is judged with `--tif open`** (CRO §3.2).
+
+    > **C-8 (26 Nov: DAY order with attached stop).**
+    > - **Placing the order:** buy only with a **limit order, time-in-force DAY**, at or below the **限價上限 (maximum limit price)** printed by scanner ① or the bot, for the printed number of shares.
+    > - **Attached stop:** attach to the **same order** a **sell-stop at the system stop** (OTO / bracket), so it goes live the moment the buy fills. **Never place the buy without the attached stop.**
+    > - **No fill:** if the order is not filled by the close, it expires. Do not re-enter it the next day, do not raise the limit, do not add shares.
+    > - **Open at or below the system stop:** the buy may fill and the attached stop will sell at once. Record both the same day (`fill open`, `fill close`) and send the S2 to the CRO.
+    > - **E2 stop:** raise the broker stop each day to section ④'s stop (C-9). Never lower it.
+    > - **No attached stop at your broker:** (b) does not apply. Watch the open, and cancel if the open is above the limit or at or below the system stop. V-1 is then judged with `--tif open`.
   - **The CRO's caution:** the whole difference between failing and passing at US$0.35 comes from 46 trades that fill intraday at the limit after opening above it. They average +1.005% net, while the trades both order types share average −0.012%. There is no live evidence for those 46 fills.
 
 ### 1.5 Not modelled
@@ -254,8 +264,15 @@ If T-bill rates fall, the hurdle falls with them. The interest income falls too,
 - **It cannot run at all until C-6 is cured.** The Webull account is still a margin account (2026-11-26 read-only pull).
 
 **Verdict:**
-- As a small sleeve that **might** add a little and is unlikely to do serious harm, it can run long-term, once C-6 is cured, V-1 passes on the live rule and the Owner chooses (A).
-- As an **income source for living costs**, it does **not** qualify. The income is the T-bill interest. The system's expected addition is about zero, and the chance of trailing plain T-bills over five years is about 30–75%.
+- As a small sleeve that **might** add a little and is unlikely to do serious harm, it can run long-term only once **all** of these hold:
+  - C-6 is cured;
+  - V-1 passes on the live rule, with the order type declared in advance (`--tif open` until N-30 lands);
+  - the sleeve is ≤ 10% of LNW (LNW ≥ HK$125,000 at HK$12,500; otherwise (B), whatever V-1 shows; CRO R-3);
+  - the other README switch conditions close;
+  - the Owner chooses (A).
+
+  The CRO and CEO still recommend (B).
+- As an **income source for living costs**, it does **not** qualify. The income is the T-bill interest. The system's expected addition is about zero, and the chance of trailing plain T-bills over five years is 28–75%, depending on fee and order type.
 
 ---
 
@@ -297,7 +314,7 @@ If T-bill rates fall, the hurdle falls with them. The interest income falls too,
 - **(A)** above;
 - **(B) shadow-only:** scanner and signal ledger, no fills, until (A) is met.
 
-**CRO and CEO recommendation: (B)** until **V-1 passes on the live rule (N-29)** **and** there are ≥ 6 months of ledger. If V-1 confirms a minimum fee of about US$0.35 a side or more, **that is S4: no trading at any cap,** not "(A) later" (CRO R-4.4).
+**CRO and CEO recommendation: (B)** until **V-1 passes on the live rule (N-29)** **and** there are ≥ 6 months of ledger. If V-1 confirms a minimum fee of about US$0.35 a side or more, **that is S4: no trading at any cap** (with `--tif open`; with a DAY order and an attached stop, the US$0.35 estimate passes, subject to the 46-trade caveat below), not "(A) later" (CRO R-4.4).
 - The one exception the CRO allows for the order type: a DAY limit with an attached stop, if the broker supports it in writing and after N-30 (§1.4).
 - Even then the CRO still recommends (B): at US$0.35, in-sample EV is −0.020% and the edge rests on the 46 intraday fills.
 - The choice remains the Owner's.
@@ -316,7 +333,7 @@ Raising slots or the base to chase income. The §2.7 rows are unapproved researc
 ```
 cd strategy/v6.6
 python income_study.py                                          # needs data/*.csv and data/BIL.csv; builds data/TBILL.csv
-python lab.py --mode feecheck --fee-min 0.35 --fee-bp 10 --tif open   # or --tif day
+python lab.py --mode feecheck --fee-min 0.35 --fee-bp 10 --tif open   # --tif day only after N-30 lands and the broker confirms an attached stop in writing
 ```
 
 **Lab V6.6.7 (fingerprint `fae5fa5a7403`):**
@@ -339,4 +356,4 @@ python lab.py --mode feecheck --fee-min 0.35 --fee-bp 10 --tif open   # or --tif
 ## 9. Reviews
 - **Tom (2026-11-26):** VALIDATED WITH CONCERNS. F-1 to F-8 are applied in V6.6.7 and v2 (F-1 bootstrap, F-2 reserve, F-3 order type, F-4 wording, F-5 counts, F-6 threshold, F-7 gaps, F-8 split factor).
 - **John, CRO (2026-11-26):** V6.6.6 PASS with N-29; R-1 to R-4. **V6.6.7 PASS** (N-29 closed). F-3 ruling: DAY only with an attached stop, else cancel-at-open; N-30 before DAY can be used; recommendation still (B).
-- **Ai 管理層:** *pending.*
+- **Ai 管理層 (2026-11-26):** PASS WITH CORRECTIONS; no HIGH findings. S-1 to S-7 applied here; K-1 to K-8 in the checklist; RM-1 to RM-4 in the README (`reports/committee/2026-11-26-v66-income-audit.md`).

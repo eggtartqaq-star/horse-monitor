@@ -241,3 +241,7 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **Tom F-4:** larger bases trade a different, pricier set of names (only 11–31 trades shared with the 10k run); not a case for a bigger base.
   - **CRO:** the DAY pass at US$0.35 rests entirely on 46 intraday fills with no live evidence.
 - **Lesson:** L-012.
+- **Audit 2026-11-26** (`reports/committee/2026-11-26-v66-income-audit.md`): PASS WITH CORRECTIONS on the study, checklist and README; no HIGH findings.
+  - **Main finding:** the CRO's "until N-30 lands, V-1 is judged with `--tif open`" clause had been dropped in all three documents, along with parts of C-8 and R-3. Every drop pointed toward permission. **L-009 recurred.**
+  - **Corrections applied:** S-1 to S-7, K-1 to K-8 and RM-1 to RM-4. The README's stale 25 Nov debit line was also updated.
+  - **Routed to 床狗:** when a CRO ruling carries an "until X lands" clause, grep every Owner file for the ruling's identifiers (here N-30 and `--tif`) and carry the clause wherever the ruling is restated.
