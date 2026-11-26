@@ -1,40 +1,46 @@
-# Swing V6.6 as a long-term extra-income source: income study, 2026-11-26
+# Swing V6.6 as a long-term extra-income source: income study, 2026-11-26 (v2)
 
-**Prepared by:** 皮褸黃 (CEO), using lab V6.6.6 (`strategy/v6.6/income_study.py`, commit after cf41d84).
-
-**Reviews:** Tom (backtest fidelity), John (CRO), Ai 管理層 (audit of the Owner-facing text). Their verdicts are appended in §9 when they arrive. **Until the CRO has ruled, nothing here is a recommendation.**
+**Prepared by:** 皮褸黃 (CEO).
+- **Tools:** lab **V6.6.7** (`a496ba4`, fingerprint `fae5fa5a7403`) and `strategy/v6.6/income_study.py` (`887d9c6`).
+- **v2 incorporates:**
+  - Tom's review (`reports/quant/2026-11-26-v66-income-study-review.md`: VALIDATED WITH CONCERNS, F-1 to F-8);
+  - the CRO's rulings R-1 to R-4 and N-29 (`reports/risk/2026-11-26-v66-6-verification.md`).
+- **Pending:** the CRO's ruling on order duration (§1.4), and the audit of the Owner-facing text (§9).
 
 **The Owner's question (2026-11-26):** "evaluate is it possible to run it long-term — although it cannot beat the market I will take this as providing some extra return for my living."
 
-*Research and decision support, not financial advice. Markets cannot be reliably predicted. Every number below comes from `income_study.py` output (`strategy/v6.6/results/income_*.csv`) or a cited file. Backtest figures are history, not forecasts.*
+*Research and decision support, not financial advice. Markets cannot be reliably predicted. Every number below comes from `income_study.py` output (`strategy/v6.6/results/income_*.csv`), from `lab.py --mode feecheck`, or from a cited file. Backtest figures are history (2022-11-30 → 2026-11-23), not forecasts.*
 
 ---
 
-## 0. The answer in one table
+## 0. The answer
 
-**The right comparison is not the S&P 500. It is the same money sitting in T-bills.** That alternative is almost riskless and needs no work. The system uses at most 20% of its sizing base (2 slots × 10% cap), so the rest of the account can earn T-bill interest. The question is whether the trades add anything on top.
+**The right comparison is not the S&P 500. It is the same money sitting in T-bills.** That alternative is almost riskless and needs no work. The system invests at most 20% of its sizing base (2 slots × 10% cap), so most of the account can earn T-bill interest anyway. The question is whether the trades add anything on top.
 
-**Setting:** HK$12,500 capital and a HK$10,000 sizing base (CRO C-7 (A)), live entry rule, 20% of the base kept as cash, the rest in T-bills. Full period 2022-11-30 → 2026-11-23 (4.0 years). HK$ per year.
+**Setting:** HK$12,500 capital, HK$10,000 sizing base, live entry rule. Settled cash is kept at 30% of the base (CRO R-1) and the rest sits in T-bills. HK$ per year, full period, out-of-sample (2025-01-01 →) in brackets.
 
-| Fee scenario | Trading P&L | Interest on idle cash | **Total** | All in T-bills instead | **System's extra over T-bills** |
-|---|---|---|---|---|---|
-| `webull0`: zero commission + 10 bp/side (assumption) | +169 | +447 | **+616** | +600 | **+16** |
-| `real35`: US$0.35 minimum + 10 bp/side (CRO N-9 estimate) | −9 | +432 | **+422** | +600 | **−178** |
-| `min1`: US$1 minimum + 10 bp/side (stress) | −340 | +403 | **+63** | +600 | **−537** |
-
-Same setting, **out-of-sample only** (2025-01-01 → 2026-11-23): the extra over T-bills is **+268 / +73 / −289** HK$ a year (`results/income_decomposition.csv`).
+| Fee scenario | Order type (§1.4) | Trading P&L | Interest | **Total** | All in T-bills instead | **System's extra over T-bills** |
+|---|---|---|---|---|---|---|
+| zero commission + 10 bp/side (`webull0`, assumption) | cancel at open | +169 | +456 | **+625** | +600 | **+26** (+269) |
+| zero commission + 10 bp/side | DAY order | +295 | +471 | **+766** | +600 | **+166** (+344) |
+| US$0.35 minimum + 10 bp (`real35`, CRO N-9 estimate) | cancel at open | −9 | +441 | **+432** | +600 | **−168** (+74) |
+| US$0.35 minimum + 10 bp | DAY order | +104 | +455 | **+559** | +600 | **−41** (+137) |
+| US$1 minimum + 10 bp (`min1`, stress) | cancel at open | −340 | +412 | **+72** | +600 | **−528** (−287) |
+| US$1 minimum + 10 bp | DAY order | −250 | +424 | **+174** | +600 | **−426** (−247) |
 
 **Plain words:**
-- On HK$12,500, the account would have made about **HK$420–620 a year, about HK$35–50 a month**. Almost all of it came from the T-bills.
-- The trading itself added between **−HK$340 and +HK$170 a year** over four years, depending on fees nobody has yet confirmed (V-1 is still open).
-- Over five years, the bootstrap puts the chance that the system leaves the account **behind** plain T-bills at:
-  - **≈ 79%** at the CRO's US$0.35 fee estimate;
-  - **≈ 39%** at zero commission (§2.5).
-- **Scaling up does not fix this.** At HK$100,000 (base 80,000), T-bills alone made ≈ HK$4,800 a year. System plus T-bills made HK$4,250–4,430, so it **trailed by HK$370–550 a year**, and by more out of sample.
+- **Where the money comes from.** On HK$12,500, the account would have made about **HK$430–770 a year (HK$36–64 a month)** at the zero-commission and US$0.35 fee levels. **Most of it is the T-bill interest** (about HK$440–470). The trading itself added **−HK$9 to +HK$295 a year**, or −HK$340 at the US$1 stress fee.
+- **Chance of doing worse than plain T-bills over five years** (bootstrap with uncertainty in the mean, §2.5): **28% to 75%**, depending on the fee and order type. That is roughly a coin flip, worse at the CRO's fee estimate. In no case is the average monthly excess statistically different from zero (t between −0.91 and +0.84).
+- **The fee gate is decisive, not informative (CRO N-29).** At the CRO's US$0.35 fee estimate, with orders cancelled at the open as C-8 literally reads, the live rule's net expected value per trade is **−0.066%** over the full period. That is **S4: no new entries at any cap.** V-1, a real contract note, decides whether the system may be used at all.
+- **Bigger capital does not reliably help** (§2.3). At HK$100,000 the result is −HK$191 to −HK$367 a year with cancel-at-open. With DAY orders it is +HK$401 to +HK$586 over the full period, but −HK$1,318 to −HK$1,521 out of sample.
 
-**CEO reading (pending CRO):**
-- **Can it run long-term without hurting you?** Probably yes. It is small, capped and slow: backtest drawdowns with interest of about −2% to −5% at these sizes, worst month about −1% to −2%.
-- **Can it be counted on for living income?** **No.** The income comes from the T-bills. The system is a small add-on whose sign is still unknown.
+**CRO and CEO reading:**
+- **Can it run long-term without serious harm?** The backtest drawdowns are small: about −3% to −4% with interest at 12.5k, −11% at US$1 fees with no interest. But those are backtest figures. The **binding limits** are:
+  - the **−10% monthly breaker** (C-10);
+  - the **20% drawdown floor** (C-7: account value below HK$10,000 → stop new entries).
+
+  The real risks are **operational**: about 66–70 manual orders a year, and S2 discipline. **It cannot run at all until C-6 is cured.** The Webull account is still a margin account.
+- **Can it be counted on for living income?** **No.** The income comes from the T-bills. The system is a small add-on whose sign is unknown and which may not even pass its own fee gate.
 
 ---
 
@@ -42,233 +48,285 @@ Same setting, **out-of-sample only** (2025-01-01 → 2026-11-23): the extra over
 
 ### 1.1 Benchmark
 - **Primary: all capital in T-bills,** with the same tax assumption as the system's cash.
-- **Secondary:** SPY buy-and-hold, shown for context only. The Owner has already accepted that the system will not beat the market.
+- **Secondary:** SPY buy-and-hold, shown for context only. The Owner has already accepted that the system will not beat the market. Over the period SPY returned 16.96% a year, with a −18.76% maximum drawdown.
 
 ### 1.2 Data
-- **Stocks:** `strategy/v6.6/data/*.csv`, the 38-name universe plus SPY. Webull read-only daily bars, split- and dividend-adjusted, 2022-02-11 → 2026-11-23. These are the same files as every V6.6 backtest.
-- **Test period:** 2022-11-30 (the first day SPY's 200-day MA exists) → 2026-11-23. Out-of-sample means 2025-01-01 onward, the split used since V6.6.0.
+- **Stocks:** `strategy/v6.6/data/*.csv`, the 38-name universe plus SPY. Webull read-only daily bars, split- and dividend-adjusted, 2022-02-11 → 2026-11-23, the same files as every V6.6 backtest.
+- **Test period:** 2022-11-30 (the first day SPY's 200-day MA exists) → 2026-11-23. Out-of-sample means 2025-01-01 onward.
 - **T-bills:** `data/BIL.csv`, BIL (SPDR Bloomberg 1–3 Month T-Bill ETF), Webull read-only API pulled 2026-11-26, adjusted closes 2022-02-15 → 2026-11-25.
-  - **Correction (derived data, estimate):** Webull failed to adjust 4 distributions. Those days show one-day drops of −0.34% to −0.40% on 2024-10-01, 2024-11-01, 2024-12-02 and 2024-12-19, which a T-bill fund does not do.
-  - `build_tbill()` replaces any daily return below −0.25% with the median of that month's other days. The rebuilt index matches the one used in the CEO's working file exactly (max difference 0.0).
-  - Corrected calendar-year returns: 2023 **4.94%**, 2024 **5.16%**, 2025 **4.15%**.
-  - Over the test period the T-bill index compounds at **4.49%** a year; out of sample, 3.91%.
-- **Withholding scenario (not a fact).** An HK resident holding a US T-bill ETF may have **30%** of distributions withheld. Whether the broker applies the qualified-interest-income exemption has **not been verified**. The scenario multiplies the daily T-bill return by 0.7. That turns 4.49% into **3.12%**, both for the system's cash and for the T-bill benchmark.
+  - **Correction (derived data, estimate):** Webull failed to adjust 4 distributions. Those days fall 0.34%–0.40% in one day: 2024-10-01, 2024-11-01, 2024-12-02 and 2024-12-19.
+  - `build_tbill()` flags any day more than 0.15 percentage points below its month's median (Tom F-6). It replaces each with the median of that month's other days. It flags exactly those 4 days, and Tom confirmed no smaller missed dates.
+  - Corrected calendar-year returns: 2023 **4.94%**, 2024 **5.16%**, 2025 **4.15%**. Over the test period **4.49%** a year; out of sample **3.91%**.
+- **Withholding scenario (not a fact).** An HK resident holding a US T-bill ETF may have **30%** of distributions withheld. Whether the broker applies the qualified-interest exemption is **not verified**. The scenario multiplies the daily T-bill return by 0.7, turning 4.49% into **3.12%** a year. It applies to both the system's cash and the benchmark.
 
-### 1.3 What the lab now models (V6.6.6, `entry_rule="limit"`)
-The live rules (C-8 amended, N-15, N-26):
-- At the signal close, compute the share count and the **maximum limit price** (`sizing_v66.max_limit`; the lab copy agrees in 363/363 random cases in the selftest).
-- Next day:
-  - open above the limit → **no fill**;
-  - open at or below the system stop → **don't buy**;
-  - otherwise fill **at the open**, with the share count computed at the close.
+### 1.3 What the lab models (V6.6.6 → V6.6.7)
+- **Live entry:**
+  - at the signal close, the share count and the **maximum limit price** are computed (`sizing_v66.max_limit`; the lab copy agrees in 363/363 random selftest cases);
+  - next day, an open above the limit means **no fill**;
+  - an open at or below the system stop means **no buy**;
+  - otherwise the order fills **at the open** with the close-time share count. This matches C-8 as amended, N-15 and N-26 (Tom: PASS).
 - **Capital and base are separate:** `capital_hkd` 12,500 and `account_hkd` 10,000.
-- **Interest is paid on cash above the reserve:** cash = capital + realised P&L + interest − cost of open positions.
+- **Cash:**
+  - settled cash is kept at **30% of the base**, the CRO R-1 minimum;
+  - new positions are paid from it (Tom F-2), so the reserve does not need topping up while two positions are open;
+  - everything else earns the T-bill return.
+- **Rows labelled "all idle cash in T-bills"** (no reserve) show the upper bound. That arrangement is **not allowed** under R-1.
 
-**Why a 20% reserve.** C-7 (A) requires settled cash to cover each order. A T-bill ETF sold today settles the next business day. Keeping 2 slots × 10% of the base in cash lets a next-open buy be paid with settled cash. Positions are then refilled from T-bills, so the reserve stays at 20%.
-- Rows with "all idle cash in T-bills" (0% reserve) show the upper bound.
-- Whether **any** T-bill holding is allowed in the swing account is a CRO question (§8). C-7 (A) says the account holds "nothing but the swing sleeve".
+### 1.4 Order duration: a decision for the CRO (Tom F-3)
+- **The problem.** C-8 says "open above the limit → don't buy" and "open at or below the stop → don't buy". A plain limit order does neither by itself. The Owner is in Hong Kong, and the US open is at 21:30 or 22:30 HKT.
+  - **Cancel at the open** (C-8 literally) means being awake at the open to cancel.
+  - **A DAY order** fills later in the day if the price dips to the limit. If the open gaps below the stop, it fills at once; the protective stop then takes the position out, costing the fees (modelled as buy and sell at the open).
+- **The choice changes the answer** (fee gate, `lab.py --mode feecheck --tif …`; net EV per trade on the 10,000 base):
 
-### 1.4 Not modelled
-- the broker's own interest on uninvested cash (unknown);
-- FX cost of converting HKD to USD;
-- slippage beyond 10 bp/side;
-- missed or late manual orders;
-- the Owner's time;
-- any tax other than the withholding scenario.
+| Fees | Order type | Full period | In-sample | Out-of-sample | Gate (S4 / V-1) |
+|---|---|---|---|---|---|
+| 0 + 10 bp | cancel at open | +0.651% | +0.060% | +1.151% | pass |
+| US$0.35 + 10 bp | cancel at open | **−0.066%** | −0.637% | +0.416% | **fail: S4** |
+| 0 + 10 bp | DAY | +1.087% | +0.678% | +1.240% | pass |
+| US$0.35 + 10 bp | DAY | +0.367% | −0.020% | +0.501% | pass |
 
-**Fees are the big unknown:** `webull0` is an assumption and `real35` the CRO's estimate. V-1, a real Webull contract note, is still outstanding.
+- With a DAY order, the full-period skip count falls from 43 to 7 (`income_scenarios.csv`). The trade path also changes, so these are not the same 43 signals. Holding the cancel-at-open trades fixed, Tom measured 25 of the 43 skips filling intraday at the limit.
+- **Caveat on the DAY rows:** on an intraday fill, the lab's E2 trailing-stop update uses the whole day's high, including the part before the fill. That is slightly optimistic.
+- **The CRO is ruling on which order type is the live rule** (pending, §9).
+
+### 1.5 Not modelled
+- **Lab-vs-live gaps (Tom F-7):**
+  - the lab has **no earnings guard** (the live scanner blocks 0–5 days before earnings);
+  - it does **not** model the N-11 hold (no new entries while an S2 is unexplained);
+  - it **enforces** the −10% monthly breaker, which is manual in live use (C-10).
+- **Other costs and frictions:**
+  - the broker's own interest on uninvested cash (unknown);
+  - FX cost of converting HKD to USD;
+  - slippage beyond 10 bp a side;
+  - missed or late manual orders;
+  - the Owner's time;
+  - any tax other than the withholding scenario.
+- **Fees are the big unknown.** `webull0` is an assumption; `real35` is the CRO's estimate. **V-1 is outstanding.**
 
 ---
 
 ## 2. Results
 
-### 2.1 HK$12,500 / base 10,000, live entry: full period (out-of-sample in brackets)
+### 2.1 HK$12,500 / base 10,000, live entry, cancel-at-open: full period (out-of-sample in brackets)
 
 | Fees | Cash | CAGR % | Extra vs T-bills, %/yr | Extra HK$/yr | Max DD % | Worst month % | Months up % |
 |---|---|---|---|---|---|---|---|
 | webull0 | no interest | 1.33 (2.92) | −3.16 (−0.99) | −431 (−127) | −3.83 | −1.17 | 53 |
-| webull0 | 20% reserve, rest T-bills | 4.60 (5.82) | +0.11 (+1.91) | +16 (+249) | −3.09 | −0.80 | 67 |
-| webull0 | all idle cash in T-bills | 5.27 (6.34) | +0.78 (+2.43) | +112 (+318) | −2.94 | −0.74 | 67 |
-| webull0 | 20% reserve, 30% withholding | 3.59 (4.92) | +0.47 (+2.20) | +65 (+284) | −3.31 | −0.91 | 65 |
+| webull0 | **30% settled cash, rest T-bills (R-1)** | 4.67 (5.82) | +0.18 (+1.91) | **+26** (+249) | −3.10 | −0.79 | 67 |
+| webull0 | all idle cash in T-bills (not allowed) | 5.27 (6.34) | +0.78 (+2.43) | +112 (+318) | −2.94 | −0.74 | 67 |
+| webull0 | 30% reserve, 30% withholding | 3.64 (4.93) | +0.52 (+2.20) | +71 (+285) | −3.32 | −0.91 | 65 |
 | real35 | no interest | −0.07 (1.49) | −4.56 (−2.42) | −609 (−310) | −4.86 | −1.35 | 43 |
-| real35 | 20% reserve, rest T-bills | 3.22 (4.45) | −1.27 (+0.54) | −178 (+70) | −3.49 | −0.96 | 65 |
-| real35 | all idle cash in T-bills | 3.91 (5.02) | −0.58 (+1.10) | −82 (+144) | −3.33 | −0.89 | 67 |
-| real35 | 20% reserve, 30% withholding | 2.21 (3.53) | −0.92 (+0.81) | −124 (+104) | −3.71 | −1.08 | 61 |
+| real35 | **30% settled cash, rest T-bills (R-1)** | 3.29 (4.46) | −1.20 (+0.55) | **−168** (+71) | −3.49 | −0.95 | 65 |
+| real35 | all idle cash in T-bills (not allowed) | 3.91 (5.02) | −0.58 (+1.10) | −82 (+144) | −3.33 | −0.89 | 67 |
+| real35 | 30% reserve, 30% withholding | 2.25 (3.54) | −0.87 (+0.82) | −117 (+105) | −3.71 | −1.07 | 61 |
 | min1 | no interest | −2.84 (−1.47) | −7.33 (−5.38) | −940 (−680) | −10.98 | −1.70 | 35 |
-| min1 | 20% reserve, rest T-bills | 0.50 (1.63) | −3.99 (−2.28) | −537 (−292) | −4.23 | −1.29 | 43 |
-| min1 | all idle cash in T-bills | 1.25 (2.29) | −3.24 (−1.62) | −441 (−208) | −4.07 | −1.20 | 45 |
-| min1 | 20% reserve, 30% withholding | −0.53 (0.67) | −3.65 (−2.05) | −475 (−260) | −5.38 | −1.42 | 43 |
+| min1 | **30% settled cash, rest T-bills (R-1)** | 0.57 (1.65) | −3.92 (−2.26) | **−528** (−290) | −4.23 | −1.28 | 43 |
+
+**DAY-order rows** (same layout, 30% reserve): webull0 5.63% (6.28), extra **+166** (+310); real35 4.20% (4.89), extra **−41** (+127); min1 1.36% (2.02), extra **−426** (−243).
 
 **Notes:**
-- 130 closed trades over 4 years, about 33 a year; 63 out of sample.
-- At least one position was open on 88% of trading days.
-- The live limit rule skipped 43 signals (open above the limit) and 1 (open at or below the stop).
-- "Extra HK$/yr" is scaled to the starting HK$12,500 in both periods.
-- The withholding rows are compared with T-bills **after** the same 30% withholding.
+- Cancel-at-open: 130 closed trades over 4 years (about 33 a year), 63 of them out of sample. At least one position was open on 88% of trading days. Over the full period, 43 signals were skipped because the open was above the limit, and 1 because the open was at or below the stop.
+- DAY orders: 139 trades, 7 skips.
+- The "Extra HK$/yr" column is scaled to the starting HK$12,500. The §0 table is in actual HK$ over each window, so out-of-sample values can differ by a few HK$.
 
-### 2.2 Where the money comes from (HK$/yr; `results/income_decomposition.csv`)
+### 2.2 The hurdle: interest given up by running the system
 
-Splitting into "trades" and "interest" is exact. Position sizing uses the fixed HK$10,000 base, so the trades are identical with or without interest.
+The split into trading and interest is exact: sizing uses the fixed HK$10,000 base, so the trades are identical with or without interest.
+- At 12.5k with the 30% reserve, running the system gives up about **HK$130–160 a year** of interest (`income_decomposition.csv`, "少收咗嘅利息").
+- At about 33–35 trades a year, the trades must net roughly **HK$4–5 (≈ US$0.5–0.6) per trade** just to match T-bills.
+- At the CRO's US$0.35 fee estimate, the trades netted **−HK$9 a year** (cancel at open) or **+HK$104** (DAY) over the full period.
 
-| 12.5k, 20% reserve | Trading | Interest earned | All-T-bill alternative | Interest given up | Extra |
-|---|---|---|---|---|---|
-| webull0, full period | +169 | +447 | +600 | 153 | **+16** |
-| webull0, out-of-sample | +370 | +433 | +535 | 102 | **+268** |
-| real35, full period | −9 | +432 | +600 | 168 | **−178** |
-| real35, out-of-sample | +182 | +411 | +520 | 109 | **+73** |
+### 2.3 Bigger capital, same rules (30% settled cash, rest in T-bills). Extra over T-bills, HK$/yr, full period (out-of-sample)
 
-**The hurdle.** Running the system means giving up about **HK$150–170 a year** of interest at this size, from the reserve plus the money in positions. The trades must earn more than that just to break even with T-bills.
-- At about 33 trades a year, that is roughly **HK$5 (≈ US$0.60) of net profit per trade** before the system adds anything.
-- At the CRO's US$0.35 fee estimate, the trades netted **−HK$9 a year** over the full period.
-
-The decomposition is in actual HK$ over each window. Its out-of-sample "extra" can differ by a few HK$ from §2.1, which is scaled to the starting capital.
-
-### 2.3 Bigger capital, same rules (20% reserve, rest in T-bills)
-
-| Capital / base (HK$) | Fees | Trading HK$/yr | Interest HK$/yr | All-T-bill HK$/yr | **Extra HK$/yr, full (out-of-sample)** | Max DD % |
-|---|---|---|---|---|---|---|
-| 12,500 / 10,000 | webull0 | +169 | +447 | +600 | **+16** (+268) | −3.09 |
-| 12,500 / 10,000 | real35 | −9 | +432 | +600 | **−178** (+73) | −3.49 |
-| 25,000 / 20,000 | webull0 | +491 | +916 | +1,200 | **+207** (+436) | −1.94 |
-| 25,000 / 20,000 | real35 | +311 | +902 | +1,200 | **+13** (+227) | −2.27 |
-| 50,000 / 40,000 | webull0 | +30 | +1,744 | +2,400 | **−625** (−404) | −2.87 |
-| 50,000 / 40,000 | real35 | −144 | +1,730 | +2,400 | **−814** (−591) | −3.07 |
-| 100,000 / 80,000 | webull0 | +855 | +3,574 | +4,800 | **−370** (−646) | −2.69 |
-| 100,000 / 80,000 | real35 | +692 | +3,561 | +4,800 | **−547** (−825) | −2.79 |
-
-Out-of-sample values in brackets are from `income_decomposition.csv`.
-
-**Reading:**
-- **Fixed fees matter less at larger size,** but the interest given up grows in step with capital: HK$1,238 a year at 100k on real35.
-- **The trading result is not monotonic in size:** +311 at 25k, −144 at 50k, +692 at 100k. A different base changes which names are affordable and in what order slots fill. That is path dependence, not skill. It is the same fragility Tom found with a one-bar ADX slip.
-- **No size in this table reliably beats T-bills.**
-
-### 2.4 Calendar years: 12.5k / real35 / 20% reserve, % (`results/income_yearly.csv`)
-
-| Year | System + T-bills | All T-bills | SPY | Extra |
+| Capital / base (HK$) | webull0, cancel at open | real35, cancel at open | webull0, DAY | real35, DAY |
 |---|---|---|---|---|
-| 2022 (from 30 Nov) | −0.71 | 0.36 | −5.76 | −1.07 |
-| 2023 | 0.81 | 4.94 | 26.18 | **−4.13** |
-| 2024 | 4.45 | 5.16 | 24.89 | −0.71 |
-| 2025 | 5.82 | 4.15 | 17.72 | **+1.67** |
-| 2026 (to 23 Nov) | 2.55 | 3.26 | 6.75 | −0.71 |
+| 12,500 / 10,000 | +26 (+269) | −168 (+74) | +166 (+344) | −41 (+137) |
+| 25,000 / 20,000 | +237 (+454) | +43 (+246) | +286 (+615) | +90 (+407) |
+| 50,000 / 40,000 | −551 (−353) | −739 (−540) | −312 (−186) | −500 (−376) |
+| 100,000 / 80,000 | −191 (−512) | −367 (−691) | +586 (−1,318) | +401 (−1,521) |
 
-- At `webull0`, the yearly extra is −0.94 / −2.68 / +0.62 / +3.15 / +0.40.
-- The system trailed T-bills in **4 of 5** calendar periods at the CRO fee estimate, and in **2 of 5** at zero commission.
-- One good year (2025) carries most of the out-of-sample result.
+**Reading (corrected per Tom F-4):**
+- **A larger base admits pricier names, so it is a different trade set,** not a scaled-up version of the 12.5k account.
+  - At a HK$10,000 base, only names under about US$128 can be bought.
+  - At bases of 20k / 40k / 80k, only 31 / 18 / 11 trades are shared with the 10k run.
+  - The trades in names above US$128 earned a steady +1.45% to +1.70% of base a year in Tom's run (real35, no interest).
+  - The swings in the totals come from the cheaper remainder, where slot competition reshuffles which trades happen.
+- **Do not read this as a case for a bigger base.** The figures are in-sample history, and the 100k DAY row flips from +586 to −1,318 out of sample.
+- **Under C-7 / R-2, any base other than 10,000 needs Tom's rerun and the CRO's review before the setting changes.** This table is evidence for such a review, not the review.
+- **Allowed without review:** adding more capital while keeping `account_hkd` at 10,000. The extra money sits in the reserve or in T-bills (R-1, R-2).
+
+### 2.4 Calendar years, 12.5k, 30% reserve: extra over T-bills, percentage points (`results/income_yearly.csv`)
+
+| Year | real35, cancel at open | webull0, cancel at open | real35, DAY | webull0, DAY | All T-bills % | SPY % |
+|---|---|---|---|---|---|---|
+| 2022 (from 30 Nov) | −1.08 | −0.95 | −1.08 | −0.95 | 0.36 | −5.76 |
+| 2023 | **−4.00** | −2.55 | −1.86 | −0.28 | 4.94 | 26.18 |
+| 2024 | −0.58 | +0.75 | +0.06 | +1.44 | 5.16 | 24.89 |
+| 2025 | +1.66 | +3.14 | +2.62 | +4.11 | 4.15 | 17.72 |
+| 2026 (to 23 Nov) | −0.68 | +0.42 | −0.80 | +0.34 | 3.26 | 6.75 |
+
+- Behind T-bills in **4 of 5** periods at real35 with cancel-at-open, and **3 of 5** with DAY orders. At webull0, 2 of 5 for either order type.
+- 2023 was the worst year in every variant. 2025 carries most of the out-of-sample result.
 
 ### 2.5 How likely is it to trail T-bills? (`results/income_bootstrap.csv`)
 
-**Method:** block bootstrap of the 49 monthly excess returns vs T-bills, in 3-month blocks, 5,000 paths. It assumes the next five years look like a reshuffle of the last four, which is a strong assumption.
+**Method:**
+- circular block bootstrap of the 49 monthly excess returns vs T-bills, 3-month blocks, wrapped end to end (Tom F-1), 5,000 paths;
+- the right-hand columns also add uncertainty about the true mean (a per-path shift drawn from N(0, sd/√49));
+- it assumes the next five years look like a reshuffle of the last four, which is a strong assumption.
 
-| Scenario | P(behind T-bills) after 1 yr | 3 yrs | 5 yrs | Median 5-yr extra | 10th–90th pct 5-yr extra |
-|---|---|---|---|---|---|
-| 12.5k, real35 | 66% | 75% | **79%** | −4.9% | −11.8% … +2.8% |
-| 12.5k, webull0 | 45% | 42% | **39%** | +1.6% | −5.6% … +9.4% |
-| 100k, real35 | 50% | 53% | **54%** | −0.5% | −6.9% … +5.9% |
+| Scenario | P(behind T-bills), 1 yr | 3 yrs | 5 yrs | 5 yrs + uncertainty in the mean | Median 5-yr extra (with mean uncertainty) | t (monthly mean) |
+|---|---|---|---|---|---|---|
+| 12.5k, real35, cancel at open | 67% | 77% | 84% | **75%** | −5.6% | −0.91 |
+| 12.5k, webull0, cancel at open | 48% | 45% | 44% | **46%** | +0.8% | +0.17 |
+| 12.5k, real35, DAY | 54% | 56% | 59% | **56%** | −1.4% | −0.17 |
+| 12.5k, webull0, DAY | 35% | 25% | 19% | **28%** | +5.5% | +0.84 |
+| 100k, real35, cancel at open | 53% | 57% | 59% | **57%** | −1.5% | −0.21 |
 
-**Monthly excess:**
-- 12.5k/real35: mean −0.097% a month, standard deviation 0.708%.
-- 12.5k/webull0: +0.011% a month, standard deviation 0.680%.
-
-**In both cases the mean is a small fraction of the noise.**
+**In every case the average monthly excess is a small fraction of its noise** (standard deviation about 0.7% a month).
 
 ### 2.6 Live entry rule vs the old backtest entry (12.5k, webull0, no interest)
-- **Old 1% deviation rule:**
-  - 1.78% CAGR on HK$12,500, which is ≈ 2.2% on the HK$10,000 base and matches the V6.6.5 release note;
-  - 135 trades.
-- **Live limit rule:**
-  - 1.33% CAGR;
-  - 130 trades;
-  - 43 limit skips.
-- The live rule is somewhat **more conservative** than the old backtest, as the CRO expected (N-27). The Owner's real results should be compared with the 1.33% line, not the old ≈2.2%.
+- **Old 1% deviation rule:** 1.78% CAGR on HK$12,500 (≈ 2.2% on the HK$10,000 base, matching the V6.6.5 release note), 135 trades.
+- **Live rule, cancel at open:** 1.33%, 130 trades, 43 skips.
+- **Live rule, DAY order:** 2.28%, 139 trades.
+- The Owner's real results should be compared with the live-rule lines, not the old ≈ 2.2%.
 
 ### 2.7 Research only, NOT approved: more slots at HK$100,000
-`MAX_POSITIONS = 2` is a locked parameter. These rows are a hypothesis, not a proposal.
+`MAX_POSITIONS = 2` is a locked parameter. These rows are a hypothesis for a possible future review by Tom and the CRO, not a proposal. Settings: real35, cancel at open, reserve = slots × 10% + 10%.
 
 | | Trading HK$/yr | Extra vs T-bills, full (out-of-sample) | Max DD % |
 |---|---|---|---|
-| 3 slots, 30% reserve, real35 | +1,718 | −167 (+684) | −3.51 |
-| 4 slots, 40% reserve, real35 | +2,462 | −5 (+392) | −4.27 |
-
-More slots earn more from trading but give up more interest. Over the full period the net is still about zero.
+| 3 slots, 40% reserve | +1,718 | +289 (+1,048) | −3.41 |
+| 4 slots, 50% reserve | +2,462 | +724 (+967) | −4.17 |
 
 ---
 
 ## 3. Why the system struggles to beat T-bills
 
-1. **By design it is mostly in cash.** At most 20% of the base is invested.
-   - At 12.5k/real35, whole-share sizing makes the average position **7.9% of the base**, not 10%.
-   - Days with 0 / 1 / 2 positions open: **12% / 30% / 58%**.
-   - On average about **12% of the base (≈ 9% of the capital)** is in trades. The rest earns T-bill interest or nothing.
-   - When SPY is below its 200-day MA, nothing is invested. As of the 23 Nov close (`data/SPY.csv`), it is below.
-2. **Its edge per trade is small.** The V6.6.5 release note reports net expected value of about +1.85% per E1 trade and −1.03% per E2 trade in the 2-slot book. Neither is statistically distinguishable from zero at this size.
-3. **Fees eat it.** The CRO estimated net EV per trade crosses zero at about US$0.25–0.40 fixed per side (N-9). This study confirms it at the account level: the trading line is +169 HK$/yr at zero commission and −9 at US$0.35.
-4. **Every dollar in a trade stops earning about 4–5%.** That is the HK$150–170/yr hurdle at 12.5k, and HK$1,200+ at 100k.
+1. **By design it is mostly in cash.** At 12.5k/real35 with whole-share sizing:
+   - the average position is **7.9% of the base**, not 10%;
+   - days with 0 / 1 / 2 positions open: **12% / 30% / 58%**;
+   - on average about **12% of the base (≈ 9% of capital)** is in trades.
+
+   When SPY is below its 200-day MA, nothing is invested. As of the 23 Nov close (`data/SPY.csv`), it is below.
+2. **Its edge per trade is small.** The V6.6.5 release note reports net EV of about +1.85% per E1 trade and −1.03% per E2 trade in the 2-slot book. Neither is statistically distinguishable from zero at this size.
+3. **Fees eat it.** On the live rule with cancel-at-open, net EV per trade is +0.651% at zero commission and −0.066% at US$0.35 (§1.4).
+4. **The settled-cash reserve and the money in trades earn nothing.** That is the HK$130–160 a year hurdle at 12.5k (§2.2).
 
 If T-bill rates fall, the hurdle falls with them. The interest income falls too, though, and the trading result does not improve.
 
 ---
 
-## 4. Can it run long-term? Assessment
+## 4. Can it run long-term? Assessment (CEO; CRO rulings applied)
 
 **What supports running it:**
-- The rules are fixed, fingerprinted and tested: selftest 126 checks, equivalence 0/85,120, ledger check, CRO-verified up to V6.6.5.
-- Drawdowns at this sizing are small in backtest: about −2% to −5% with interest, worst month about −1% to −2%. With `min1` fees and no interest the drawdown was −11%.
-- The SPY 200-day filter takes it out of the market in weak regimes.
+- **Tested code.** The rules are fixed, fingerprinted and tested:
+  - selftest 131 checks;
+  - equivalence 0/85,120;
+  - ledger check;
+  - CRO-verified through V6.6.6 (`reports/risk/2026-11-26-v66-6-verification.md`); V6.6.7 verification pending.
+- **Small backtest drawdowns at this sizing:** about −3% to −4% with interest, worst month about −1%; −11% at US$1 fees with no interest.
+  - These are backtest figures. **The binding limits are the −10% monthly breaker (C-10) and the 20% drawdown floor (C-7).**
+- The SPY 200-day filter keeps it out of the market in weak regimes.
 
 **What argues against counting on it:**
-- The extra return over T-bills is **indistinguishable from zero**. Its sign depends on a fee that has not been verified (V-1).
-- It is **path-fragile.** Results jump with account size (§2.3) and with a one-bar indicator slip.
-- **No forward evidence yet.** The firm's own gate is ≥ 30 closed E2 trading-path signals **and** ≥ 6 months of ledger before any forward review, and no cap-level return comparison before 100 trades.
-- **Operational load:** about 33 round trips a year means a daily scan and about 66 manual limit orders a year. Each one is a chance for error. CLAUDE.md rule 1: the Owner places every order; no agent can.
+- The extra return over T-bills is **indistinguishable from zero** (t between −0.91 and +0.84).
+- **At the CRO's fee estimate it may fail its own gate.** With cancel-at-open orders, S4 applies (N-29). The answer depends on V-1 and on the order type, neither of which is settled.
+- **No forward evidence yet.** The firm's own gate: ≥ 30 closed E2 trading-path signals **and** ≥ 6 months of ledger before any forward review, and no cap-level return comparison before 100 trades.
+- **Operational load:**
+  - about 66–70 manual limit orders a year, plus protective stops;
+  - the S2 discipline;
+  - with cancel-at-open, being awake at the US open.
+
+  The Owner places every order; no agent can (CLAUDE.md rule 1).
 - **Unresolved costs:**
-  - withholding on the T-bill side, which takes about 1.4 percentage points off the yield in the 30% scenario;
+  - withholding on the T-bill side, worth about 1.4 percentage points of yield in the 30% scenario;
   - the broker's interest on cash;
   - HKD/USD conversion.
-- **Alpha decay:** short-horizon technical edges tend to weaken once published or crowded. This is a general observation, not something measured here.
+- **Alpha decay:** short-horizon technical edges tend to weaken. This is a general observation, not measured here.
+- **It cannot run at all until C-6 is cured.** The Webull account is still a margin account (2026-11-26 read-only pull).
 
-**Verdict (CEO, pending CRO):**
-- As a **capital-preservation sleeve that might add a little**, it can run long-term at C-7 (A) size without much risk to the capital.
-- As an **income source for living costs**, it does not qualify. Expected extra income is about zero, with a 40–80% chance of trailing plain T-bills over five years, depending on fees.
+**Verdict:**
+- As a small sleeve that **might** add a little and is unlikely to do serious harm, it can run long-term, once C-6 is cured, V-1 passes on the live rule and the Owner chooses (A).
+- As an **income source for living costs**, it does **not** qualify. The income is the T-bill interest. The system's expected addition is about zero, and the chance of trailing plain T-bills over five years is about 30–75%.
 
 ---
 
-## 5. What the Owner can do instead, or as well (options, not advice)
+## 5. What the Owner can do (options, not advice)
 
-1. **For the income itself:** the return in every row above comes from the T-bill-like holding. The Owner should check, with the broker and in writing:
-   - whether US T-bill ETF distributions to an HK resident are withheld at 30%, or exempted as qualified interest income;
-   - whether HK-listed USD/HKD money-market funds, or time deposits, are available and at what yield. **Not verified this session;** no figures are given.
-   - whether uninvested cash at the broker earns anything.
-2. **For the system:** choose between the two C-7 options the CRO approved (25 Nov):
-   - **(A)** a separate **cash** or margin-disabled account holding nothing but the swing sleeve, with **≥ HK$12,500 of settled cash**, `account_hkd` 10,000, and `switch_date` set on the day you start;
-   - **(B)** **shadow-only:** scanner and signal ledger, no fills, until (A) is met.
+### 5.1 For the income itself (CRO R-3, quoted from `reports/risk/2026-11-26-v66-6-verification.md`)
+- "Living-cost money for the next 12 months goes in this sleeve at 0%, and in no risk asset at all." It belongs in cash, time deposits, T-bills or a government money-market fund, in an account separate from any trading account. "That money then earns the T-bill-like return directly, which is where the study shows the income comes from anyway."
+- **Questions for the broker, in writing:**
+  - whether US T-bill ETF distributions are withheld at 30% or exempt as qualified interest (R-1.6);
+  - whether uninvested cash earns interest (R-1.5: if it earns close to the T-bill rate, leaving it as cash is preferred);
+  - which HK-listed USD/HKD government money-market funds or time deposits are available, and at what yield. **Not verified this session;** no figures are given.
 
-   The CEO's preference, pending CRO: **(B) first, until V-1 (the real fee) and 6 months of ledger exist.** The study shows that (A) at today's evidence is a bet on a fee nobody has confirmed. That choice belongs to the Owner.
-3. **Not recommended:** raising slots or the base to chase income. The §2.7 rows are unapproved research, and §2.3 shows size alone does not help.
+### 5.2 For the system: the CRO's conditions, in full
+
+> **C-7 (A), as ruled 25 Nov and amended here.** A separate account (Webull or another broker) that is a **cash account or has margin disabled**, holding **nothing but the swing sleeve** (plus, from today, cash equivalents per R-1). It is funded with **≥ HK$12,500 of settled cash**.
+> - Set `account_hkd` to **10,000** and set `switch_date` on the day you start.
+> - Reconcile real NLV (no borrowed money) **monthly and after every withdrawal**. It must stay **≥ `account_hkd` (10,000)**.
+> - A fall below 10,000 is a 20% drawdown: **stop new entries**; CRO de-risk review.
+> - Any other `account_hkd`, higher or lower, needs Tom's rerun at that base **and** my review **before** the setting changes.
+>
+> **C-6.** Shown by a broker statement or a read-only pull (**a screenshot does not count**). Settled cash ≥ each order.
+
+**R-1, cash equivalents inside that account:**
+- **Allowed:** US T-bills, a T-bill ETF holding bills of ≤ 3 months, or a government money-market fund (≤ 1 year paper).
+- **Not allowed:** bond funds beyond 1 year, credit, leveraged or "income" ETFs, covered-call ETFs (for example 3416.HK), or anything with an equity leg.
+- **They are not swing positions:** no `ledger fill`, no slot. They do count in NLV.
+- **Keep ≥ 30% of `account_hkd` (HK$3,000) as settled cash,** checked before every order. The T-bill ETF never counts as settled cash.
+- **Top-ups:** top up only on a day with no pending order, and count the proceeds only once settled (T+1). **Never buy with unsettled proceeds.**
+
+**R-3, size and withdrawals:**
+- **Sleeve capital ≤ 10% of liquid net worth (LNW).** At HK$12,500 that needs LNW ≥ HK$125,000. **If LNW is below that, the answer is (B) shadow-only, whatever V-1 shows.**
+- **Withdrawals:**
+  - none may be planned from the sleeve to pay living costs;
+  - any withdrawal triggers the C-7 reconciliation;
+  - one that takes NLV below HK$12,500 or below `account_hkd` stops new entries.
+- **Blackouts:** firm blackouts (E-1 4–10 Dec; E-2 for Tier A/B names) bind V6.6 entries once it is live.
+
+**The choice:**
+- **(A)** above;
+- **(B) shadow-only:** scanner and signal ledger, no fills, until (A) is met.
+
+**CRO and CEO recommendation: (B)** until **V-1 passes on the live rule (N-29)** **and** there are ≥ 6 months of ledger. If V-1 confirms a minimum fee of about US$0.35 a side or more, **that is S4: no trading at any cap,** not "(A) later" (CRO R-4.4). The order-type ruling (§1.4) may change which fee level passes. The choice remains the Owner's.
+
+### 5.3 Not recommended
+Raising slots or the base to chase income. The §2.7 rows are unapproved research, and §2.3 shows that size alone does not reliably help.
 
 ## 6. What would change this verdict
-- **V-1:** a real Webull contract note showing about zero commission and spread near 10 bp. That would move the 12.5k result toward the `webull0` rows: about +HK$16/yr full period, +HK$268/yr out of sample, and P(behind T-bills over 5 years) about 39%.
-- **Forward ledger:** ≥ 30 closed E2 trades and ≥ 6 months, with net EV per trade clearly above the ≈ HK$5 hurdle.
-- **A CRO-approved rule change** (slots, cap or base). Each needs Tom's rerun and CRO review, as C-7 already requires.
+- **V-1:** a real Webull contract note. About zero commission with spread near 10 bp would put the 12.5k result near the `webull0` rows: +26 to +166 HK$ a year over T-bills, with a 28–46% chance of trailing over 5 years. A minimum of about US$0.35 or more with cancel-at-open is S4.
+- **The CRO's order-type ruling** (§1.4).
+- **Forward ledger:** ≥ 30 closed E2 trades and ≥ 6 months, with net EV per trade clearly above the ≈ HK$4–5 hurdle.
+- **A CRO-approved rule change** (slots, cap or base). Each needs Tom's rerun and CRO review (C-7, R-2).
 
 ## 7. Reproduce
 
 ```
 cd strategy/v6.6
-python income_study.py   # needs data/*.csv (stocks) and data/BIL.csv; builds data/TBILL.csv
+python income_study.py                                          # needs data/*.csv and data/BIL.csv; builds data/TBILL.csv
+python lab.py --mode feecheck --fee-min 0.35 --fee-bp 10 --tif open   # or --tif day
 ```
 
-- Outputs: `results/income_scenarios.csv`, `income_decomposition.csv`, `income_yearly.csv`, `income_bootstrap.csv`.
-- Lab V6.6.6 (fingerprint `943960c97a9b`): `entry_rule`, `capital_hkd`, `cash_yield`, `cash_reserve_pct`. Defaults are unchanged:
-  - `results/baseline.json` is identical;
-  - 9 new selftest checks (126 total, also under `-O`);
-  - 4 mutants were each caught by their check.
+**Lab V6.6.7 (fingerprint `fae5fa5a7403`):**
+- `entry_rule`;
+- `entry_tif`;
+- `capital_hkd`;
+- `cash_yield`;
+- `cash_reserve_pct` (positions are paid from the reserve);
+- the share count uses the signal-date split factor.
 
-## 8. Questions for the CRO
-1. May a T-bill ETF or money-market holding sit in the C-7 (A) swing account, given the wording "nothing but the swing sleeve"? If not, where should the interest-earning part sit, and does the 20% settled-cash reserve satisfy "settled cash must cover each order"?
-2. C-7 says `account_hkd` is never raised or lowered without Tom's rerun and CRO review. Does §2.3 count as that rerun for any base other than 10,000, or is a separate review needed?
-3. "Living income" framing: what limits apply to putting money the Owner needs for living costs into this sleeve?
+**Defaults are unchanged:** `results/baseline.json` and every tracked results file are byte-identical. Selftest has 131 checks (also under `-O`); 9 mutants were each caught.
+
+## 8. Questions answered by the CRO (`reports/risk/2026-11-26-v66-6-verification.md`)
+- **R-1:** T-bills or government money-market funds are allowed in the C-7 (A) account as cash equivalents, with a 30% settled-cash reserve. The 20% reserve is not enough.
+- **R-2:** §2.3 is evidence for a review at another base, not the review itself.
+- **R-3:** 12 months of living money stays outside any risk asset; sleeve ≤ 10% of LNW; no planned withdrawals.
+- **R-4:** corrections to this text. Applied in v2: §0, §4, §5 and §6.
+- **N-29:** the fee gate now uses the live rule (V6.6.7).
 
 ## 9. Reviews
-*(Appended when received.)*
+- **Tom (2026-11-26):** VALIDATED WITH CONCERNS. F-1 to F-8 are applied in V6.6.7 and v2 (F-1 bootstrap, F-2 reserve, F-3 order type, F-4 wording, F-5 counts, F-6 threshold, F-7 gaps, F-8 split factor).
+- **John, CRO (2026-11-26):** V6.6.6 PASS with N-29 (fixed in V6.6.7); R-1 to R-4. *V6.6.7 verification and the order-type ruling: pending.*
+- **Ai 管理層:** *pending.*
