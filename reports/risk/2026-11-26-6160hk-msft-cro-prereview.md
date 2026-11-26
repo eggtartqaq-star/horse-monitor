@@ -49,7 +49,7 @@
 
 - **ONC:** US$415.62 at the 24 Nov close (Webull bar) [C: 老詹 L10]. ADS = 13 ordinary shares (verified, 老詹 §6).
 - **HK-share equivalent:** HK$250.65 at 7.84 [C].
-- **Last HK print on file:** HK$230.80 on **20 Nov**, single unconfirmed source [C: 老詹 L202].
+- **Last HK print on file:** HK$230.80 on **20 Nov** (two sources: Halo via 老詹 L202; Longbridge via news refresh L75). *(audit P-2)*
 - **Correction (LOW, for 𢦀鳩仔).** The valuation pairs US$415.62 (24 Nov) with HK$230.80 (20 Nov) as if they were simultaneous.
   - HK MoS of −82% against HK$127 is the stale figure. At the HK$250.65 equivalent it is **−97%** [D]: the same picture as the ADS (−98%).
   - Mark-to-market against cost is **+14.1%** on the equivalent, not +5.1% (the 20 Nov figure) [D].
@@ -104,6 +104,7 @@
 - **Why a 15% planning gap.** The ONC worst day is NOT OBTAINED. Realised volatility is 34.1% a year, about 2.1% a day [C: 老詹 L68], so 15% is about 7σ, which is conservative. It is the same planning gap I used for AVGO.
 - **Mario** should stress a BIOSECURE naming and an HK policy shock before the committee meets.
 - **Binding:** if the position is above the band, the excess is trimmed. Risk reduction is permitted on any day.
+- **Re-test at each price** *(audit P-1)*: cap = 1% ÷ (1 − 327.25 ÷ ONC price); for example 4.1% at US$450.
 - **Correlation.** 6160 is **outside** the AI cluster (§4.3). Its relevant factor is **China/HK policy**, which it shares with **3416.HK** (HSCEI covered-call ETF, about HK$8,000, Owner-stated).
   - There is no country limit in the law. My 17 Nov proposal (d) for a country/FX line is still unadopted.
   - Until it is adopted I treat **6160 + 3416.HK** as one China-policy exposure for the committee. I set no number of my own.
@@ -234,3 +235,5 @@
 **For 腦大裝草:** `2026-11-26 · CRO pre-review 6160.HK + MSFT. 6160: HOLD WITH CONDITIONS — no adds; stop = ONC daily close < US$385 → sell 6160 next HK session (HK$229.40 = alert only); band ≤ 4.7% LNW at market thru 18 Dec (15% gap [A]), 2.0% if no stop commitment; trim excess; decision record (none exists); committee before 11 Dec. Cost HK$219.60 = Owner disclosure (Aug pack), unverified; HK MoS restated −97% (HK$230.80 was a 20 Nov print vs ONC 24 Nov). COINS: Owner US-person status needed. Risk 35 → 55. MSFT: Tier B confirmed; E-1 4–10 Dec, E-2 4 Dec–~17 Dec; value entry ≤ $320 (−35.5%) not a planning case; trade path not approvable (no compliant account, no LNW); no committee now; risk 25. Cross-checks: 6160 net cash 4,777.7 (mixed dates) ✓; MSFT leases 297.9 ✓, possible finance-lease double count (≤ $28.7/sh, conservative).`
 
 *Research and decision support, not financial advice. Markets cannot be reliably predicted. No agent of this firm places orders; every trim or exit above is a recommendation for the Owner to execute himself.*
+
+*Corrections applied 2026-11-26 by the CEO per `reports/committee/2026-11-26-6160hk-msft-audit.md` §8 (P-1, P-2).*

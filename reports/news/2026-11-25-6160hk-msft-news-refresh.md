@@ -467,7 +467,7 @@ Covered in A2.
 **[FACT] Contract terms:**
 - **No change found since the 27 Apr 2026 amendment**: non-exclusive IP licence through 2032, OpenAI revenue share to Microsoft capped through 2030, Microsoft no longer pays a share, and OpenAI may serve any cloud ([Microsoft blog, 27 Apr 2026](https://blogs.microsoft.com/blog/2026/04/27/the-next-phase-of-the-microsoft-openai-partnership/)).
 - **19 Nov 2026, The Information (paywalled, via secondaries):** Mustafa Suleyman told Microsoft AI staff to **prepare for a possible loss of access to OpenAI IP**. It is described as internal preparation, not a decision ([Dataconomy, 23 Nov](https://dataconomy.com/2026/11/23/microsoft-prepares-for-possible-loss-of-openai-technology/); [CryptoBriefing](https://cryptobriefing.com/microsoft-prepares-possible-loss-openai-access/)).
-- **OpenAI IPO:** OpenAI announced a confidential draft S-1 on **8 Jun 2026** ([Xinhua](https://english.news.cn/northamerica/20260609/fc1f0b581dc541fe90b5a27c525810e8/c.html); [The Tech Portal](https://thetechportal.com/2026/06/09/openai-confidentially-files-for-ipo-through-draft-s-1-submission-to-us-sec/)). The CFO reportedly told staff it would list in 2027 or sooner (secondary, Aug 2026). Microsoft owns about 27%.
+- **OpenAI IPO:** OpenAI announced a confidential draft S-1 on **8 Jun 2026** ([Xinhua](https://english.news.cn/northamerica/20260609/fc1f0b581dc541fe90b5a27c525810e8/c.html); [The Tech Portal](https://thetechportal.com/2026/06/09/openai-confidentially-files-for-ipo-through-draft-s-1-submission-to-us-sec/)). The CFO reportedly told staff it would list in 2027 or sooner (secondary, Aug 2026). Microsoft owns about 24–27% (sources conflict; see financials §7).
 
 **[FACT] Anthropic:**
 - The IPO priced at **US$83** and Anthropic began trading on **19 Nov 2026**, closing day one at **US$97.17 (+17.07%)** ([Forbes](https://www.forbes.com/sites/fionariley/2026/11/19/anthropic-ipo-live-stock-closes-day-at-97-up-more-than-17/); [CNN](https://www.cnn.com/2026/11/19/business/live-news/anthropic-ipo)).
@@ -665,4 +665,4 @@ Research only. No recommendation is made or implied. Committee and Owner decide.
 a source and a date. Estimates and my own inferences are labelled. Where sources conflict, the conflict
 is shown and not resolved. tradingkey.com was not used.*
 
-*Corrections applied 2026-11-26 by the CEO per `reports/committee/2026-11-26-6160hk-msft-audit.md` (NW-1 at :481; the auditor's :470 anchor ("Microsoft owns about 27%") was not present in the file).*
+*Corrections applied 2026-11-26 by the CEO per `reports/committee/2026-11-26-6160hk-msft-audit.md` (NW-1 at :470 and :481).*
