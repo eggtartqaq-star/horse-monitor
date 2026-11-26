@@ -108,6 +108,11 @@ class Cfg:
     e1_strong_only: bool = False     # False = 回測版;True = 掃描器版
     mom_filter: Optional[str] = None  # "top_half" = 引擎二只做126日動能前50%
     account_hkd: float = 10000.0
+    # 2026-11-26 收入研究(Owner 問:長期跑,當額外收入得唔得)。預設值 = 舊行為,基準唔變。
+    entry_rule: str = "deviation"    # "deviation" = 手冊 1% 重計(舊);"limit" = 實盤:限價 ≤ 限價上限、開市 ≤ 止蝕唔買(CRO C-8、N-15、N-26)
+    capital_hkd: Optional[float] = None    # 戶口實際資金;None = 同 account_hkd(倉位基數)一樣。CRO C-7:12,500 資金、10,000 基數
+    cash_yield: Optional[object] = None    # pd.Series:T-bill 指數(按日);閒置現金按佢嘅日回報收息
+    cash_reserve_pct: float = 0.0          # 唔收息嘅現金(倉位基數嘅 %);20 = 「兩倉 × 10%」留現金,其餘放 T-bill
     # 敏感度測試用(預設 = V6.4.2 鎖死值)
     trend_score_min: float = R.TREND_SCORE_MIN
     trail_mult: float = R.ATR_TRAIL_MULT
@@ -241,9 +246,35 @@ class Pos:
                  "highest", "atr", "sig_date")
 
 
+def _max_limit_adj(s, f, sh0, cfg):
+    """同 sizing_v66.max_limit 一樣嘅規則,但用 lab 嘅倉位基數(cfg.account_hkd)。回傳調整後價格(同 bar 一致)。
+    最高嘅一仙,仍然買得到 sh0 股;唔高過收市 +1%;引擎一保住 R ≥ 2。"""
+    close, stop = s["sig_close"] * f, s["stop"] * f
+    cap = R.MAX_POSITION_PCT if cfg.notional_cap else 1e9
+    lo, hi = int(close * 100), int(close * 1.01 * 100)
+    if s["engine"] == "E1" and s.get("target") is not None:
+        hi = min(hi, int((s["target"] * f + 2 * stop) / 3 * 100))
+    ok = lambda c: R.position_plan(c / 100, stop, account_hkd=cfg.account_hkd, max_position_pct=cap,
+                                   fractional=cfg.fractional)[0] >= sh0
+    if hi < lo or not ok(lo):
+        return None
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if ok(mid):
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo / 100 / f
+
+
 def simulate(sig, cfg: Cfg, start=None, end=None):
     broker = BROKERS[cfg.broker]
     acct_usd = cfg.account_hkd / R.USD_HKD
+    cap_usd = (cfg.capital_hkd if cfg.capital_hkd is not None else cfg.account_hkd) / R.USD_HKD
+    cy = cfg.cash_yield
+    cy_ret = cy.pct_change().dropna().to_dict() if cy is not None else {}
+    reserve_usd = cfg.cash_reserve_pct / 100 * acct_usd
+    interest = 0.0
     dates = sorted(set().union(*[set(df.index) for df in sig.values()]))
     dates = [d for d in dates if (start is None or d >= pd.Timestamp(start))
              and (end is None or d <= pd.Timestamp(end))]
@@ -252,7 +283,7 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
 
     open_pos, pending, trades, equity = [], [], [], []
     busy_until = {}                     # 同一隻股出場當日唔再入
-    rejects = {"no_slot": 0, "notional_or_risk_0_shares": 0, "deviation": 0,
+    rejects = {"limit": 0, "floor": 0, "no_slot": 0, "notional_or_risk_0_shares": 0, "deviation": 0,
                "breaker": 0, "mom_filter": 0, "scan_0_shares": 0}
     realized = 0.0
     month_pnl, cur_month = 0.0, None
@@ -304,6 +335,18 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
 
     def open_position(tk, s, d, px, sig_date, atr_sig):
         stop = s["stop"]
+        if cfg.entry_rule == "limit" and not unlimited:
+            # 實盤做法:限價單 ≤ 限價上限(收市計好);開市高過限價 → 冇成交;開市 ≤ 止蝕 → 唔買
+            lim = s.get("limit_adj")
+            if lim is None or px > lim + 1e-9:
+                rejects["limit"] += 1; return None
+            if px <= stop:
+                rejects["floor"] += 1; return None
+            f = raw_factor(tk, d)
+            p = Pos()
+            p.tk, p.engine, p.entry, p.stop, p.target = tk, s["engine"], px, stop, s.get("target")
+            p.shares, p.edate, p.days, p.highest, p.atr, p.sig_date = s["sh0_raw"] * f, d, 0, px, atr_sig, sig_date
+            return p
         if cfg.fill == "next_open" and cfg.deviation_pct is not None:
             dev = abs(px - s["sig_close"]) / s["sig_close"] * 100
             if dev > cfg.deviation_pct:
@@ -406,6 +449,9 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
                                          fractional=cfg.fractional)
                 if sh0 <= 0:
                     rejects["scan_0_shares"] += 1; continue
+                if cfg.entry_rule == "limit":
+                    s["sh0_raw"] = sh0
+                    s["limit_adj"] = _max_limit_adj(s, f0, sh0, cfg)
             if not unlimited and len(open_pos) + len(pending) >= cfg.max_positions:
                 rejects["no_slot"] += 1; continue
             if cfg.fill == "close":
@@ -417,12 +463,17 @@ def simulate(sig, cfg: Cfg, start=None, end=None):
 
         # 4) 淨值(按收市價計)
         if not unlimited:
-            mtm = 0.0
+            mtm, cost_basis = 0.0, 0.0
             for p in open_pos:
+                cost_basis += p.entry * p.shares
                 k = idx[p.tk].get(d)
                 if k is not None:
                     mtm += (arr[p.tk]["Close"].iloc[k] - p.entry) * p.shares
-            equity.append((d, acct_usd + realized + mtm, len(open_pos)))
+            if cy is not None:
+                r_d = cy_ret.get(d, 0.0)
+                cash = cap_usd + realized + interest - cost_basis
+                interest += max(0.0, cash - reserve_usd) * r_d
+            equity.append((d, cap_usd + realized + interest + mtm, len(open_pos)))
 
     # 數據結束:強制平倉(Tom 2026-11-24:用期間最後一日,唔係成份數據最後一日)
     for p in open_pos:

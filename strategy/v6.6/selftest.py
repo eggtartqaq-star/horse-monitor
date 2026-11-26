@@ -137,6 +137,64 @@ def _main_body():
     check("拆股表包括 MSTR 2024-08-08(10拆1)", lab.raw_factor("MSTR", pd.Timestamp("2024-08-07")) == 10
           and lab.raw_factor("MSTR", pd.Timestamp("2024-08-08")) == 1)
 
+    # ---- V6.6.6(2026-11-26 收入研究):lab 實盤入場規則 + 閒置現金收息 ----
+    rng66 = np.random.default_rng(66)
+    n66 = bad66 = 0
+    for _ in range(400):
+        cl = round(float(rng66.uniform(5, 130)), 2)
+        st = round(cl * (1 - float(rng66.uniform(0.01, 0.15))), 2)
+        eng = "E1" if rng66.random() < 0.5 else "E2"
+        tg = round(cl * (1 + float(rng66.uniform(0.05, 0.40))), 2) if eng == "E1" else None
+        sh = R.position_plan(cl, st, account_hkd=10000)[0]
+        if sh < 1:
+            continue
+        n66 += 1
+        a = lab._max_limit_adj({"sig_close": cl, "stop": st, "engine": eng, "target": tg}, 1.0, sh, lab.AS_TRADED)
+        bad66 += a != Z.max_limit(cl, st, sh, eng, target=tg)
+    check(f"V6.6.6:lab 限價上限 == sizing_v66.max_limit({n66} 個隨機組合,差異 {bad66})", n66 > 100 and bad66 == 0)
+
+    LIM66 = lab.replace(lab.AS_TRADED, entry_rule="limit")
+    sh66 = R.position_plan(50.0, 47.25, account_hkd=10000)[0]
+    lim66 = Z.max_limit(50.0, 47.25, sh66, "E1", target=65.0)
+
+    def chp(open1):
+        f = mini(50.0, False)
+        f.loc[idx2[1], "Open"] = open1
+        f.loc[idx2[1], "Low"] = min(f.loc[idx2[1], "Low"], open1)
+        f.loc[idx2[1], "High"] = max(f.loc[idx2[1], "High"], open1)
+        return {"CHP": f}
+    t_hi, _, r_hi = lab.simulate(chp(round(lim66 + 0.01, 2)), LIM66)
+    check(f"V6.6.6:開市高過限價上限(${lim66})一仙 → 冇成交", len(t_hi) == 0 and r_hi["limit"] == 1)
+    t_fl, _, r_fl = lab.simulate(chp(47.25), LIM66)
+    check("V6.6.6:開市 ≤ 系統止蝕 → 唔買(C-8 修訂、N-26)", len(t_fl) == 0 and r_fl["floor"] == 1)
+    t_ok, e_ok, _ = lab.simulate(chp(49.0), LIM66)
+    check(f"V6.6.6:止蝕 < 開市 ≤ 限價上限 → 開市價成交、股數 = 收市計嗰個({sh66} 股)",
+          len(t_ok) == 1 and abs(t_ok["entry"].iloc[0] - 49.0) < 1e-9 and t_ok["shares"].iloc[0] == sh66)
+    t_lim, _, _ = lab.simulate(chp(lim66), LIM66)
+    check("V6.6.6:開市 = 限價上限 → 成交", len(t_lim) == 1)
+
+    r66 = 0.0002
+    cy66 = pd.Series(100 * (1 + r66) ** np.arange(len(idx2)), index=idx2)
+    skip = mini(50.0, False); skip["sig"] = [{"route": "SKIP"}] * len(idx2)
+    cap66, base66 = 12500 / R.USD_HKD, 10000 / R.USD_HKD
+    _, e_none, _ = lab.simulate({"CHP": skip}, lab.replace(lab.AS_TRADED, capital_hkd=12500))
+    check("V6.6.6:唔收息 → 淨值 = 資金(12,500)", np.allclose(e_none["equity"], cap66, atol=1e-9, rtol=0))
+    _, e_cy, _ = lab.simulate({"CHP": skip}, lab.replace(lab.AS_TRADED, capital_hkd=12500, cash_yield=cy66,
+                                                         cash_reserve_pct=20.0))
+    want = 0.2 * base66 + (cap66 - 0.2 * base66) * (1 + r66) ** (len(idx2) - 1)
+    check("V6.6.6:閒置現金收息 = 留底(基數 20%)+ 其餘 × T-bill 回報",
+          abs(e_cy["equity"].iloc[-1] - want) < 1e-9)
+    _, e_pos, _ = lab.simulate(chp(49.0), lab.replace(LIM66, capital_hkd=12500, cash_yield=cy66))
+    cb, it = 49.0 * sh66, 0.0
+    for _ in range(len(idx2) - 1):
+        it += (cap66 + it - cb) * r66
+    check("V6.6.6:持倉嘅錢唔收息(現金 = 資金 − 成本)",
+          e_pos["n_pos"].iloc[-1] == 1 and abs(e_pos["equity"].iloc[-1] - (cap66 + it + (50.0 - 49.0) * sh66)) < 1e-9)
+    cfg_cap = lab.replace(lab.AS_TRADED, capital_hkd=10000)
+    cfg_zero = lab.replace(lab.AS_TRADED, cash_yield=pd.Series(1.0, index=eq.index))
+    same = all(np.array_equal(lab.simulate(sig, c)[1]["equity"].values, eq["equity"].values) for c in (cfg_cap, cfg_zero))
+    check("V6.6.6:預設(資金 = 基數、唔收息)淨值同舊公式一樣", same)
+
     trf, _, _ = lab.simulate(sig, lab.AS_TESTED)
     check("as_tested(零成本):淨 = 毛", len(trf) == 0 or np.allclose(trf["net_pct"], trf["gross_pct"]))
 
