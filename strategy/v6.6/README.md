@@ -7,12 +7,12 @@
 >    - 雙擊 `電腦檢查_v66.bat` —— 自我測試(131 項,關卡 V-2)、對照測試(關卡 V-3)、試掃描一次過做,寫一份 `pc_report_….txt`,傳畀 AI;
 >    - 再雙擊 `掃描_v66.bat` 一次(測試掃描 .bat 本身),將 v6.6 資料夾入面嘅 `selftest_last.log` 一齊傳畀 AI(CRO V-2);如果出咗交易清單,唔好落單;
 >    - AI / CRO 睇完報告確認之後,先喺 `owner_settings.json` 將 V2、V3 改做 `true`。
-> 2. **微牛成交單據(關卡 V-1):** 確認真實收費,再跑 `lab.py --mode feecheck`。淨 EV ≤ 0(S4)→ 呢個戶口規模下唔好用呢個系統。
+> 2. **微牛成交單據(關卡 V-1):** 確認真實收費,同埋**先書面講明落單方法**(券商可唔可以全日限價單附加止蝕,見 `電腦待辦清單.md` D1),再跑 `lab.py --mode feecheck --tif open/day`(用實盤入場規則,CRO N-29)。淨 EV ≤ 0(S4)→ 呢個戶口規模下唔好用呢個系統。
 > 3. **CRO 核對代碼:** V6.6.3 已經 PASS(`reports/risk/2026-11-25-v66-3-n12-verification.md`)。
 >    V6.6.4(你 11-25 決定嘅功能:有 S2 就停開新倉、舊倉記錄、限價上限)CRO 已經 PASS,其中 N-15 部分過 → CRO 修訂咗 C-8(開市價 ≤ 系統止蝕 → 唔買)(`reports/risk/2026-11-25-v66-4-verification.md`)。
 >    V6.6.5(CRO 嘅 N-24 至 N-28 同審計 X-1 修正)CRO 都已經 PASS(`reports/risk/2026-11-25-v66-5-verification.md`)。
 >    V6.6.6(2026-11-26):淨係改咗研究用嘅 `lab.py`(模擬實盤限價入場、閒置現金收息,為咗收入研究),同埋多咗 9 項自我測試;掃描、記錄簿、bot 冇改。CRO 已經 PASS(`reports/risk/2026-11-26-v66-6-verification.md`)。
->    V6.6.7(2026-11-26):收費關卡 `lab.py --mode feecheck`(V-1)改用實盤入場規則(CRO N-29),同埋 Tom 嘅 F-2/F-3/F-8;掃描、記錄簿、bot 都冇改。**CRO 核對中**(同一份報告 §3)。
+>    V6.6.7(2026-11-26):收費關卡 `lab.py --mode feecheck`(V-1)改用實盤入場規則(CRO N-29),同埋 Tom 嘅 F-2/F-3/F-8;掃描、記錄簿、bot 都冇改。CRO 已經 PASS(同一份報告 §3),代碼方面可以轉用。✅
 > 4. **戶口(CRO 條件 C-6 / C-7):**
 >    - **2026-11-25 唯讀讀取(`reports/risk/2026-11-25-webull-readonly-snapshot.md`):** 微牛仲係孖展戶口、USD −12.06(同 11 月 13 日一樣);
 >      成個戶口淨值大約 HK$4,497(估算),AVGO 市值大約係淨值嘅 102%(有部分用孖展借錢)。用呢個金額系統會變成另一個、未測試過嘅系統 —— **CRO 唔批准**。
@@ -77,9 +77,10 @@
 5. **真實收費(關卡 V-1):** 喺微牛搵一張成交單據(佣金、平台費、SEC/TAF、匯兌),影相畀 AI。
    AI 會話你 `real_fee` 填咩數;你喺 `owner_settings.json` 填好;下面嘅 feecheck 過咗(淨 EV > 0)先將 `"V1_真實收費已核"` 改做 `true`。指令:
    ```cmd
-   python lab.py --mode feecheck --fee-min 每邊最低收費 --fee-bp 每邊bp
+   python lab.py --mode feecheck --fee-min 每邊最低收費 --fee-bp 每邊bp --tif open
    ```
-   (呢個指令 AI 會喺雲端跑:你部電腦冇 `data/` 資料夾。feecheck 用 HK$10,000 計;戶口細過 HK$10,000,收費佔比更高。)
+   (呢個指令 AI 會喺雲端跑:你部電腦冇 `data/` 資料夾。feecheck 用 HK$10,000 計;戶口細過 HK$10,000,收費佔比更高。
+   `--tif open` = 開市冇成交就取消(而家嘅寫法);`--tif day` 淨係喺你書面確認券商可以「全日限價單附加止蝕」之後先用(CRO 11-26 F-3)。)
    如果真實收費之下淨 EV ≤ 0(S4),**呢個戶口規模下,用咩上限都唔應該交易。**
 6. **戶口(CRO 11-25 裁決,見頂部方框第 4 點):**
    - **金額(C-7):** 短線戶口入 ≥ HK$12,500 已交收現金,`owner_settings.json` 嘅 `account_hkd` 設 **10,000**

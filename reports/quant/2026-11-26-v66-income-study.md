@@ -5,7 +5,8 @@
 - **v2 incorporates:**
   - Tom's review (`reports/quant/2026-11-26-v66-income-study-review.md`: VALIDATED WITH CONCERNS, F-1 to F-8);
   - the CRO's rulings R-1 to R-4 and N-29 (`reports/risk/2026-11-26-v66-6-verification.md`).
-- **Pending:** the CRO's ruling on order duration (§1.4), and the audit of the Owner-facing text (§9).
+- **CRO, V6.6.7:** PASS, with a ruling on order duration (§1.4).
+- **Pending:** the audit of the Owner-facing text (§9).
 
 **The Owner's question (2026-11-26):** "evaluate is it possible to run it long-term — although it cannot beat the market I will take this as providing some extra return for my living."
 
@@ -87,7 +88,13 @@
 
 - With a DAY order, the full-period skip count falls from 43 to 7 (`income_scenarios.csv`). The trade path also changes, so these are not the same 43 signals. Holding the cancel-at-open trades fixed, Tom measured 25 of the 43 skips filling intraday at the limit.
 - **Caveat on the DAY rows:** on an intraday fill, the lab's E2 trailing-stop update uses the whole day's high, including the part before the fill. That is slightly optimistic.
-- **The CRO is ruling on which order type is the live rule** (pending, §9).
+- **CRO ruling (F-3, 26 Nov):**
+  - **(b) DAY is approved, but only with the protective stop attached to the entry order** (OTO / bracket). It is approved on control grounds, not because it passes the fee gate. With an attached stop, the floor and the stop are live the moment the buy fills, awake or not.
+  - **If the broker cannot attach a stop to the entry order, (b) is not approved.** The Owner must then watch the open and cancel, which is option (a).
+  - **V-1 uses the order type the Owner will actually use, declared in writing before the contract note is read.** `--tif day` only with written confirmation that the broker attaches a stop to a DAY limit buy for US stocks in the C-6 account; otherwise `--tif open`, which at the US$0.35 estimate means S4.
+  - **The S4 test is not re-tuned after the fact:** ALL > 0 and OOS > 0.
+  - **Before (b) can be used, N-30 must land:** scanner ①, the bot plan and README must print the CRO's 26 Nov C-8 wording (DAY limit with an attached sell-stop at the system stop; expires unfilled at the close, no re-entry; an open at or below the stop means fill and immediate stop-out, recorded the same day and sent to the CRO as S2). Until then, the printed cancel-at-open text governs.
+  - **The CRO's caution:** the whole difference between failing and passing at US$0.35 comes from 46 trades that fill intraday at the limit after opening above it. They average +1.005% net, while the trades both order types share average −0.012%. There is no live evidence for those 46 fills.
 
 ### 1.5 Not modelled
 - **Lab-vs-live gaps (Tom F-7):**
@@ -224,7 +231,7 @@ If T-bill rates fall, the hurdle falls with them. The interest income falls too,
   - selftest 131 checks;
   - equivalence 0/85,120;
   - ledger check;
-  - CRO-verified through V6.6.6 (`reports/risk/2026-11-26-v66-6-verification.md`); V6.6.7 verification pending.
+  - CRO-verified through V6.6.7 (`reports/risk/2026-11-26-v66-6-verification.md` §1, §3).
 - **Small backtest drawdowns at this sizing:** about −3% to −4% with interest, worst month about −1%; −11% at US$1 fees with no interest.
   - These are backtest figures. **The binding limits are the −10% monthly breaker (C-10) and the 20% drawdown floor (C-7).**
 - The SPY 200-day filter keeps it out of the market in weak regimes.
@@ -290,14 +297,17 @@ If T-bill rates fall, the hurdle falls with them. The interest income falls too,
 - **(A)** above;
 - **(B) shadow-only:** scanner and signal ledger, no fills, until (A) is met.
 
-**CRO and CEO recommendation: (B)** until **V-1 passes on the live rule (N-29)** **and** there are ≥ 6 months of ledger. If V-1 confirms a minimum fee of about US$0.35 a side or more, **that is S4: no trading at any cap,** not "(A) later" (CRO R-4.4). The order-type ruling (§1.4) may change which fee level passes. The choice remains the Owner's.
+**CRO and CEO recommendation: (B)** until **V-1 passes on the live rule (N-29)** **and** there are ≥ 6 months of ledger. If V-1 confirms a minimum fee of about US$0.35 a side or more, **that is S4: no trading at any cap,** not "(A) later" (CRO R-4.4).
+- The one exception the CRO allows for the order type: a DAY limit with an attached stop, if the broker supports it in writing and after N-30 (§1.4).
+- Even then the CRO still recommends (B): at US$0.35, in-sample EV is −0.020% and the edge rests on the 46 intraday fills.
+- The choice remains the Owner's.
 
 ### 5.3 Not recommended
 Raising slots or the base to chase income. The §2.7 rows are unapproved research, and §2.3 shows that size alone does not reliably help.
 
 ## 6. What would change this verdict
 - **V-1:** a real Webull contract note. About zero commission with spread near 10 bp would put the 12.5k result near the `webull0` rows: +26 to +166 HK$ a year over T-bills, with a 28–46% chance of trailing over 5 years. A minimum of about US$0.35 or more with cancel-at-open is S4.
-- **The CRO's order-type ruling** (§1.4).
+- **The Owner's written answer on attached stops** (OTO / bracket for a DAY limit buy). It decides which `--tif` V-1 uses (§1.4).
 - **Forward ledger:** ≥ 30 closed E2 trades and ≥ 6 months, with net EV per trade clearly above the ≈ HK$4–5 hurdle.
 - **A CRO-approved rule change** (slots, cap or base). Each needs Tom's rerun and CRO review (C-7, R-2).
 
@@ -328,5 +338,5 @@ python lab.py --mode feecheck --fee-min 0.35 --fee-bp 10 --tif open   # or --tif
 
 ## 9. Reviews
 - **Tom (2026-11-26):** VALIDATED WITH CONCERNS. F-1 to F-8 are applied in V6.6.7 and v2 (F-1 bootstrap, F-2 reserve, F-3 order type, F-4 wording, F-5 counts, F-6 threshold, F-7 gaps, F-8 split factor).
-- **John, CRO (2026-11-26):** V6.6.6 PASS with N-29 (fixed in V6.6.7); R-1 to R-4. *V6.6.7 verification and the order-type ruling: pending.*
+- **John, CRO (2026-11-26):** V6.6.6 PASS with N-29; R-1 to R-4. **V6.6.7 PASS** (N-29 closed). F-3 ruling: DAY only with an attached stop, else cancel-at-open; N-30 before DAY can be used; recommendation still (B).
 - **Ai 管理層:** *pending.*
