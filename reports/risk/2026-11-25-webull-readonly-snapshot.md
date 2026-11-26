@@ -105,3 +105,31 @@ Owner names. For this Webull account today that is ≈ 4,497.
   0.01, so it cannot.
 
 *Research and decision support, not financial advice. No agent of this firm places orders.*
+
+---
+
+## Addendum: 2026-11-26 read-only re-pull (G-1 debit cured)
+
+**Source:** Webull MCP, read-only, 2026-11-26 about 15:45 UTC. Calls: `get_account_list`,
+`get_account_balance` and `get_account_positions` only. This follows the Owner's statement that
+he had cleared all debt.
+
+| Field | 25 Nov | 26 Nov |
+|---|---|---|
+| Account class | `INDIVIDUAL_MRGN` | **`INDIVIDUAL_MRGN`** (unchanged) |
+| USD cash_balance / settled | −12.06 / −12.06 | **+0.66 / +0.66** |
+| HKD cash | 0.01 | 0.00 |
+| total_market_value (HKD) | 4,590.91 | 4,743.96 |
+| total_cash_balance (HKD) | −94.25 | +5.16 |
+| AVGO | 2 @ last 293.69 | 2 @ last **303.50** (unrealized −US$99.31) |
+
+**Net liquidation** ≈ 4,743.96 + 5.16 = **HK$4,749** (CEO arithmetic, estimate).
+
+**Status:**
+- **G-1 debit: CURED.** USD cash is ≥ 0, before the 3 Dec deadline, so the CRO's sell
+  recommendation (triggered only by an uncured debit) does not apply.
+- **G-1 structural part / C-6: NOT MET.** The account is still a margin account; margin has not
+  been turned off and the account has not been converted to cash. It therefore remains
+  **ineligible for V6.6** (CRO 25 Nov §1.1).
+- **G-2 (holding AVGO through 9 Dec):** still needs LNW by the 3 Dec close, 老詹's stop, a decision
+  record and no adds.

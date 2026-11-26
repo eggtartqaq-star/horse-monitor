@@ -210,3 +210,10 @@ switch condition 1 in the previous update.
 - **V6.6.5 CRO verification:** PASS, no new code findings. Code side of the switch clear; risk 76;
   B′ OFF (`reports/risk/2026-11-25-v66-5-verification.md`). Switch condition 1 is therefore
   **DONE** for V6.6.5 / `847d34621a5f`.
+
+**Update 2026-11-26:** the Owner reported that he had cleared all debt. A read-only re-pull
+(snapshot addendum) confirms it: USD cash is +0.66, so the **G-1 debit is cured**. The account is
+still `INDIVIDUAL_MRGN`, so **C-6 is not met** and the account is not eligible for V6.6. G-2 is
+unchanged: LNW is still due by the 3 Dec close. The Owner also asked whether V6.6 can run long
+term as a source of "some extra return" (not market-beating). An income study was commissioned
+(`reports/quant/2026-11-26-v66-income-study.md`).
