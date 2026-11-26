@@ -588,9 +588,9 @@ def _main_body():
 
     # 9) Telegram bot(離線)
     import telegram_bot_v66 as B
-    check("bot:遮 token", "<TOKEN>" in B.redact("/bot123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe")
-          and "AAEhBP0av18tR" not in B.redact("/bot123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe"))
-    check("bot:遮 URL 編碼咗嘅 token(%3A)", "AAEhBP0av18tR" not in B.redact("/bot123456789%3AAAEhBP0av18tR_ABCDEFGHIJKLMNOPQ/getMe"))
+    check("bot:遮 token", "<TOKEN>" in B.redact("/bot123456789:FAKEfakeFAKEz_ABCDEFGHIJKLMNOPQ/getMe")
+          and "FAKEfakeFAKEz" not in B.redact("/bot123456789:FAKEfakeFAKEz_ABCDEFGHIJKLMNOPQ/getMe"))
+    check("bot:遮 URL 編碼咗嘅 token(%3A)", "FAKEfakeFAKEz" not in B.redact("/bot123456789%3AFAKEfakeFAKEz_ABCDEFGHIJKLMNOPQ/getMe"))
     old_env = os.environ.get("SWING_BOT_TOKEN")
     os.environ["SWING_BOT_TOKEN"] = B.PLACEHOLDER
     try:
@@ -930,9 +930,9 @@ def _main_body():
 
         # ---- 電腦檢查(pc_check.py):淨係測純函數,唔可以喺 selftest 入面再跑 selftest ----
         home = os.path.expanduser("~")
-        red = P.redact(f"{home}{os.sep}Desktop{os.sep}v6.6 bot 123456789:AAEhBP0av18tR_ABCDEFGHIJKLMNOPQ")
+        red = P.redact(f"{home}{os.sep}Desktop{os.sep}v6.6 bot 123456789:FAKEfakeFAKEz_ABCDEFGHIJKLMNOPQ")
         check("電腦檢查:報告將用戶路徑變 ~、遮住似 token 嘅字串",
-              home not in red and "~" in red and "AAEhBP0av18tR" not in red)
+              home not in red and "~" in red and "FAKEfakeFAKEz" not in red)
         inv = P.ledger_inventory(d11)
         check("電腦檢查:記錄簿清單(檔案、行數、未解釋 S2)",
               ("fills.csv", 2) in inv["files"] and inv["uncleared_s2"] == hold2)
@@ -999,8 +999,8 @@ def _main_body():
                 self.ok = ok
 
             def json(self):
-                return {"ok": self.ok, "description": "bad https://api.telegram.org/bot123456789:AAEhBP0av18tRxyzxyzxyzxyzxyz1/x"}
-        tok8 = "123456789:AAEhBP0av18tRxyzxyzxyzxyzxyz1"
+                return {"ok": self.ok, "description": "bad https://api.telegram.org/bot123456789:FAKEfakeFAKEzxyzxyzxyzxyzxyz1/x"}
+        tok8 = "123456789:FAKEfakeFAKEzxyzxyzxyzxyzxyz1"
         long8 = "\n".join(f"第 {i} 行 " + "字" * 50 for i in range(200))
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
@@ -1009,7 +1009,7 @@ def _main_body():
         check("V6.6.8:Telegram 長訊息切開(每段 ≤ 4,000 字、冇漏行),錯誤訊息遮住 token,唔上網",
               ok8 and len(sent) > 1 and all(len(d["text"]) <= N.MAX_LEN for _, d in sent)
               and "\n".join(d["text"] for _, d in sent) == long8 and bad8 is False
-              and tok8 not in buf.getvalue() and "AAEhBP0av18tR" not in buf.getvalue())
+              and tok8 not in buf.getvalue() and "FAKEfakeFAKEz" not in buf.getvalue())
         with contextlib.redirect_stdout(io.StringIO()):
             nochat = N.send("x", tok8, set(), post=lambda u, data, timeout: sent.append(1) or _R(True))
         check("V6.6.8:冇准許 chat ID → 唔傳", nochat is False)
