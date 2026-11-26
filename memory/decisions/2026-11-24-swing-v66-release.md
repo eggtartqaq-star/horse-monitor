@@ -217,3 +217,27 @@ still `INDIVIDUAL_MRGN`, so **C-6 is not met** and the account is not eligible f
 unchanged: LNW is still due by the 3 Dec close. The Owner also asked whether V6.6 can run long
 term as a source of "some extra return" (not market-beating). An income study was commissioned
 (`reports/quant/2026-11-26-v66-income-study.md`).
+
+**Update 2026-11-26 (later): V6.6.6 → V6.6.7, and the income study answered.**
+- **Owner question (verbatim):** "evaluate is it possible to run it long-term although it cannot beat the market I will take this as providing some extra return for my living".
+- **Code:**
+  - V6.6.6 (`cf41d84`, `943960c97a9b`) added the live entry rule and idle-cash interest to the lab. CRO: PASS, with N-29.
+  - V6.6.7 (`a496ba4`, `fae5fa5a7403`) made the fee gate use the live rule (N-29) and applied Tom's F-2, F-3 and F-8. CRO: **PASS**.
+  - Selftest 131, 9 mutants caught, baseline byte-identical. Scanner, ledger and bot are unchanged.
+- **Result** (`reports/quant/2026-11-26-v66-income-study.md` v2; HK$12,500 capital, 10,000 base, 30% settled cash, rest in T-bills; backtest 2022-11-30 → 2026-11-23):
+  - The account makes about HK$430–770 a year, mostly T-bill interest (about HK$440–470).
+  - The system's extra over all-in-T-bills is −HK$168 to +HK$166 a year (fee × order type); P(trailing T-bills over 5 years) is 28–75%; t between −0.91 and +0.84.
+  - At the CRO's US$0.35 estimate with cancel-at-open orders, net EV per trade is −0.066%, which is **S4**.
+  - HK$100k does not fix it.
+- **Verdict (CRO and CEO):** the system can run long-term as a small sleeve once C-6, V-1 and (A) are met. It is **not** a living-income source; the income is the T-bills.
+- **CRO rulings** (`reports/risk/2026-11-26-v66-6-verification.md`):
+  - **R-1:** T-bill / government money-market funds allowed in the C-7 (A) account as cash equivalents, with ≥ 30% of `account_hkd` held as settled cash. The T-bill ETF is never counted as settled cash.
+  - **R-2:** another base needs Tom's rerun and CRO review. Adding more capital at a 10,000 base is allowed.
+  - **R-3:** 12 months of living money outside any risk asset; sleeve ≤ 10% of LNW (≥ HK$125,000 at 12.5k, else (B)); no planned withdrawals.
+  - **R-4:** text corrections, applied.
+  - **F-3:** a DAY limit is allowed only with an attached stop (OTO / bracket); otherwise cancel at the open. `--tif` is declared before V-1, and S4 will not be re-tuned. N-30 (scanner and bot print the 26 Nov C-8 wording) is required before DAY can be used.
+- **Recommendation (CRO and CEO): (B) shadow-only** until V-1 passes on the live rule and there are ≥ 6 months of ledger. The choice is the Owner's.
+- **Dissent / caution carried:**
+  - **Tom F-4:** larger bases trade a different, pricier set of names (only 11–31 trades shared with the 10k run); not a case for a bigger base.
+  - **CRO:** the DAY pass at US$0.35 rests entirely on 46 intraday fills with no live evidence.
+- **Lesson:** L-012.
