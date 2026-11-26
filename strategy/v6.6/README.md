@@ -1,16 +1,17 @@
-# Swing V6.6.5 — 用法手冊
+# Swing V6.6.6 — 用法手冊
 
 > ## ⛔ 狀態(2026-11-25):**未可以轉用。** 繼續用 V6.4.2 做模擬交易(唔好落真錢),直到下面五樣全部完成。
 > 截至 2026-11-23 收市(`data/SPY.csv`),SPY 722.29 低過 200 日線 730.47(11-19 起),系統本身都停手,而家等唔會錯過訊號。
 > SPY 一返上 200 日線就會再出訊號 —— 到時一樣要等下面幾樣完成。
 > 1. **你部電腦(步驟見 `電腦待辦清單.md`):**
->    - 雙擊 `電腦檢查_v66.bat` —— 自我測試(117 項,關卡 V-2)、對照測試(關卡 V-3)、試掃描一次過做,寫一份 `pc_report_….txt`,傳畀 AI;
+>    - 雙擊 `電腦檢查_v66.bat` —— 自我測試(126 項,關卡 V-2)、對照測試(關卡 V-3)、試掃描一次過做,寫一份 `pc_report_….txt`,傳畀 AI;
 >    - 再雙擊 `掃描_v66.bat` 一次(測試掃描 .bat 本身),將 v6.6 資料夾入面嘅 `selftest_last.log` 一齊傳畀 AI(CRO V-2);如果出咗交易清單,唔好落單;
 >    - AI / CRO 睇完報告確認之後,先喺 `owner_settings.json` 將 V2、V3 改做 `true`。
 > 2. **微牛成交單據(關卡 V-1):** 確認真實收費,再跑 `lab.py --mode feecheck`。淨 EV ≤ 0(S4)→ 呢個戶口規模下唔好用呢個系統。
 > 3. **CRO 核對代碼:** V6.6.3 已經 PASS(`reports/risk/2026-11-25-v66-3-n12-verification.md`)。
 >    V6.6.4(你 11-25 決定嘅功能:有 S2 就停開新倉、舊倉記錄、限價上限)CRO 已經 PASS,其中 N-15 部分過 → CRO 修訂咗 C-8(開市價 ≤ 系統止蝕 → 唔買)(`reports/risk/2026-11-25-v66-4-verification.md`)。
->    V6.6.5(CRO 嘅 N-24 至 N-28 同審計 X-1 修正)CRO 都已經 PASS(`reports/risk/2026-11-25-v66-5-verification.md`),代碼方面可以轉用。✅
+>    V6.6.5(CRO 嘅 N-24 至 N-28 同審計 X-1 修正)CRO 都已經 PASS(`reports/risk/2026-11-25-v66-5-verification.md`)。
+>    V6.6.6(2026-11-26):淨係改咗研究用嘅 `lab.py`(模擬實盤限價入場、閒置現金收息,為咗收入研究),同埋多咗 9 項自我測試;掃描、記錄簿、bot 冇改。**CRO 核對中**(`reports/risk/2026-11-26-v66-6-verification.md`)。
 > 4. **戶口(CRO 條件 C-6 / C-7):**
 >    - **2026-11-25 唯讀讀取(`reports/risk/2026-11-25-webull-readonly-snapshot.md`):** 微牛仲係孖展戶口、USD −12.06(同 11 月 13 日一樣);
 >      成個戶口淨值大約 HK$4,497(估算),AVGO 市值大約係淨值嘅 102%(有部分用孖展借錢)。用呢個金額系統會變成另一個、未測試過嘅系統 —— **CRO 唔批准**。
@@ -60,7 +61,7 @@
    cd %USERPROFILE%\Desktop\v6.6
    python selftest.py
    ```
-   要見到「全部通過」(117 項)。AI / CRO 確認之後,喺 `owner_settings.json` 將 `"V2_代碼測試"` 改做 `true`。
+   要見到「全部通過」(126 項)。AI / CRO 確認之後,喺 `owner_settings.json` 將 `"V2_代碼測試"` 改做 `true`。
 4. **對照測試(關卡 V-3):**
    ```cmd
    copy "<你 V6.4.2 資料夾>\dual_engine_v6_4.py" .
@@ -97,13 +98,13 @@
 ### 睇頂部印章
 
 ```
-Swing V6.6.5  規則指紋 847d34621a5f  |  ...
+Swing V6.6.6  規則指紋 943960c97a9b  |  ...
 交易路徑: bt(回測驗證版)  影子路徑: scan(只記錄)
 名義上限: A(10% 一律)  B′ 關  |  每筆風險 1.0%  最多 2 倉
 設定: 戶口 HK$10,000  上限 A  B′ 關  關卡 G1/V1/V2/V3 = ✓✗✗✗
 ```
 
-- **規則指紋唔係 `847d34621a5f`** = 代碼唔係呢個版本 → 先問清楚先好交易。
+- **規則指紋唔係 `943960c97a9b`** = 代碼唔係呢個版本 → 先問清楚先好交易。
 - **「美股開緊市」警告** = 今日條 bar 未收市;呢次唔會寫入記錄簿,收市後再跑。
 - **「下載失敗」列表** = 嗰幾隻今日冇訊號,唔係冇事。
 - **「[X] 掃描出錯」** = 今日唔好交易,將錯誤訊息畀 AI 睇。
@@ -251,6 +252,7 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 | 檔案 | 做咩 |
 |---|---|
 | `lab.py` | 回測實驗室:`--mode ab / sens / caps / baseline / feecheck`,`--path bt/scan`,`--source yf` |
+| `income_study.py` | 收入研究(2026-11-26):系統 + 閒置現金收息 對比 全部放 T-bill;要 `data/BIL.csv`。報告:`reports/quant/2026-11-26-v66-income-study.md` |
 | `equivalence_check.py` | 掃描器規則 == 回測規則(每日每隻每條路徑) |
 | `ledger_check.py` | 記錄簿 resolve == 回測模擬器(逐筆) |
 | `golden_export.py` | 重新匯出 Pine 對照檔 |
@@ -278,7 +280,7 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 | 第一次 / 更新後 | `電腦檢查_v66.bat`、`pc_check.py`(寫 `pc_report_….txt` 畀 AI)、`電腦待辦清單.md` |
 | 你嘅設定(唔計指紋) | `owner_settings.json` |
 | 規則指紋涵蓋 | `config_v66.py`、`rules_v642.py`、`indicators.py`、`signals_v66.py`、`sizing_v66.py`、`guardrails_v66.py`、`daily_scan_v66.py`、`ledger_v66.py`、`telegram_bot_v66.py`、`lab.py`(resolve 用佢計結果) |
-| 研究 | `selftest.py`、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py` |
+| 研究 | `selftest.py`、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py`、`income_study.py` |
 
 `ledger/`(你嘅記錄)同 `data/`(歷史數據)唔會上載 GitHub。
 
