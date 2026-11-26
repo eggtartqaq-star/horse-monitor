@@ -17,7 +17,7 @@ import json
 import os
 import re
 
-VERSION = "V6.6.7"
+VERSION = "V6.6.8"
 RELEASE_DATE = "2026-11-26"
 HERE = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_FILE = os.path.join(HERE, "owner_settings.json")
@@ -93,7 +93,7 @@ SWITCH_DATE = _S.get("switch_date")
 # CRO B-11(2026-11-25):加入 lab.py —— ledger resolve 用佢嘅 simulate 計結果
 CORE_FILES = ("rules_v642.py", "indicators.py", "signals_v66.py", "sizing_v66.py",
               "guardrails_v66.py", "config_v66.py", "daily_scan_v66.py", "ledger_v66.py",
-              "telegram_bot_v66.py", "lab.py")
+              "telegram_bot_v66.py", "lab.py", "notify_v66.py")   # V6.6.8:Telegram 訊息印落單規則,一齊入指紋
 
 
 def fingerprint(folder=None) -> str:

@@ -947,6 +947,121 @@ def _main_body():
         D.load, D.partial_bar_warning, D.G.bar_still_open, D.G.get_next_earnings, C.SWITCH_DATE = orig19
         shutil.rmtree(tmp11, ignore_errors=True)
 
+    # ---- V6.6.8:每日 Telegram 訊息(模擬盤)、熊市日持倉、TradingView 限價上限 ----
+    import notify_v66 as N
+    import math
+    here = os.path.dirname(os.path.abspath(__file__))
+    tmp8 = tempfile.mkdtemp()
+    orig8 = (D.load, D.partial_bar_warning, D.G.get_next_earnings)
+    try:
+        D.G.get_next_earnings = lambda tk: None
+        D.partial_bar_warning = lambda: False
+        spy_b = data["SPY"].copy()
+        spy_b.iloc[-1, spy_b.columns.get_loc("Close")] = float(spy_b["Close"].iloc[-1]) * 0.5     # 最後一日跌穿 MA200
+        D.load = lambda t, s_, dd, a_: ({**data, "SPY": spy_b}, [])
+        with contextlib.redirect_stdout(io.StringIO()):
+            ob = D.scan("syn", None, None, tmp8, dry_run=True, quiet=True)
+        check("V6.6.8:熊市日 scan() 都交返數據(持倉止蝕位要用)",
+              ob is not None and ob.get("bull") is False and "SPY" in (ob.get("data") or {}) and (ob.get("gap") or 0) < 0)
+        tkp = R.TICKERS[0]
+        L._append_rows(tmp8, "fills.csv", L.FILL_COLS, [{"fill_id": "p1", "ticker": tkp, "engine": "E2",
+                                                       "open_date": str(data[tkp].index[-30].date()),
+                                                       "open_px": float(data[tkp]["Close"].iloc[-30]),
+                                                       "init_stop": float(data[tkp]["Close"].iloc[-30]) * 0.9,
+                                                       "close_date": ""}])
+        mb = N.compose_morning(ob, tmp8)
+        check("V6.6.8:熊市日訊息有「唔開新倉」同 ④ 持倉今日止蝕位;冇交易清單",
+              "熊市" in mb and "唔開新倉" in mb and "④" in mb and tkp in mb and "今日止蝕" in mb and "①" not in mb)
+        check("V6.6.8:訊息頭有「模擬盤」、版本同規則指紋", mb.startswith("📋 模擬盤") and C.VERSION in mb
+              and C.fingerprint() in mb)
+
+        rec = {"ticker": "ZZZ", "engine": "E2", "tier": "", "rank": 1, "score": 0.8, "close": 50.0, "stop": 46.0,
+               "target": "", "r": "", "risk_pct": 8.0, "days_er": 30, "spec_flag": "✅", "size_live": 2,
+               "notional_live": 100.0, "limit_max": 50.5}
+        base8 = {"bull": True, "bar_date": data["SPY"].index[-1], "gap": 3.0, "failed": [], "data": data,
+                 "live": [rec], "held_signals": [], "s2_hold": []}
+        empty8 = tempfile.mkdtemp(dir=tmp8)
+        mo = N.compose_morning(base8, empty8)
+        check("V6.6.8:牛市訊息 —— 排名、股數、限價上限、止蝕,同掃描器同一段落單規則(N-15、C-8 修訂)",
+              "#1" in mo and "ZZZ" in mo and "股數 2" in mo and "限價上限 $50.50" in mo and "止蝕 $46.00" in mo
+              and all(t in mo for t in D.ORDER_RULES) and "TradingView" in mo and "✅" not in mo.split("ZZZ")[1][:120])
+        mh = N.compose_morning({**base8, "s2_hold": ["2026-03-04_OLD1(OLD1)"]}, empty8)
+        check("V6.6.8:有未解釋 S2 → 訊息講停開新倉,唔顯示股數同限價上限(N-11)",
+              "停開新倉" in mh and "限價上限 $" not in mh and D.ORDER_RULES[0] not in mh)
+        m0 = N.compose_morning({**base8, "live": []}, empty8)
+        check("V6.6.8:冇訊號 → 「空手係一種倉位」,唔印落單規則", "空手" in m0 and D.ORDER_RULES[0] not in m0)
+        check("V6.6.8:掃描出錯(None)→ 訊息叫你今日唔好交易", "唔好交易" in N.compose_morning(None, empty8))
+
+        sent = []
+
+        class _R:
+            def __init__(self, ok):
+                self.ok = ok
+
+            def json(self):
+                return {"ok": self.ok, "description": "bad https://api.telegram.org/bot123456789:AAEhBP0av18tRxyzxyzxyzxyzxyz1/x"}
+        tok8 = "123456789:AAEhBP0av18tRxyzxyzxyzxyzxyz1"
+        long8 = "\n".join(f"第 {i} 行 " + "字" * 50 for i in range(200))
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            ok8 = N.send(long8, tok8, {"111"}, post=lambda u, data, timeout: sent.append((u, data)) or _R(True))
+            bad8 = N.send("x", tok8, {"111"}, post=lambda u, data, timeout: _R(False))
+        check("V6.6.8:Telegram 長訊息切開(每段 ≤ 4,000 字、冇漏行),錯誤訊息遮住 token,唔上網",
+              ok8 and len(sent) > 1 and all(len(d["text"]) <= N.MAX_LEN for _, d in sent)
+              and "\n".join(d["text"] for _, d in sent) == long8 and bad8 is False
+              and tok8 not in buf.getvalue() and "AAEhBP0av18tR" not in buf.getvalue())
+        with contextlib.redirect_stdout(io.StringIO()):
+            nochat = N.send("x", tok8, set(), post=lambda u, data, timeout: sent.append(1) or _R(True))
+        check("V6.6.8:冇准許 chat ID → 唔傳", nochat is False)
+        check("V6.6.8:警告訊息(自我測試失敗 / 掃描出錯)都叫你今日唔好交易",
+              all("唔好交易" in v for v in N.ALERTS.values()))
+
+        # TradingView 限價上限(Pine 用公式計,唔係逐仙試):同 sizing_v66.max_limit 比
+        def pine_lim(close, stop, n, e1, target):
+            if n < 1 or close <= stop:
+                return None
+            hi = min(10000 / 7.8 * 0.10 / n, stop + 10000 * 0.01 / 7.8 / n, close * 1.01)
+            if e1 and target is not None:
+                hi = min(hi, (target + 2 * stop) / 3)
+            c = math.floor(hi * 100 + 1e-7) / 100
+            return c if c >= math.floor(close * 100 + 1e-7) / 100 else None
+        rng8 = np.random.default_rng(8)
+        n8 = bad8n = 0
+        for _ in range(600):
+            cl = round(float(rng8.uniform(4, 130)), 2)
+            st = round(cl * (1 - float(rng8.uniform(0.01, 0.15))), 2)
+            e1 = rng8.random() < 0.5
+            tg = round(cl * (1 + float(rng8.uniform(0.05, 0.4))), 2) if e1 else None
+            sh = Z.size(cl, st, "E1" if e1 else "E2")["shares"]
+            if sh < 1:
+                continue
+            n8 += 1
+            bad8n += pine_lim(cl, st, sh, e1, tg) != Z.max_limit(cl, st, sh, "E1" if e1 else "E2", target=tg)
+        check(f"V6.6.8:TradingView 限價上限公式 == sizing_v66.max_limit({n8} 個隨機組合,差異 {bad8n})",
+              n8 > 200 and bad8n == 0)
+        pine = open(os.path.join(here, "pine", "swing_v66.pine"), encoding="utf-8").read()
+        check("V6.6.8:Pine 靜態檢查 —— 版本、括號平衡、限價公式、收市提示、開市檢查(用 TradingView open)",
+              "//@version=6" in pine and pine.count("(") == pine.count(")") and pine.count("[") == pine.count("]")
+              and "f_limit(" in pine and "(_target + 2 * _stop) / 3" in pine and "_close * 1.01" in pine
+              and "alert.freq_once_per_bar_close" in pine and "alert.freq_once_per_bar)" in pine
+              and "open > _lim" in pine and "open <= _stp" in pine and C.VERSION in pine)
+        for fn in ("notify_v66.bat", "schedule_v66.bat"):
+            b = open(os.path.join(here, fn), "rb").read().decode("utf-8")
+            check(f"{fn}:冇半形括號、失敗 goto、CRLF、冇 BOM",
+                  "(" not in b and ")" not in b and "if errorlevel 1 goto FAILED" in b
+                  and b.count("\r\n") == b.count("\n") and not b.startswith("﻿"))
+        nb = open(os.path.join(here, "notify_v66.bat"), "rb").read().decode("utf-8")
+        check("notify_v66.bat:先自我測試,唔過 → 傳警告、唔掃描;唔會停低等人撳掣",
+              nb.index("selftest.py") < nb.index("python notify_v66.py >") and "--alert selftest" in nb
+              and "pause" not in nb)
+        src8 = open(os.path.join(here, "notify_v66.py"), encoding="utf-8").read()
+        check("notify_v66.py:冇券商代碼、token 唔印出(用 load_token / redact)",
+              not any(w in src8.lower() for w in ("place_order", "webull", "futu", "openapi"))
+              and "TB.load_token()" in src8 and "TB.redact(" in src8 and "print(token" not in src8)
+    finally:
+        D.load, D.partial_bar_warning, D.G.get_next_earnings = orig8
+        shutil.rmtree(tmp8, ignore_errors=True)
+
 
 
 if __name__ == "__main__":

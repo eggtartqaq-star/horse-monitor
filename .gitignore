@@ -5,4 +5,5 @@ strategy/v6.6/ledger/
 *.token
 telegram_token.txt
 selftest_last.log
+notify_last.log
 strategy/v6.6/pc_report_*.txt
