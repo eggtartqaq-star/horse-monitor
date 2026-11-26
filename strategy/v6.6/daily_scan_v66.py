@@ -156,12 +156,15 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
     gap = (s["Close"] - s["MA200"]) / s["MA200"] * 100
     print(f"\n市場環境({bar_date.date()}): {'牛市' if is_bull else '熊市'}(SPY 對 MA200 {gap:+.1f}%)")
     if not is_bull:
-        print("熊市:系統停手,今日唔搵做多訊號。")
+        print("熊市:系統停手,今日唔搵做多訊號(唔開新倉);持倉照管(見 ④)。")
+        if not quiet:
+            _print_positions(ledger_dir, data)        # V6.6.8:熊市日都要印持倉止蝕位(之前漏咗)
         if can_write:
             L.append_run(_run_row(bar_date, False, source, failed, asof_mode), ledger_dir)   # CRO C-4r:熊市日都要有心跳
         elif why_not:
             print(why_not)
-        return {"bull": False, "rows": [], "bar_date": bar_date}
+        return {"bull": False, "rows": [], "bar_date": bar_date, "gap": gap, "failed": failed, "data": data,
+                "s2_hold": L.uncleared_s2(ledger_dir)}
 
     held = set(L.open_fills(ledger_dir)["ticker"])
     mode = Z.live_mode()          # Tom 2026-11-24:交易清單用 config 嘅模式(而家 = A);以前寫死 "A",開 B′ 都唔會生效
@@ -244,7 +247,8 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
         print("\n" + why_not)
     return {"bull": True, "rows": rows, "live": [r for _, r in live], "shadow_only": shadow_only,
             "s2_hold": L.uncleared_s2(ledger_dir),
-            "blocked": blocked, "held_signals": held_sigs, "bar_date": bar_date}
+            "blocked": blocked, "held_signals": held_sigs, "bar_date": bar_date,
+            "gap": gap, "failed": failed, "data": data}
 
 
 def _size_txt(rec, hide):
@@ -265,6 +269,23 @@ def _line(rec, rank_txt, tag="", hide=False):
             f"距財報 {rec['days_er']}  {rec['spec_flag']} {tag}")
 
 
+# 落單規則(CRO C-8 修訂、N-15、N-26)—— 掃描器同 Telegram 訊息(notify_v66.py)共用同一段字,唔准各寫各
+ORDER_RULES = (
+    "落單:聽日開市,用**限價單**,限價唔可以高過「限價上限」;開市價高過就唔買,唔好加價、唔好加股(CRO C-8、N-15)。",
+    "開市價 ≤ 系統止蝕 → 唔買。萬一成交咗,即刻沽,用 fill open + fill close 記錄,S2 交 CRO(CRO C-8 修訂,N-26)。",
+    "成交後即刻設系統止蝕單(唔准自己收緊,永不下移)。",
+    "落單後記錄:python ledger_v66.py fill open --ticker X --price P --shares N --stop S --engine E2",
+)
+
+
+def _print_positions(ledger_dir, data):
+    of = L.open_fills(ledger_dir)
+    if len(of):
+        print("\n④ 你嘅持倉 —— 今日止蝕位")
+        for x in of.itertuples():
+            print("   " + trailing_line(x, data))
+
+
 def _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs=()):
     print("\n" + "=" * 64)
     print("① 交易清單(回測驗證版)—— 按排名揀,最多 2 倉(扣返現有持倉)")
@@ -280,21 +301,15 @@ def _print(live, shadow_only, blocked, held, ledger_dir, data, held_sigs=()):
     for rec in held_sigs:
         print(_line(rec, " — ", "持倉中(唔計排名,唔好加注)", hide=True))
     if live and not hold:
-        print("  落單:聽日開市,用**限價單**,限價唔可以高過「限價上限」;開市價高過就唔買,唔好加價、唔好加股(CRO C-8、N-15)。")
-        print("  開市價 ≤ 系統止蝕 → 唔買。萬一成交咗,即刻沽,用 fill open + fill close 記錄,S2 交 CRO(CRO C-8 修訂,N-26)。")
-        print("  成交後即刻設系統止蝕單(唔准自己收緊,永不下移)。")
-        print("  落單後記錄:python ledger_v66.py fill open --ticker X --price P --shares N --stop S --engine E2")
+        for t in ORDER_RULES:
+            print("  " + t)
     print("\n② 舊掃描器版先有嘅訊號 —— 只記錄,唔交易")
     print("   " + (", ".join(f"{r['ticker']}({r['engine']})" for r in shadow_only) if shadow_only else "冇"))
     if blocked:
         print("\n③ 交易路徑被擋(學習用)")
         for tk, eng, why in blocked:
             print(f"   {tk:5} {eng}  {why}")
-    of = L.open_fills(ledger_dir)
-    if len(of):
-        print("\n④ 你嘅持倉 —— 今日止蝕位")
-        for x in of.itertuples():
-            print("   " + trailing_line(x, data))
+    _print_positions(ledger_dir, data)
 
 
 def trailing_line(x, data):

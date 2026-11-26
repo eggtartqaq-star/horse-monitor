@@ -1,5 +1,5 @@
 // ============================================================
-// Swing V6.6.0 —— 雙引擎指標(引擎一 + 引擎二,兩條路徑)
+// Swing V6.6.8 —— 雙引擎指標(引擎一 + 引擎二,兩條路徑)+ 收市提示 + 開市檢查
 // ============================================================
 // 同 V6.4.2 Pine 嘅分別:
 //   1. 加入引擎二(趨勢):ADX≥25、DI+>DI−、評分≥0.65、3×ATR 止蝕 ≤12%
@@ -11,10 +11,15 @@
 //   4. 選填:引擎二入場日 → 畫移動止損(每日 最高價 − 3×ATR,只升不降)
 // 財報:Pine 判斷唔到,一定要手動查 >5 日
 // ★ 數字同 Python(daily_scan_v66)應該一致;用 golden_v66.csv 對照(見 README)
+// V6.6.8(2026-11-26):
+//   - 限價上限(CRO N-15,同 sizing_v66.max_limit 同一條規則)
+//   - 收市提示:交易路徑訊號(用 TradingView 數據)→ 同 Telegram 清單核對
+//   - 開市檢查:新一日第一個成交價 = 開市價(TradingView 數據,唔係 Yahoo)→ 取消 / 唔買 / 落止蝕
+//   設定:每個圖表開一個警報,條件揀「Any alert() function call」
 // ============================================================
 
 //@version=6
-indicator("Swing V6.6.0 雙引擎", overlay=true, max_labels_count=500, max_lines_count=200)
+indicator("Swing V6.6.8 雙引擎", overlay=true, max_labels_count=500, max_lines_count=200)
 
 MIN_R            = input.float(2.0, "最低R值")
 ACCOUNT_HKD      = input.float(10000, "短線資金(HKD)")
@@ -107,6 +112,24 @@ e2Trade = e2Base and breakout          // 交易路徑(回測驗證)
 e2Shadow = e2Base and not breakout     // 舊掃描器路徑(只記錄)
 
 // ============================================================
+// 限價上限(CRO N-15):仲買得到同樣股數嘅最高一仙,唔高過收市 +1%,引擎一保住 R ≥ 2
+// 股數 = min(floor(風險 ÷ (價 − 止蝕)), floor(上限 ÷ 價)) ≥ N  ⇔  價 ≤ min(止蝕 + 風險 ÷ N, 上限 ÷ N)
+// ============================================================
+f_limit(float _close, float _stop, int _n, bool _isE1, float _target) =>
+    float _out = na
+    if _n >= 1 and _close > _stop
+        float _hi = math.min(math.min(acctUSD * MAX_POSITION_PCT / 100 / _n, _stop + riskUSD / _n), _close * 1.01)
+        if _isE1 and not na(_target)
+            _hi := math.min(_hi, (_target + 2 * _stop) / 3)
+        float _c = math.floor(_hi * 100 + 1e-7) / 100
+        _out := _c >= math.floor(_close * 100 + 1e-7) / 100 ? _c : na
+    _out
+
+limE1 = f_limit(close, stopL, int(sharesE1), true, target)
+limE2 = f_limit(close, stopTR, int(sharesE2), false, na)
+e1Trade = basic                        // 引擎一交易路徑(評分 ≥0.55、R ≥2、所有級別)
+
+// ============================================================
 // 背景 + 線
 // ============================================================
 bgcolor(not bull ? color.new(color.red, 92) : e2Trade ? color.new(color.fuchsia, 85) : premium ? color.new(color.yellow, 78) : strong ? color.new(color.green, 84) : basic ? color.new(color.blue, 88) : na)
@@ -151,16 +174,18 @@ plot(breakout ? 1 : 0,    "G_E2突破(1/0)", display=display.data_window)
 plot(riskTR,              "G_E2止損%",     display=display.data_window)
 plot(e2Trade ? 1 : 0,     "G_E2交易路徑",  display=display.data_window)
 plot(adxVal,              "G_ADX",         display=display.data_window)
+plot(limE1,               "G_E1限價上限",  display=display.data_window)
+plot(limE2,               "G_E2限價上限",  display=display.data_window)
 
 // ============================================================
 // 面板
 // ============================================================
-var table t = table.new(position.top_right, 2, 16, bgcolor=color.new(color.black, 15), border_width=1)
+var table t = table.new(position.top_right, 2, 18, bgcolor=color.new(color.black, 15), border_width=1)
 if barstate.islast
     e1Txt = tier==3 ? "⭐頂級" : tier==2 ? "💪強" : tier==1 ? "🔵普通" : "無"
     e2Txt = e2Trade ? "🚀交易路徑" : e2Shadow ? "冇突破·只記錄" : "無"
     pathTxt = not bull ? "熊市停手" : (tier > 0 or e2Trade) ? "交易路徑有訊號" : e2Shadow ? "只有舊掃描器訊號" : "無訊號"
-    t.cell(0, 0, "Swing V6.6.0", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
+    t.cell(0, 0, "Swing V6.6.8", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
     t.cell(1, 0, "倉位一律1%", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
     t.cell(0, 1, "結論", text_color=color.white, text_size=size.small)
     t.cell(1, 1, pathTxt, text_color=(tier > 0 or e2Trade) ? color.lime : color.gray, text_size=size.normal)
@@ -192,8 +217,32 @@ if barstate.islast
     t.cell(1, 14, isSpec ? "⚠️係" : "否", text_color=isSpec ? color.orange : color.gray, text_size=size.small)
     t.cell(0, 15, "財報", text_color=color.white, text_size=size.small)
     t.cell(1, 15, "手動查 >5 日", text_color=color.orange, text_size=size.small)
+    t.cell(0, 16, "引擎一限價上限", text_color=color.white, text_size=size.small)
+    t.cell(1, 16, na(limE1) ? "—" : "$" + str.tostring(limE1, "#.##"), text_color=color.aqua, text_size=size.small)
+    t.cell(0, 17, "引擎二限價上限", text_color=color.white, text_size=size.small)
+    t.cell(1, 17, na(limE2) ? "—" : "$" + str.tostring(limE2, "#.##"), text_color=color.aqua, text_size=size.small)
 
-// 警報
+// ============================================================
+// 提示(V6.6.8):每個圖表開一個警報,條件揀「Any alert() function call」
+// ============================================================
+f_lim_txt(float _l) =>
+    na(_l) ? "—(冇限價上限 → 唔買)" : "$" + str.tostring(_l, "#.##")
+
+// 1. 收市提示:交易路徑訊號,用 TradingView 數據計(同 Telegram ① 核對)
+if e2Trade or e1Trade
+    string _m = e2Trade ? ("🚀引擎二 " + syminfo.ticker + ":" + str.tostring(sharesE2) + " 股,限價上限 " + f_lim_txt(limE2) + ",止蝕 $" + str.tostring(stopTR, "#.##")) : ("引擎一 " + syminfo.ticker + ":" + str.tostring(sharesE1) + " 股,限價上限 " + f_lim_txt(limE1) + ",止蝕 $" + str.tostring(stopL, "#.##") + ",止盈 $" + str.tostring(target, "#.##"))
+    alert("收市訊號(TradingView 數據)" + _m + "。淨係落 Telegram ① 清單都有嘅;唔一致就唔落,問 AI。", alert.freq_once_per_bar_close)
+
+// 2. 開市檢查:新一日第一個成交價(開市價)對比尋日嘅限價上限同止蝕
+wasE2 = e2Trade[1]
+wasE1 = e1Trade[1]
+if barstate.isrealtime and (wasE2 or wasE1)
+    float _lim = wasE2 ? limE2[1] : limE1[1]
+    float _stp = wasE2 ? stopTR[1] : stopL[1]
+    string _d = na(_lim) ? "冇限價上限 → 唔買" : open > _lim ? "開市價高過限價上限 → 取消張單" : open <= _stp ? "開市價 ≤ 系統止蝕 → 唔買;如果已成交即刻沽,記 S2" : "應該已成交 → 即刻落止蝕單 $" + str.tostring(_stp, "#.##") + ",記 fill open"
+    alert("開市檢查 " + syminfo.ticker + "(如果你有落單):開市 $" + str.tostring(open, "#.##") + "(TradingView)| 限價上限 " + f_lim_txt(_lim) + " | 止蝕 $" + str.tostring(_stp, "#.##") + " → " + _d, alert.freq_once_per_bar)
+
+// 舊式警報(保留;用上面 alert() 就唔使開呢啲)
 alertcondition(e2Trade and not e2Trade[1], "🚀引擎二(交易路徑)", "引擎二突破訊號(交易路徑)")
 alertcondition(premium and not premium[1], "⭐引擎一頂級", "引擎一頂級訊號")
 alertcondition(strong and not strong[1], "💪引擎一強", "引擎一強訊號")
