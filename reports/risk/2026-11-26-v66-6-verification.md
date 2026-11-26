@@ -173,3 +173,77 @@ The CEO's direction is right. These corrections are needed before the study goes
 *Research and decision support, not financial advice. Markets cannot be reliably predicted. No V6.6 code and no agent of this firm can place an order.*
 
 **For 腦大裝草:** `2026-11-26 · CRO V6.6.6 at cf41d84 / 943960c97a9b: PASS (lab-only diff; selftest 126 normal/-O; equivalence 85,120/0; ledger_check PASS; baseline identical; stamp match; study headline reproduced exactly). New N-29 MEDIUM: feecheck still uses the old entry rule; on the live limit rule at US$0.35+10bp ALL EV −0.066% (IS −0.637, OOS +0.416) → S4 would trigger; fix before V-1 is judged. Code side CLEAR subject to N-29. Income rulings: R-1 T-bill ETF/gov MMF ≤1y allowed in the C-7(A) cash account as cash equivalent, not a slot; settled reserve ≥30% of base (20% insufficient); R-2 §2.3 is not Tom's rerun; more capital at base 10,000 needs no review; R-3 12-month living money 0% in sleeve, sleeve ≤10% LNW (needs LNW ≥ HK$125k at 12.5k), E-1/E-2 bind V6.6 once live; R-4 §0/§4/§5 corrections incl. full C-7(A)/C-6 text and S4. CRO+CEO recommend (B) shadow-only. G-1 debit cured (USD +0.66), C-6 open, LNW due 3 Dec.`
+
+---
+
+## §3 V6.6.7 addendum (2026-11-26): N-29 fix, Tom F-2/F-3/F-8, and the order-duration ruling
+
+**Scope:** `git diff cf41d84 a496ba4 -- strategy/v6.6`. V6.6.7 is `a496ba4`, fingerprint **`fae5fa5a7403`**; HEAD is `887d9c6`.
+- **Code:** only `lab.py`, `selftest.py`, `config_v66.py` (version) and the stamp. Scanner, ledger, bot, sizing, signals, rules and guardrails are unchanged.
+- **Also in the range:** README and checklist edits, plus `income_study.py` and its results files (not in `CORE_FILES`).
+
+**Method:** scratch copy (`git archive a496ba4`); no broker call, no pip; only this file edited.
+
+### 3.1 Verdict: **PASS** (one docs item, D-3)
+
+| Check | Result [D] |
+|---|---|
+| Fingerprint / stamp | `fae5fa5a7403`; `pc_check.stamp()["match"]` True; `selftest.py` hash `d814e7469b69`. |
+| selftest | **131/131**, normal and `-O`. |
+| equivalence / ledger_check | 85,120 / 0; PASS. |
+| `lab.py --mode baseline` | `baseline.json` and every rules result are byte-identical. Only the `income_*.csv` files differ, and those were regenerated at `887d9c6` by design. |
+| **N-29** | **CLOSED.** `run_feecheck` uses `entry_rule="limit"` and `--tif`. At US$0.35 + 10 bp:<br>- **open:** ALL −0.066 / IS −0.637 / OOS +0.416% → **S4 ❌**;<br>- **day:** ALL +0.367 / IS −0.020 / OOS +0.501% → ✅.<br>Both reproduce the coordinator's figures exactly. |
+| **F-2** reserve | Correct. The interest base is total − max(reserve, cost). At my 30% (HK$3,000), the reserve always covers two positions at cost (≤ HK$2,000). |
+| **F-3** `entry_tif` | Correct as modelled.<br>- **Same-day stop:** checked on the fill day (`manage` runs on entry).<br>- **Floor under DAY:** buy at the open and exit at the open (1 case in 4 years).<br>- **Tom's "fill-day high" optimism is immaterial.** My probe ignores the fill-day high for intraday fills and requires the price to trade 1¢ **through** the limit. Result at US$0.35: ALL **+0.367** / IS **−0.020** / OOS **+0.499%**, unchanged to the third decimal. |
+| **F-8** split factor | Correct: shares = signal-close shares × signal-date factor. |
+
+**D-3 (LOW–MED): CLOSED by `9f40e35`, which landed during this check. README and checklist now cite `fae5fa5a7403` and 131. Originally:** the docs were one version behind. README L7, L64, L101 and L107, and checklist L90–91, still say **V6.6.6 / 126 checks / `943960c97a9b`**. The code is **V6.6.7 / 131 / `fae5fa5a7403`**. The README itself tells the Owner that a different fingerprint means "代碼唔係呢個版本 → 先問清楚" ("the code is not this version; ask first").
+
+### 3.2 Ruling F-3: order duration
+
+**What the DAY numbers rest on** [D, US$0.35, full period]:
+- DAY adds **46 trades** that fill intraday at the limit after the open was above it. Those trades average **+1.005% net**.
+- The trades common to both rules average **−0.012%**.
+- **The whole difference between "S4 ❌" and "S4 ✅" comes from those 46 order-mechanics fills.** No forward evidence exists for them.
+
+**Ruling: (b) DAY, approved for live use, but only with the protective stop attached to the entry order (OTO / bracket).**
+- **The reason is control, not the fee result.** An attached stop makes both the C-8 floor and the C-9 stop **structural**: they go live the instant the buy fills, whether or not the Owner is awake.
+  - (a) depends on the Owner watching every open at 21:30/22:30 HKT and cancelling correctly. That is a behavioural control the lab assumes is executed perfectly.
+  - (a) does not enforce the floor by itself either. Any limit buy, including a limit-on-open, fills when the open is at or below the stop.
+- **If the broker cannot attach a stop to the entry order, (b) is NOT approved.** The Owner must then use (a), watching the open and cancelling.
+- **I do not accept choosing an order type because it passes the gate.** (b) is approved on the control argument. Its gate result is reported with the 46-trade caveat above.
+
+**How the floor is enforced under (b):**
+- **Structurally:** by the attached stop.
+- **Procedurally:** a fill at or below the system stop is sold by that stop at once. The Owner records `fill open` and `fill close` the same day and sends me the S2.
+- **My clearance:** I clear it on the broker record showing that the attached stop executed. Expect about one in four years.
+
+**Which `--tif` the V-1 feecheck must use: the one the Owner will use live, declared before the contract note is read.**
+- **`--tif day`** only if the Owner confirms in writing that his broker attaches a stop to a DAY limit buy (OTO/bracket) for US stocks in the C-6 account.
+- **Otherwise `--tif open`.** At the N-9 estimate that is S4: no trading at any cap.
+- **The S4 criterion is unchanged:** ALL > 0 and OOS > 0. It is not to be re-tuned after the fact.
+
+**C-8, exact wording for the Owner under (b)** (it replaces the 25 Nov amended text):
+
+> **C-8 (26 Nov: DAY order with attached stop).**
+> - **Placing the order:** buy only with a **limit order, time-in-force DAY**, at or below the **限價上限 (maximum limit price)** printed by scanner ① or the bot, for the printed number of shares.
+> - **Attached stop:** attach to the **same order** a **sell-stop at the system stop** (OTO / bracket), so it goes live the moment the buy fills. **Never place the buy without the attached stop.**
+> - **No fill:** if the order is not filled by the close, it expires. Do not re-enter it the next day, do not raise the limit, do not add shares.
+> - **Open at or below the system stop:** the buy may fill and the attached stop will sell at once. Record both the same day (`fill open`, `fill close`) and send the S2 to the CRO.
+> - **E2 stop:** raise the broker stop each day to section ④'s stop (C-9). Never lower it.
+> - **No attached stop at your broker:** (b) does not apply. Watch the open, and cancel if the open is above the limit or at or below the system stop. V-1 is then judged with `--tif open`.
+
+**Code before (b) can be used (N-30, diff-only re-verification):**
+- **What is wrong today:** scanner ① (`daily_scan_v66.py`), the bot plan and README still print the **(a)** wording: "開市價高過就唔買" ("open above the limit → don't buy") and "開市價 ≤ 系統止蝕 → 唔買" ("open ≤ system stop → don't buy").
+- **What to print:** the C-8 text above.
+- **Until it lands:** the printed (a) text governs, and V-1 is judged with `--tif open`.
+- These files are in `CORE_FILES`, so the change moves the fingerprint.
+
+**Recommendation unchanged: (B) shadow-only.** Even with DAY:
+- at US$0.35, IS EV is −0.020% and the edge rests on 46 intraday fills;
+- P(behind T-bills over 5 years) is 56% at real35;
+- at 100k, DAY is negative out of sample (−1,318 / −1,521 HK$/yr).
+
+V-1 (the real fee) and the declared order type decide. Size does not.
+
+**For 腦大裝草:** `2026-11-26 · CRO V6.6.7 at a496ba4 / fae5fa5a7403: PASS (lab-only; selftest 131 normal/-O; equivalence 0/85,120; ledger_check PASS; baseline identical; stamp match). N-29 CLOSED (feecheck on live rule; open S4 ❌ / day ✅ at US$0.35). Tom F-3 day-fill optimism immaterial (probe: +0.367/−0.020/+0.499%). D-3 docs lag closed by 9f40e35. RULING F-3: (b) DAY approved ONLY with stop attached to the entry order (OTO/bracket) — control argument, not gate result; DAY's edge = 46 intraday fills (+1.005% vs −0.012% common). No attachable stop → (a), V-1 on --tif open. V-1 tif declared before the contract note; S4 criterion unchanged. C-8 reworded (above); N-30 scanner/bot/README text change required before (b) is used. Recommendation (B) shadow-only stands.`
