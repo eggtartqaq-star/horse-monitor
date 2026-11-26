@@ -157,14 +157,14 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
     print(f"\n市場環境({bar_date.date()}): {'牛市' if is_bull else '熊市'}(SPY 對 MA200 {gap:+.1f}%)")
     if not is_bull:
         print("熊市:系統停手,今日唔搵做多訊號(唔開新倉);持倉照管(見 ④)。")
-        if not quiet:
-            _print_positions(ledger_dir, data)        # V6.6.8:熊市日都要印持倉止蝕位(之前漏咗)
         if can_write:
             L.append_run(_run_row(bar_date, False, source, failed, asof_mode), ledger_dir)   # CRO C-4r:熊市日都要有心跳
         elif why_not:
             print(why_not)
+        if not quiet:
+            _print_positions(ledger_dir, data)        # V6.6.8:熊市日都要印持倉止蝕位;Tom F-7:心跳寫咗先
         return {"bull": False, "rows": [], "bar_date": bar_date, "gap": gap, "failed": failed, "data": data,
-                "s2_hold": L.uncleared_s2(ledger_dir)}
+                "s2_hold": L.uncleared_s2(ledger_dir), "partial": partial}
 
     held = set(L.open_fills(ledger_dir)["ticker"])
     mode = Z.live_mode()          # Tom 2026-11-24:交易清單用 config 嘅模式(而家 = A);以前寫死 "A",開 B′ 都唔會生效
@@ -248,7 +248,7 @@ def scan(source="yf", data_dir=None, asof=None, ledger_dir=L.DEFAULT_DIR, dry_ru
     return {"bull": True, "rows": rows, "live": [r for _, r in live], "shadow_only": shadow_only,
             "s2_hold": L.uncleared_s2(ledger_dir),
             "blocked": blocked, "held_signals": held_sigs, "bar_date": bar_date,
-            "gap": gap, "failed": failed, "data": data}
+            "gap": gap, "failed": failed, "data": data, "partial": partial}      # CRO N-31:訊息都要知未收市
 
 
 def _size_txt(rec, hide):
@@ -274,7 +274,10 @@ ORDER_RULES = (
     "落單:聽日開市,用**限價單**,限價唔可以高過「限價上限」;開市價高過就唔買,唔好加價、唔好加股(CRO C-8、N-15)。",
     "開市價 ≤ 系統止蝕 → 唔買。萬一成交咗,即刻沽,用 fill open + fill close 記錄,S2 交 CRO(CRO C-8 修訂,N-26)。",
     "成交後即刻設系統止蝕單(唔准自己收緊,永不下移)。",
-    "落單後記錄:python ledger_v66.py fill open --ticker X --price P --shares N --stop S --engine E2",
+    "開市後即刻睇券商張單(C-8 (a),CRO R-6 第 9 點,以張單狀態為準):未成交 → 取消;成交價 ≤ 系統止蝕 → 即刻沽,"
+    "記 fill open + fill close,S2 交 CRO。開市嗰陣唔喺螢幕前面,當日就唔好落單。",
+    "落單後當日記錄 —— 引擎二:python ledger_v66.py fill open --ticker X --price P --shares N --stop S --engine E2;"
+    "引擎一要加止盈:… --stop S --target T --engine E1",
 )
 
 

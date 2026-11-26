@@ -40,14 +40,18 @@ ALERTS = {
     "selftest": "❌ 自我測試失敗 —— 今日唔好交易(模擬盤都唔好)。將 v6.6 資料夾嘅 selftest_last.log 畀 AI 睇。",
     "scan": "❌ 每日掃描出錯 —— 今日唔好交易。雙擊 掃描_v66.bat 睇錯誤訊息,畀 AI 睇。",
 }
-OPEN_CHECK = ("開市檢查(夏令時間香港 21:30 / 冬令 22:30 開市):睇 TradingView 嘅開市提示 —— 開市價嚟自 TradingView,唔係 Yahoo。"
-              "開市價高過限價上限 → 取消張單;開市價 ≤ 系統止蝕 → 取消(已成交就即刻沽,記 S2)。")
+OPEN_CHECK = ("開市檢查(美國夏令時間香港 21:30、其他時間 22:30 開市):你**一定要開市嗰陣睇住**;睇唔到就**唔好預先落單**,或者瞓之前取消。"
+              "以券商張單狀態為準;TradingView 開市提示(開市價嚟自 TradingView,唔係 Yahoo)只係提你。"
+              "未成交 → 取消張單(唔好留住佢全日等成交);成交價 ≤ 系統止蝕 → 即刻沽,當日記 fill open 同 fill close,S2 交 CRO;"
+              "成交咗、高過系統止蝕 → 即刻自己落止蝕單(用上面嘅系統止蝕)。")
+PARTIAL = ("⚠️ 美股未收市(呢次係開市時間跑嘅)—— ❌ 呢個訊息**唔可以用嚟落單**,冇交易清單。"
+           "等收市後(香港時間朝早)嘅訊息(CRO N-31)。")
 FOOTER = "研究工具,唔會落單;所有單由你自己落(模擬盤)。唔係投資建議。"
 
 
-def _msg_line(rec, rank_txt, hide=False):
+def _msg_line(rec, rank_txt, hide=False, held=False):
     """手機睇嘅短版(同掃描器 ① 同一批數,唔另計)。"""
-    size = DS._size_txt(rec, hide)
+    size = "股數 —(持倉中)" if held else DS._size_txt(rec, hide)
     eng = "引擎二" if rec["engine"] == "E2" else f"引擎一[{rec.get('tier') or '-'}]"
     tgt = "" if rec["engine"] == "E2" else f"  止盈 ${float(rec['target']):.2f}(R {rec['r']})"
     flag = f"  {rec['spec_flag']}" if rec.get("spec_flag") and rec["spec_flag"] != "✅" else ""
@@ -72,8 +76,10 @@ def compose_morning(out, ledger_dir=None):
     if hold:
         lines.append(f"⛔ 有未向 CRO 解釋嘅 S2({', '.join(hold)})—— 停開新倉(CRO N-11)。")
     of = L.open_fills(ledger_dir)
-    if bull:
-        free = max(0, C.MAX_POSITIONS - len(of))
+    if out.get("partial"):
+        lines.append(PARTIAL)                         # CRO N-31 / Tom F-1:未收市 → 冇 ①、冇落單規則
+    elif bull:
+        free = 0 if hold else max(0, C.MAX_POSITIONS - len(of))      # Tom F-5:停開新倉期間 = 0
         live = out.get("live") or []
         lines.append(f"\n① 交易清單(回測驗證版)—— 而家持倉 {len(of)} 個,今日最多開 {free} 個,由 #1 開始揀")
         if not live:
@@ -81,7 +87,7 @@ def compose_morning(out, ledger_dir=None):
         for rec in live:
             lines.append(_msg_line(rec, f"#{rec['rank']}", hide=bool(hold)))
         for rec in out.get("held_signals") or []:
-            lines.append(_msg_line(rec, " — ", hide=True) + "\n    持倉中(唔計排名,唔好加注)")
+            lines.append(_msg_line(rec, " — ", held=True) + "\n    持倉中(唔計排名,唔好加注)")
         if live and not hold and free > 0:
             lines.append("")
             lines += list(DS.ORDER_RULES)
@@ -91,7 +97,8 @@ def compose_morning(out, ledger_dir=None):
     else:
         lines.append("熊市:系統停手,今日唔搵做多訊號(唔開新倉);持倉照管。")
     if len(of):
-        lines.append("\n④ 你嘅持倉 —— 今日止蝕位(券商止蝕單只可以調高,永遠唔好調低)")
+        lines.append("\n④ 你嘅持倉 —— 今日止蝕位(券商止蝕單只可以調高,永遠唔好調低)"
+                     + ("\n  ⚠️ 未收市數據,只係參考;以收市後嘅訊息為準" if out.get("partial") else ""))
         data = out.get("data") or {}
         for x in of.itertuples():
             lines.append("  " + DS.trailing_line(x, data) + _e1_exit_note(x, data))
@@ -110,6 +117,14 @@ def _e1_exit_note(x, data):
     if days >= C_MR_MAX_HOLD:
         return f"\n    ⚠️ 已經滿 {C_MR_MAX_HOLD} 日:應該已經收市出咗;未出就問 AI"
     return ""
+
+
+def build_message(out, ledger_dir=None):
+    """compose_morning 出錯都要通知你(Tom F-7):回傳 (訊息, exit code)。"""
+    try:
+        return compose_morning(out, ledger_dir), (0 if out is not None else 1)
+    except Exception as e:
+        return "\n".join([f"📋 模擬盤 Swing {C.VERSION}", ALERTS["scan"], f"(整訊息出錯:{type(e).__name__})"]), 1
 
 
 def split(text, n=MAX_LEN):
@@ -139,7 +154,7 @@ def send(text, token, chats, post=None, timeout=15):
         return False
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     ok = True
-    for part in split(text):
+    for part in [p for p in split(text) if p.strip()]:          # Tom F-11:唔傳空段
         for chat in sorted(chats):
             try:
                 r = post(url, data={"chat_id": chat, "text": part}, timeout=timeout)
@@ -178,8 +193,7 @@ def main(argv=None):
         except Exception as e:                       # 掃描出錯都要通知你
             print(f"掃描出錯:{type(e).__name__}: {e}")
             out = None
-        text = compose_morning(out, a.ledger)
-        code = 0 if out is not None else 1
+        text, code = build_message(out, a.ledger)
     print(text)
     if a.print_only:
         return code

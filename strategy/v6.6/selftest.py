@@ -1058,6 +1058,33 @@ def _main_body():
         check("notify_v66.py:冇券商代碼、token 唔印出(用 load_token / redact)",
               not any(w in src8.lower() for w in ("place_order", "webull", "futu", "openapi"))
               and "TB.load_token()" in src8 and "TB.redact(" in src8 and "print(token" not in src8)
+
+        # ---- V6.6.9:CRO N-31、Tom F-1/F-2/F-3/F-4/F-5/F-6/F-7、審計 M-1/M-2/M-3/M-5 ----
+        D.load = lambda t, s_, dd, a_: (data, [])
+        D.partial_bar_warning = lambda: True                 # 好似開市時間跑(例如部電腦遲咗開機補跑)
+        with contextlib.redirect_stdout(io.StringIO()):
+            op = D.scan("yf", None, None, tmp8, dry_run=True, quiet=True)
+        D.partial_bar_warning = lambda: False
+        mp = N.compose_morning(op, empty8) if op else ""
+        check("V6.6.9(CRO N-31):未收市 → scan() 標 partial,訊息冇交易清單、冇落單規則、講明唔可以用嚟落單",
+              bool(op) and op.get("partial") is True and "未收市" in mp and "唔可以用嚟落單" in mp
+              and "限價上限 $" not in mp and D.ORDER_RULES[0] not in mp)
+        check("V6.6.9(Tom F-5):停開新倉期間「今日最多開 0 個」", "今日最多開 0 個" in mh)
+        mheld = N.compose_morning({**base8, "held_signals": [dict(rec, ticker="HHH")]}, empty8)
+        check("V6.6.9(Tom F-6):持倉中嘅訊號寫「持倉中」,唔係「停開新倉」",
+              "HHH:股數 —(持倉中)" in mheld and "停開新倉" not in mheld)
+        try:
+            txt_bad, code_bad = N.build_message({"bull": True}, empty8)      # 冇 bar_date → 整訊息出錯
+        except Exception as e:
+            txt_bad, code_bad = f"crash {type(e).__name__}", 0
+        check("V6.6.9(Tom F-7):整訊息出錯 → 照傳「掃描出錯,今日唔好交易」", code_bad == 1 and "唔好交易" in txt_bad)
+        check("V6.6.9(Tom F-2、審計 M-1/M-5):落單規則要開市後睇券商張單、睇唔到就唔落;引擎一記錄要加止盈",
+              any("券商張單" in t and "未成交 → 取消" in t and "唔喺螢幕前面" in t for t in D.ORDER_RULES)
+              and any("--target T --engine E1" in t for t in D.ORDER_RULES)
+              and "一定要開市嗰陣睇住" in N.OPEN_CHECK and "fill close" in N.OPEN_CHECK)
+        check("V6.6.9(Tom F-3/F-4、審計 M-2/M-3):Pine 止蝕去到仙先計限價、淨係日線出提示、止蝕用 Telegram、停開新倉唔落",
+              "math.round(stopL, 2)" in pine and "math.round(stopTR, 2)" in pine and pine.count("timeframe.isdaily and") == 2
+              and "價位用 Telegram ① 嘅系統止蝕" in pine and "停開新倉" in pine and "以券商張單狀態為準" in pine)
     finally:
         D.load, D.partial_bar_warning, D.G.get_next_earnings = orig8
         shutil.rmtree(tmp8, ignore_errors=True)

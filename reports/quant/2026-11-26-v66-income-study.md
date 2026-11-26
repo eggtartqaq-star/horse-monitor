@@ -363,7 +363,7 @@ python lab.py --mode feecheck --fee-min 0.35 --fee-bp 10 --tif open   # --tif da
 - **(1) "Is 30% tax withheld on US T-bill ETF payouts?": "Yes there is".**
   - The "30% withholding" rows are therefore the relevant ones for a T-bill ETF. The ETF yields about 70% of the T-bill rate: 3.12% instead of 4.49% over the test period (§1.2).
 - **(2) "Does uninvested cash earn interest?": "Yes in futu, no in webull".**
-  - Under CRO R-1.5, cash earning close to the T-bill rate is preferred to a T-bill ETF: always settled, no extra trades, and no US withholding on ETF payouts.
+  - Under CRO R-1.5 (inside a dedicated C-7 (A) account, which cannot be the Futu account holding 6160/3416), cash earning close to the T-bill rate is preferred to a T-bill ETF: always settled, no extra trades, and no US withholding on ETF payouts.
   - The Futu rate was **not provided** and is not verified here, so no figure is used.
 - **(3) "Can you attach a stop to an all-day limit buy?": "No".**
   - Per the CRO's F-3 ruling, option (b) is therefore unavailable. **Cancel-at-open (a) governs**, V-1 is judged with `--tif open`, and N-30 is not needed.

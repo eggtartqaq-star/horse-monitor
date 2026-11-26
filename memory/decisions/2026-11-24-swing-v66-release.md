@@ -264,3 +264,19 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **Tests:** selftest 147; 9 mutants caught; results byte-identical.
   - **Not testable in the cloud:** schtasks, Telegram delivery, Pine compilation, live alert timing.
 - **Proposed rule, for CRO confirmation:** place only orders that appear on **both** the Telegram ① list and a TradingView close alert. If the limits differ, use the lower one. If the two disagree, don't place, and ask the AI.
+- **Reviews of V6.6.8, 2026-11-26:**
+  - **CRO:** PARTIAL, with N-31.
+  - **CRO rulings:**
+    - **R-5:** paper fills go in the main `ledger/` before `switch_date`, with a switch-day archive procedure. Real and paper fills never share `fills.csv`.
+    - **R-6:** the two-source rule is approved with amendments. Telegram is authoritative; the broker's order status governs at the open; no order if the Owner cannot be at the open.
+    - **R-7:** the margin waiver is recorded with the CRO's dissent. `leverage: none` still binds, so any negative cash is a breach to cure within 3 sessions. G-3 stands. Keeping USD cash ≥ US$10 is recommended.
+  - **Tom:** VALIDATED WITH CONCERNS (F-1 to F-11).
+  - **Audit:** PASS WITH CORRECTIONS (H-1, M-1 to M-7, L-1 to L-5).
+  - **Correction to the line above** (append-only), audit M-7: "Cash" means that if a future dedicated swing account is at Futu and its cash rate is close to the T-bill rate, idle cash stays as cash. That account must be separate from the Futu account holding 6160/3416. Rate and tax treatment were not obtained.
+  - **Audit M-6:** the margin decision is recorded as the Owner's override of the CRO's structural recommendation. The CRO's dissent stands.
+- **V6.6.9** (fingerprint `2b7b62182068`) fixes:
+  - N-31;
+  - Tom F-2 to F-8 and F-11;
+  - audit M-1 to M-5 and L-1.
+
+  Selftest 153; mutants caught; results byte-identical. CRO diff verification pending.

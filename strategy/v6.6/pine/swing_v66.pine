@@ -1,5 +1,5 @@
 // ============================================================
-// Swing V6.6.8 —— 雙引擎指標(引擎一 + 引擎二,兩條路徑)+ 收市提示 + 開市檢查
+// Swing V6.6.9 —— 雙引擎指標(引擎一 + 引擎二,兩條路徑)+ 收市提示 + 開市檢查
 // ============================================================
 // 同 V6.4.2 Pine 嘅分別:
 //   1. 加入引擎二(趨勢):ADX≥25、DI+>DI−、評分≥0.65、3×ATR 止蝕 ≤12%
@@ -11,15 +11,16 @@
 //   4. 選填:引擎二入場日 → 畫移動止損(每日 最高價 − 3×ATR,只升不降)
 // 財報:Pine 判斷唔到,一定要手動查 >5 日
 // ★ 數字同 Python(daily_scan_v66)應該一致;用 golden_v66.csv 對照(見 README)
-// V6.6.8(2026-11-26):
+// V6.6.8 / V6.6.9(2026-11-26):
 //   - 限價上限(CRO N-15,同 sizing_v66.max_limit 同一條規則)
 //   - 收市提示:交易路徑訊號(用 TradingView 數據)→ 同 Telegram 清單核對
 //   - 開市檢查:新一日第一個成交價 = 開市價(TradingView 數據,唔係 Yahoo)→ 取消 / 唔買 / 落止蝕
-//   設定:每個圖表開一個警報,條件揀「Any alert() function call」
+//   設定:每個圖表開一個警報,條件揀「Any alert() function call」;一定要用日線圖
+//   Telegram ① 係準則(CRO R-6):股數、止蝕以 Telegram 為準;TradingView 只係核對同提你
 // ============================================================
 
 //@version=6
-indicator("Swing V6.6.8 雙引擎", overlay=true, max_labels_count=500, max_lines_count=200)
+indicator("Swing V6.6.9 雙引擎", overlay=true, max_labels_count=500, max_lines_count=200)
 
 MIN_R            = input.float(2.0, "最低R值")
 ACCOUNT_HKD      = input.float(10000, "短線資金(HKD)")
@@ -125,8 +126,12 @@ f_limit(float _close, float _stop, int _n, bool _isE1, float _target) =>
         _out := _c >= math.floor(_close * 100 + 1e-7) / 100 ? _c : na
     _out
 
-limE1 = f_limit(close, stopL, int(sharesE1), true, target)
-limE2 = f_limit(close, stopTR, int(sharesE2), false, na)
+// Tom F-3:Python 嘅止蝕 / 止盈係去到仙;Pine 用同樣嘅仙計限價上限,先唔會差一仙
+stopLc   = math.round(stopL, 2)
+stopTRc  = math.round(stopTR, 2)
+targetC  = math.round(target, 2)
+limE1 = f_limit(close, stopLc, int(sharesE1), true, targetC)
+limE2 = f_limit(close, stopTRc, int(sharesE2), false, na)
 e1Trade = basic                        // 引擎一交易路徑(評分 ≥0.55、R ≥2、所有級別)
 
 // ============================================================
@@ -185,7 +190,7 @@ if barstate.islast
     e1Txt = tier==3 ? "⭐頂級" : tier==2 ? "💪強" : tier==1 ? "🔵普通" : "無"
     e2Txt = e2Trade ? "🚀交易路徑" : e2Shadow ? "冇突破·只記錄" : "無"
     pathTxt = not bull ? "熊市停手" : (tier > 0 or e2Trade) ? "交易路徑有訊號" : e2Shadow ? "只有舊掃描器訊號" : "無訊號"
-    t.cell(0, 0, "Swing V6.6.8", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
+    t.cell(0, 0, "Swing V6.6.9", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
     t.cell(1, 0, "倉位一律1%", text_color=color.white, bgcolor=color.new(color.blue, 50), text_size=size.small)
     t.cell(0, 1, "結論", text_color=color.white, text_size=size.small)
     t.cell(1, 1, pathTxt, text_color=(tier > 0 or e2Trade) ? color.lime : color.gray, text_size=size.normal)
@@ -229,17 +234,17 @@ f_lim_txt(float _l) =>
     na(_l) ? "—(冇限價上限 → 唔買)" : "$" + str.tostring(_l, "#.##")
 
 // 1. 收市提示:交易路徑訊號,用 TradingView 數據計(同 Telegram ① 核對)
-if e2Trade or e1Trade
-    string _m = e2Trade ? ("🚀引擎二 " + syminfo.ticker + ":" + str.tostring(sharesE2) + " 股,限價上限 " + f_lim_txt(limE2) + ",止蝕 $" + str.tostring(stopTR, "#.##")) : ("引擎一 " + syminfo.ticker + ":" + str.tostring(sharesE1) + " 股,限價上限 " + f_lim_txt(limE1) + ",止蝕 $" + str.tostring(stopL, "#.##") + ",止盈 $" + str.tostring(target, "#.##"))
-    alert("收市訊號(TradingView 數據)" + _m + "。淨係落 Telegram ① 清單都有嘅;唔一致就唔落,問 AI。", alert.freq_once_per_bar_close)
+if timeframe.isdaily and (e2Trade or e1Trade)
+    string _m = e2Trade ? ("🚀引擎二 " + syminfo.ticker + ":" + str.tostring(sharesE2) + " 股,限價上限 " + f_lim_txt(limE2) + ",止蝕 $" + str.tostring(stopTRc, "#.##")) : ("引擎一 " + syminfo.ticker + ":" + str.tostring(sharesE1) + " 股,限價上限 " + f_lim_txt(limE1) + ",止蝕 $" + str.tostring(stopLc, "#.##") + ",止盈 $" + str.tostring(targetC, "#.##"))
+    alert("收市訊號(TradingView 數據)" + _m + "。淨係落 Telegram ① 清單都有、而且冇寫「停開新倉」或者「倉位已滿」嘅;股數同止蝕以 Telegram 為準,限價上限用低嗰個(差一仙係正常);唔一致就唔落,問 AI。", alert.freq_once_per_bar_close)
 
 // 2. 開市檢查:新一日第一個成交價(開市價)對比尋日嘅限價上限同止蝕
 wasE2 = e2Trade[1]
 wasE1 = e1Trade[1]
-if barstate.isrealtime and (wasE2 or wasE1)
+if timeframe.isdaily and barstate.isrealtime and (wasE2 or wasE1)
     float _lim = wasE2 ? limE2[1] : limE1[1]
-    float _stp = wasE2 ? stopTR[1] : stopL[1]
-    string _d = na(_lim) ? "冇限價上限 → 唔買" : open > _lim ? "開市價高過限價上限 → 取消張單" : open <= _stp ? "開市價 ≤ 系統止蝕 → 唔買;如果已成交即刻沽,記 S2" : "應該已成交 → 即刻落止蝕單 $" + str.tostring(_stp, "#.##") + ",記 fill open"
+    float _stp = wasE2 ? stopTRc[1] : stopLc[1]
+    string _d = na(_lim) ? "冇限價上限 → 唔買" : open > _lim ? "開市價高過限價上限 → 未成交就取消張單(以券商張單狀態為準)" : open <= _stp ? "開市價 ≤ 系統止蝕 → 唔買;如果已成交即刻沽,當日記 fill open 同 fill close,S2 交 CRO" : "應該已成交(以券商張單狀態為準)→ 即刻落止蝕單,價位用 Telegram ① 嘅系統止蝕(TradingView $" + str.tostring(_stp, "#.##") + " 只係參考)"
     alert("開市檢查 " + syminfo.ticker + "(如果你有落單):開市 $" + str.tostring(open, "#.##") + "(TradingView)| 限價上限 " + f_lim_txt(_lim) + " | 止蝕 $" + str.tostring(_stp, "#.##") + " → " + _d, alert.freq_once_per_bar)
 
 // 舊式警報(保留;用上面 alert() 就唔使開呢啲)
