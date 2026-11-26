@@ -245,3 +245,22 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **Main finding:** the CRO's "until N-30 lands, V-1 is judged with `--tif open`" clause had been dropped in all three documents, along with parts of C-8 and R-3. Every drop pointed toward permission. **L-009 recurred.**
   - **Corrections applied:** S-1 to S-7, K-1 to K-8 and RM-1 to RM-4. The README's stale 25 Nov debit line was also updated.
   - **Routed to 床狗:** when a CRO ruling carries an "until X lands" clause, grep every Owner file for the ruling's identifiers (here N-30 and `--tif`) and carry the clause wherever the ruling is restated.
+
+**Update 2026-11-26 (evening): Owner decisions and V6.6.8.**
+- **Owner (verbatim):** "Well margin is allowed I bear the risk of this while paper trading please find a way to tell me through messages in trading view or python daily scan. I got another account for paper trading."
+  - Broker answers: (1) T-bill ETF withholding: "Yes there is"; (2) cash interest: "Yes in futu, no in webull"; (3) attached stop on a DAY limit: "No".
+  - AskUserQuestion: messages via **both** Telegram (Python) and TradingView. Open check: yes, but "yahoo finance is not a good way to get information. Either get it from webull or trading view". C-6 still applies for real money: **"Yes"**.
+- **Recorded:**
+  - **Paper trading.** V6.6 is paper-traded in a separate paper account; this is in effect B1 (B) plus paper fills, and the CRO is asked how to record the fills.
+  - **Margin.** Margin stays on the real Webull account by the Owner's choice ("I bear the risk"). The G-1 structural requirement (margin off) is waived by the Owner for that account; the debit itself was cured on 26 Nov. G-2 is unchanged: LNW is still due by the 3 Dec close for holding AVGO through the 9 Dec results.
+  - **C-6** still gates any real-money V6.6 trade.
+  - **F-3:** the broker cannot attach a stop, so **(a) cancel-at-open governs**; V-1 uses `--tif open`; **N-30 is dropped**.
+  - **Cash:** idle cash stays at Futu (interest), per R-1.5. A T-bill ETF nets about 70% of the T-bill rate after withholding.
+- **V6.6.8** (`6fed2fd`, fingerprint `11b86e31c9cd`):
+  - `notify_v66.py`: after-close Telegram message from the validated scan;
+  - `notify_v66.bat` and `schedule_v66.bat`: Task Scheduler, TUE–SAT 06:30 HKT;
+  - the scanner now shows positions on bear days (a gap found while reading the code);
+  - Pine: max limit price, a close alert, and an open-check alert on TradingView data.
+  - **Tests:** selftest 147; 9 mutants caught; results byte-identical.
+  - **Not testable in the cloud:** schtasks, Telegram delivery, Pine compilation, live alert timing.
+- **Proposed rule, for CRO confirmation:** place only orders that appear on **both** the Telegram ① list and a TradingView close alert. If the limits differ, use the lower one. If the two disagree, don't place, and ask the AI.

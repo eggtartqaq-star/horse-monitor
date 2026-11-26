@@ -357,3 +357,18 @@ python lab.py --mode feecheck --fee-min 0.35 --fee-bp 10 --tif open   # --tif da
 - **Tom (2026-11-26):** VALIDATED WITH CONCERNS. F-1 to F-8 are applied in V6.6.7 and v2 (F-1 bootstrap, F-2 reserve, F-3 order type, F-4 wording, F-5 counts, F-6 threshold, F-7 gaps, F-8 split factor).
 - **John, CRO (2026-11-26):** V6.6.6 PASS with N-29; R-1 to R-4. **V6.6.7 PASS** (N-29 closed). F-3 ruling: DAY only with an attached stop, else cancel-at-open; N-30 before DAY can be used; recommendation still (B).
 - **Ai 管理層 (2026-11-26):** PASS WITH CORRECTIONS; no HIGH findings. S-1 to S-7 applied here; K-1 to K-8 in the checklist; RM-1 to RM-4 in the README (`reports/committee/2026-11-26-v66-income-audit.md`).
+
+## 10. The Owner's answers (2026-11-26, later)
+
+- **(1) "Is 30% tax withheld on US T-bill ETF payouts?": "Yes there is".**
+  - The "30% withholding" rows are therefore the relevant ones for a T-bill ETF. The ETF yields about 70% of the T-bill rate: 3.12% instead of 4.49% over the test period (§1.2).
+- **(2) "Does uninvested cash earn interest?": "Yes in futu, no in webull".**
+  - Under CRO R-1.5, cash earning close to the T-bill rate is preferred to a T-bill ETF: always settled, no extra trades, and no US withholding on ETF payouts.
+  - The Futu rate was **not provided** and is not verified here, so no figure is used.
+- **(3) "Can you attach a stop to an all-day limit buy?": "No".**
+  - Per the CRO's F-3 ruling, option (b) is therefore unavailable. **Cancel-at-open (a) governs**, V-1 is judged with `--tif open`, and N-30 is not needed.
+  - **For this study:** the cancel-at-open rows apply. At the CRO's US$0.35 estimate that is S4; the real fee (V-1) decides.
+- **Decision:** the Owner chose to **paper-trade V6.6 in a separate paper account.** The Owner keeps margin on the real Webull account and bears that risk. C-6 still applies before any real-money V6.6 trade.
+- **New in V6.6.8:** daily messages for the paper period.
+  - an after-close Telegram message from the validated scan;
+  - TradingView alerts, including an open check that uses TradingView's opening price rather than Yahoo, per the Owner.
