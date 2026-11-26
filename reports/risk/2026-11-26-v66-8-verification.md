@@ -146,3 +146,50 @@
 *Research and decision support, not financial advice. No V6.6 code and no agent of this firm places orders; the Owner places every order, paper included.*
 
 **For 腦大裝草:** `2026-11-26 · CRO V6.6.8 at 6fed2fd / 11b86e31c9cd: PARTIAL. selftest 147 (normal/-O), equivalence 0/85,120, ledger_check PASS, results identical, ORDER_RULES text identical, bear-day ④ fixed, notify no broker / token via load_token / allow-list. N-31 MEDIUM: notify sends a full ① list from an unclosed bar (NY 11:00 probe) — fix before any Telegram-based order; interim: act only on post-close messages with last-session date. R-5 paper fills in main ledger (switch_date null), S2/N-11 apply; switch-day archive procedure; paper ≠ V-1 evidence. R-6 two-source rule approved with amendments (Telegram authority; Telegram stop and shares; lower limit; broker order status decides the open check; no late entries). R-7 G-1 debit MET; structural part WAIVED BY OWNER (dissent logged); leverage:none and G-3 still bind (any debit = breach, cure in 3 sessions); C-6 kept for real money; G-2 unchanged, LNW by 3 Dec close (2 sh ≥ US$9,200).`
+
+---
+
+## §3 V6.6.9 addendum (2026-11-26): N-31 fix, order-rule wording, and Tom F-8 (E1 take-profit)
+
+**Scope:** `git diff 6fed2fd bee1985 -- strategy/v6.6`. V6.6.9 is `bee1985`, fingerprint **`2b7b62182068`**.
+- **Code:** `daily_scan_v66.py`, `notify_v66.py`, `config_v66.py` (version), Pine, `selftest.py` and the stamp.
+- **Docs** (README, checklist) also changed in the range; I did not review them.
+
+**Method:** scratch copy (`git archive bee1985`). No broker call, no pip; only this file edited.
+
+### 3.1 Verdict: **PASS.** N-31 CLOSED.
+
+| Check | Result [D] |
+|---|---|
+| Fingerprint / stamp | `2b7b62182068`; `pc_check.stamp()["match"]` True; `selftest.py` hash `5121ecb6feea`. |
+| selftest | **153/153**, normal and `-O`. |
+| equivalence / ledger_check / baseline | 85,120 / 0; PASS; every `results/` file byte-identical. |
+| **N-31** | **CLOSED.** `scan()` returns `partial` on both paths. Probe on real bars:<br>- **Bull 18 Nov at NY 11:00, and pre-market NY 08:00 with a today bar:** no limit, no order rules; "唔可以用嚟落單" ("cannot be used to place orders"); ④ marked reference-only; nothing written to the ledger.<br>- **Bear 23 Nov at NY 11:00:** same.<br>- **Bull 18 Nov at NY 17:30:** full ① with limits and rules; ledger written. |
+| `build_message` | A message-build exception sends the scan alert, exit 1. |
+| Hold / held tickers | `free = 0` during an S2 hold. Held tickers show "股數 —(持倉中)" ("shares — (held)"). |
+| Bear-day order | The heartbeat is written before ④ is printed. |
+| **`ORDER_RULES` wording** | **CONFIRMED.** The new line matches my R-6 item 9: order status decides; not filled → cancel; fill ≤ system stop → sell at once, `fill open` + `fill close`, S2 to the CRO; not at the screen at the open → no order that day.<br>The E1 fill template with `--target T --engine E1` is correct; without `--target`, ④ shows "止盈 ?" ("take-profit ?").<br>`OPEN_CHECK` also carries C-9: filled above the stop → place the system stop at once. |
+| Pine | - Stops and targets are rounded to cents before the limit is computed. 12 of 1,426 limits still differ by 1¢ (Tom); R-6 item 3 (use the lower limit) covers that.<br>- `timeframe.isdaily` guard.<br>- The alert text defers to Telegram for shares, stop, hold and full slots, consistent with R-6. |
+
+**The interim N-31 instruction is withdrawn.** The two-source rule (R-6) stands as written.
+
+### 3.2 Ruling on Tom F-8: E1 take-profit order
+
+**Ruling: do not place a separate take-profit sell. The protective stop is the only standing sell order.**
+- **Why:** without broker OCO (one-cancels-other), two sell orders for the same shares are unsafe. If the take-profit fills and the stop then triggers, the stop sells shares you no longer own.
+  - In a cash account that is rejected.
+  - **In a margin account (the paper account, and the real Webull account under R-7), it opens a short position.** That is borrowed stock: a `leverage: none` breach with open-ended loss.
+
+**Binding text for the Owner:**
+> **E1 take-profit (F-8).** Keep only the broker **stop** at the system stop (C-9). **Never place a second sell order for the same shares** unless your broker links them as OCO.
+> When the price reaches the E1 target (止盈):
+> - if you are at the screen, **cancel the stop first, then sell**, and confirm the sale filled;
+> - if the sale does not fill, **re-place the stop at once**;
+> - record `fill close` with the actual price.
+> If your broker offers OCO for this account, tell the AI. Stop + target as an OCO pair is then approved once you confirm it.
+
+**Deferred to Tom, before the first forward review:** quantify the drift between the lab and what can be executed from HK. The lab exits E1 intraday at the target, and at the day-10 close. Live, a target touched overnight is missed, and the day-10 exit happens "before the close" in the HK evening.
+- **Proposed variant:** "target or time exit at the next open after it is reached".
+- **If the drift is material,** propose a rule change through Tom's rerun and my review.
+
+**For 腦大裝草:** `2026-11-26 · CRO V6.6.9 at bee1985 / 2b7b62182068: PASS. N-31 CLOSED (partial on bull and bear; message blocks ①/rules/limits, ④ reference-only; probes NY 08:00/11:00 blocked, 17:30 normal). selftest 153 normal/-O, equivalence 0/85,120, ledger_check PASS, results identical, stamp match. ORDER_RULES new line = R-6 item 9 (confirmed); E1 fill template OK. F-8: no separate take-profit without OCO (stop is the only standing sell; double sell in a margin account = short sale, leverage breach); E1 target manual (cancel stop → sell → re-place stop if unfilled); Tom to quantify lab-vs-executable drift on E1 target and day-10 exits.`

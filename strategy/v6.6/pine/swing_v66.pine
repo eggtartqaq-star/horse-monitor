@@ -236,7 +236,7 @@ f_lim_txt(float _l) =>
 // 1. 收市提示:交易路徑訊號,用 TradingView 數據計(同 Telegram ① 核對)
 if timeframe.isdaily and (e2Trade or e1Trade)
     string _m = e2Trade ? ("🚀引擎二 " + syminfo.ticker + ":" + str.tostring(sharesE2) + " 股,限價上限 " + f_lim_txt(limE2) + ",止蝕 $" + str.tostring(stopTRc, "#.##")) : ("引擎一 " + syminfo.ticker + ":" + str.tostring(sharesE1) + " 股,限價上限 " + f_lim_txt(limE1) + ",止蝕 $" + str.tostring(stopLc, "#.##") + ",止盈 $" + str.tostring(targetC, "#.##"))
-    alert("收市訊號(TradingView 數據)" + _m + "。淨係落 Telegram ① 清單都有、而且冇寫「停開新倉」或者「倉位已滿」嘅;股數同止蝕以 Telegram 為準,限價上限用低嗰個(差一仙係正常);唔一致就唔落,問 AI。", alert.freq_once_per_bar_close)
+    alert("收市訊號(TradingView 數據)" + _m + "。淨係落 Telegram ① 清單都有、而且冇寫「停開新倉」或者「倉位已滿」嘅;股數用 Telegram 嘅(TradingView 少啲就用少啲,永遠唔多過 Telegram),止蝕一定用 Telegram 嘅系統止蝕;限價上限用低嗰個(差一仙係正常);唔一致就唔落,問 AI。", alert.freq_once_per_bar_close)
 
 // 2. 開市檢查:新一日第一個成交價(開市價)對比尋日嘅限價上限同止蝕
 wasE2 = e2Trade[1]

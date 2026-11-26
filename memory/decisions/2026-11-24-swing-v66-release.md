@@ -280,3 +280,9 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - audit M-1 to M-5 and L-1.
 
   Selftest 153; mutants caught; results byte-identical. CRO diff verification pending.
+- **CRO, V6.6.9: PASS** (`reports/risk/2026-11-26-v66-8-verification.md` §3).
+  - **N-31 closed.** The CRO probed it on real bars: market-open and pre-market runs produce no list and no ledger write; after the close, a full list is written. He withdrew the interim header-date check.
+  - **Order-rule wording confirmed:** order status governs at the open, and there is no order if the Owner is not at the screen.
+  - **F-8 ruling, binding:** for E1, keep only the broker stop and never place a second sell for the same shares unless the broker links them as OCO. At the target, cancel the stop first and then sell; if the sale does not fill, re-place the stop at once. Without OCO, a second sell can short in a margin account, which breaches `leverage: none`.
+  - **Deferred to Tom, before the first forward review:** measure lab vs executable from HK. A target touched overnight will be missed, and the day-10 exit happens in the HK evening. The variant to test is exiting at the next open.
+- **Audit diff-check** (`reports/committee/2026-11-26-v66-8-audit.md` §4): PASS WITH CORRECTIONS. F-1 to F-8 applied: (B) wording per R-5; the A1 structural item marked as waived per R-7; R-7 summary in the README; Pine shares "never more than Telegram"; stale labels fixed.
