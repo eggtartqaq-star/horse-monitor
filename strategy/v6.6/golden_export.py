@@ -25,6 +25,8 @@ from indicators import calc_indicators  # noqa: E402
 TICKERS = ["AAPL", "MSFT", "PFE", "WMT", "NFLX", "BAC", "XOM", "JPM", "UBER", "INTC", "MU", "NVDA"]
 
 
+# 2026-11-27(Tom 11-24 檢閱 INFO):評分要離門檻 > 0.05 —— 大過一個引擎二評分級距(0.0375 / 0.045),
+# 咁 TradingView 數據少少唔同、令一個評分項轉級,都唔會令 golden 行跨過門檻。
 def far(x, thr, gap):
     return pd.notna(x) and abs(x - thr) > gap
 
@@ -66,13 +68,13 @@ def main():
                    "path_bt": (S.on_path(ev, "bt") or {}).get("engine", ""),
                    "path_scan": (S.on_path(ev, "scan") or {}).get("engine", "")}
             if e1:
-                if not (far(e1["score"], 0.55, 0.03) and far(e1["r"], 2.0, 0.2) and far(e1["r"], 3.0, 0.2)
+                if not (far(e1["score"], 0.55, 0.05) and far(e1["r"], 2.0, 0.2) and far(e1["r"], 3.0, 0.2)
                         and far(e1["rsi2"], 10, 2) and far(e1["risk_pct"], 15, 0.5)):
                     continue
                 # Pine 級別:頂級 = 強 + OBV背離(Pine 唔知財報);強 = RSI2<10 且 R≥3
                 rec.update({"E1_R": e1["r"], "E1_stop%": round(e1["risk_pct"], 1),
                             "E1_tier": ("頂級" if e1["obv_div"] else "強") if e1["strong"] else "普通"})
-            elif ev["route"] == "TREND_UP" and not (far(sc_t, 0.65, 0.03) and far(rec["E2_stop%"], 12, 0.5)):
+            elif ev["route"] == "TREND_UP" and not (far(sc_t, 0.65, 0.05) and far(rec["E2_stop%"], 12, 0.5)):
                 continue
             sg = S.on_path(ev, "bt") or S.on_path(ev, "scan")
             if sg:

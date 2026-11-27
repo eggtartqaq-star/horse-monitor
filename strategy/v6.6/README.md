@@ -281,7 +281,8 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 | `income_study.py` | 收入研究(2026-11-26):系統 + 閒置現金收息 對比 全部放 T-bill;要 `data/BIL.csv`。報告:`reports/quant/2026-11-26-v66-income-study.md` |
 | `equivalence_check.py` | 掃描器規則 == 回測規則(每日每隻每條路徑) |
 | `ledger_check.py` | 記錄簿 resolve == 回測模擬器(逐筆) |
-| `golden_export.py` | 重新匯出 Pine 對照檔 |
+| `golden_export.py` | 重新匯出 Pine 對照檔(2026-11-27:評分離門檻 > 0.05,換咗 4 行;舊檔仍然有效) |
+| `selftest_extra.py` | 2026-11-27 加嘅 10 項額外測試(突變測試捉漏咗嘅位),雲端跑;你部電腦唔使跑,下一版會併入 `selftest.py` |
 | `results/` | 2026-11-24 Webull 數據結果;`baseline.json` 係回歸指紋 |
 
 **研究結論**(詳見 `reports/quant/2026-11-24-v642-real-code-v66-lab.md`):
@@ -306,7 +307,7 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 | 第一次 / 更新後 | `電腦檢查_v66.bat`、`pc_check.py`(寫 `pc_report_….txt` 畀 AI)、`電腦待辦清單.md` |
 | 你嘅設定(唔計指紋) | `owner_settings.json` |
 | 規則指紋涵蓋 | `config_v66.py`、`rules_v642.py`、`indicators.py`、`signals_v66.py`、`sizing_v66.py`、`guardrails_v66.py`、`daily_scan_v66.py`、`ledger_v66.py`、`telegram_bot_v66.py`、`lab.py`(resolve 用佢計結果) |
-| 研究 | `selftest.py`、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py`、`income_study.py` |
+| 研究 | `selftest.py`、`selftest_extra.py`、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py`、`income_study.py` |
 
 `ledger/`(你嘅記錄)同 `data/`(歷史數據)唔會上載 GitHub。
 
