@@ -3,7 +3,7 @@
 These are the firm's fixed terms for Owner-facing documents. Every term here is
 already used in `strategy/v6.6/電腦待辦清單.md` and `README.md` (seeded
 2026-11-27). The first time a term appears in a document, add the English in
-brackets. Commands, file names, tickers and numbers are never translated.
+brackets in the long detail files only. In Owner front pages and PDFs, give no English in brackets (Owner, 27 Nov). Commands, file names, tickers and numbers are never translated.
 
 ## Trading and orders
 
@@ -62,7 +62,7 @@ brackets. Commands, file names, tickers and numbers are never translated.
 
 - Written Hong Kong Cantonese in Traditional characters: 嘅、咗、唔、喺、冇、佢、睇、搵.
 - Full-width punctuation(,。:;())in Cantonese text; ASCII inside commands and code.
-- CRO conditions: translate in full and label 「CRO 原文翻譯」 with the source path.
+- CRO conditions: translate in full. In the long detail files, label them 「CRO 原文翻譯」 with the source path. In Owner front pages and PDFs, label them 「CRO 嘅全部條件」 with no path or code; the source path goes in the hand-off for the audit.
 
 ## Added 2026-11-27 (翻譯官's first job, the front page 先睇我.md)
 

@@ -32,24 +32,19 @@ The Owner rejected the first front page as "so unclear to read", for four reason
 
 ⚠️ {at most one warning line}
 
-詳細:`{path to the detail file}`
+詳細:{plain name of the detail file}
 
 ---
 
 ## {Owner's question 1, e.g. 「點解要咁做?」}
 
-*At most 5 bullets. One idea per line. Numbers go in the table below.*
-
-| {item} | {number} | 來源 |
-|---|---|---|
-| … | … | `{source path}` |
+*At most 5 short lines. One idea per line. A number comparison may use two or three big-number tiles; no Markdown tables.*
 
 ## {Owner's question 2}
 
-> **CRO 原文翻譯(`{source path}`):** *A condition the Owner must act on today
-> is quoted IN FULL here. Never summarise it.*
+*A condition the Owner must act on now: a red-edged box headed 「CRO 嘅全部條件」, with every condition as its own plain line. Nothing dropped. The source path goes in the hand-off, not on the page.*
 
-*Any other condition is a pointer: 「(全文見 `{path}` {section})」.*
+*Any other condition: a plain pointer, e.g. 「詳細睇清單入面『每日訊息』嗰部分」.*
 
 ---
 
