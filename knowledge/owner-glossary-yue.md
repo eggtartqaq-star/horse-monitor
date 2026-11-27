@@ -63,3 +63,20 @@ brackets. Commands, file names, tickers and numbers are never translated.
 - Written Hong Kong Cantonese in Traditional characters: 嘅、咗、唔、喺、冇、佢、睇、搵.
 - Full-width punctuation(,。:;())in Cantonese text; ASCII inside commands and code.
 - CRO conditions: translate in full and label 「CRO 原文翻譯」 with the source path.
+
+## Added 2026-11-27 (翻譯官's first job, the front page 先睇我.md)
+
+| English | Cantonese | Note |
+|---|---|---|
+| print (earnings) | 業績公佈 | |
+| close-basis stop | 收市價止蝕 | 老詹's stop for AVGO |
+| planning gap | 規劃用跳空幅度 | the assumed −15% gap in CRO sizing |
+| retrospective decision record | 事後補寫嘅決策紀錄 | |
+| thesis | 投資論點 | |
+| no adds | 唔准加注 | stronger form; older text says 唔加注 |
+| alert (TradingView) | 警報 / 提示 | |
+| two-source rule | 兩個來源規則 | CRO R-6 |
+| open check | 開市檢查 | |
+| switch day | 轉用日 | CRO R-5 |
+| Task Scheduler | 工作排程器 | Windows label: copy as shown on screen |
+| estimate | 估算 | add 「(估算)」 to every derived number (CLAUDE.md rule 5) |
