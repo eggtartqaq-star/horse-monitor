@@ -1,18 +1,18 @@
 <!doctype html><html><head><meta charset='utf-8'><title>先睇我</title><style>
 @page { size: A4; margin: 0; }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: "WenQuanYi Zen Hei", sans-serif; font-size: 13pt; line-height: 15.6pt; color: #111; }
-.page { width: 210mm; height: 297mm; padding: 8mm 12mm 3mm 12mm; position: relative; overflow: hidden; }
+body { margin: 0; font-family: "WenQuanYi Zen Hei", sans-serif; font-size: 12.5pt; line-height: 14.6pt; color: #111; }
+.page { width: 210mm; height: 297mm; padding: 5.5mm 12mm 2mm 12mm; position: relative; overflow: hidden; }
 .banner { display: flex; justify-content: space-between; align-items: center; color: #fff; border-radius: 2mm; padding: 1.2mm 4mm; margin-bottom: 1.5mm; }
 .b1 { background: #C62828; min-height: 13mm; } .b2 { background: #37474F; } .b3 { background: #424242; }
 .banner .l1 { font-size: 20pt; font-weight: bold; line-height: 22pt; }
 .banner .r { text-align: right; font-weight: bold; font-size: 13pt; }
 .banner .l2 { font-size: 15pt; font-weight: bold; } .banner .r2 { font-size: 11.5pt; text-align: right; }
 .banner .r3 { font-size: 12pt; font-weight: bold; text-align: right; }
-.block { margin-bottom: 3mm; }
-.blk2 { font-size: 12pt; line-height: 15pt; }
+.block { margin-bottom: 2.5mm; }
+.blk2 { font-size: 11.5pt; line-height: 13.8pt; }
 b, .lead, .conseq, .you, .banner .l1, .banner .l2, .banner .r, .banner .r3, .tile .tn, .redbox .label, .panel .pl { -webkit-text-stroke: 0.45px currentColor; }
-.lead { font-weight: bold; margin: 0 0 2.5mm 0; }
+.lead { font-weight: bold; margin: 0 0 2mm 0; }
 .redbox { border: 1.5pt solid #C62828; background: #FDECEA; border-radius: 2mm; padding: 3.2mm 3mm 1.8mm 3mm; position: relative; }
 .redbox .label { position: absolute; top: -3mm; left: 4mm; background: #fff; color: #C62828; font-weight: bold; font-size: 11pt; padding: 0 1.5mm; line-height: 13pt; }
 .item { display: flex; margin: 0.4mm 0; } .num { flex: 0 0 7mm; }
@@ -22,17 +22,19 @@ b, .lead, .conseq, .you, .banner .l1, .banner .l2, .banner .r, .banner .r3, .til
 .div { border-top: 0.5pt solid #C62828; margin: 1.5mm 0; }
 .conseq { color: #B71C1C; font-weight: bold; } .you { font-weight: bold; }
 .tiles { display: flex; gap: 3mm; margin-top: 2mm; }
-.tile { flex: 0 0 58mm; background: #F5F5F5; border-radius: 2mm; padding: 1.2mm 3mm; }
-.tile .tl { font-size: 11pt; color: #555; line-height: 13pt; } .tile .tn { font-size: 18pt; font-weight: bold; line-height: 21pt; }
+.tile { flex: 0 0 58mm; background: #F5F5F5; border-radius: 2mm; padding: 1mm 3mm; }
+.tile .tl { font-size: 11pt; color: #555; line-height: 13pt; } .tile .tn { font-size: 16pt; font-weight: bold; line-height: 19pt; }
 .tile.note { flex: 1 1 auto; background: none; border-left: 1pt solid #999; border-radius: 0; color: #666; font-size: 11pt; line-height: 14pt; padding-top: 2mm; }
 .sub { margin-left: 7mm; } .grey { color: #555; font-size: 12pt; } .gtick { color: #2E7D32; font-weight: bold; }
 code { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; background: #EEEEEE; border: 0.5pt solid #BDBDBD; border-radius: 2mm; padding: 0.3mm 2.5mm; white-space: nowrap; }
-.cmdbox { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; background: #EEEEEE; border: 0.5pt solid #BDBDBD; border-radius: 2mm; padding: 1mm 3mm; display: inline-block; margin: 0.8mm 0 0.8mm 7mm; line-height: 14pt; }
+.cmdbox { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; background: #EEEEEE; border: 0.5pt solid #BDBDBD; border-radius: 2mm; padding: 0.8mm 3mm; display: inline-block; margin: 0.5mm 0 0.5mm 7mm; line-height: 13pt; font-size: 10.5pt; }
+.cmdrow { display: flex; align-items: center; gap: 3mm; margin: 0.5mm 0 0.5mm 7mm; } .cmdrow .cmdbox { margin: 0; }
 .amber { border-left: 3pt solid #F9A825; padding-left: 4mm; margin-bottom: 1.2mm; }
 .panel { background: #F5F5F5; border-radius: 2mm; padding: 1.5mm 3mm; margin-top: 1.2mm; }
 .panel .pl { font-size: 11pt; font-weight: bold; color: #555; }
 .ind { margin-left: 4mm; }
-.footer { text-align: center; color: #888; font-size: 8.5pt; line-height: 10pt; margin-top: 1.5mm; }
+.exc { color: #B71C1C; }
+.footer { text-align: center; color: #888; font-size: 8.5pt; line-height: 10pt; margin-top: 1mm; }
 .block:last-of-type { margin-bottom: 0; }
 </style></head><body><div class='page'>
 <div class='block'><div class='banner b1'><div class='l1'>而家要做:AVGO</div><div class='r'>死線:12月3日(星期四)美東下午4點收市<br>即係香港時間12月4日(星期五)朝早5點</div></div>
@@ -44,21 +46,24 @@ code { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; background: 
 <div class='item'><div class='num'><span class='dot red'>4</span></div><div>12月9日前,答應跟老詹嘅收市價止蝕。</div></div>
 <div class='item'><div class='num'><span class='dot red'>5</span></div><div>唔准再買 AVGO。</div></div>
 <div class='item done'><div class='num'><span class='tick'>✓</span></div><div>已做咗:微牛欠款已還清,11月26日查過。唔好再欠。</div></div>
-<div class='div'></div><div class='conseq'>任何一項做唔到,CRO 建議12月9日業績前賣晒 AVGO。</div><div class='you'>每一張單都係你自己落。</div></div>
+<div class='div'></div><div class='conseq'>任何一項做唔到,CRO 建議12月9日業績前賣晒 AVGO。</div><div class='exc'>例外:你個數淨係夠留1股,就賣1股、留1股。</div><div class='you'>每一張單都係你自己落。</div></div>
 <div class='tiles'><div class='tile'><div class='tl'>留2股:你個數最少要係</div><div class='tn'>大約 US$9,200</div></div><div class='tile'><div class='tl'>留1股:你個數最少要係</div><div class='tn'>大約 US$4,600</div></div><div class='tile note'>用11月26日價 US$303.50 計。<br>兩個都係估算。</div></div></div>
 <div class='block blk2'><div class='banner b2'><div class='l2'>得閒先做:設定電腦</div><div class='r2'>大約70分鐘,冇死線。每一步完整寫喺電腦待辦清單。</div></div>
-<div class='item'><div class='num'><span class='dot slate'>1</span></div><div>解壓縮到桌面,再由 V6.4.2 資料夾複製舊引擎檔入去。</div></div>
+<div class='item'><div class='num'><span class='dot slate'>1</span></div><div>將 ZIP 入面嘅 v6.6 資料夾搬去桌面。</div></div>
+<div class='sub'>由 V6.4.2 資料夾複製 dual_engine_v6_4.py 入去,唔好改佢。</div>
+<div class='sub grey'>之前裝過 v6.6:唔好覆蓋 owner_settings.json 同 ledger。</div>
 <div class='sub'>然後喺 CMD 打:<code>pip install yfinance pandas numpy requests ta</code></div>
 <div class='item'><div class='num'><span class='dot slate'>2</span></div><div>雙擊<b>電腦檢查_v66.bat</b>,再將報告傳畀 AI。</div></div>
 <div class='sub grey'><span class='gtick'>✓</span> 應該見到:153 項過,0 項唔過,同埋「一致」。</div>
-<div class='sub'>然後雙擊一次<b>掃描_v66.bat</b>。將相片同記錄檔傳畀 AI。</div>
-<div class='item'><div class='num'><span class='dot slate'>3</span></div><div>Telegram:舊 token 洩漏咗。整個新嘅,永遠唔好傳畀 AI。</div></div>
-<div class='sub'>喺 v6.6 資料夾入面打:</div><div class='sub cmdbox'>cd %USERPROFILE%\Desktop\v6.6<br>python notify_v66.py --test</div><div class='sub grey'>你應該會收到測試訊息。</div>
-<div class='item'><div class='num'><span class='dot slate'>4</span></div><div>雙擊 <b>schedule_v66.bat</b>。之後星期二至六,香港時間朝早6:30有訊息。</div></div>
+<div class='sub'>然後雙擊一次<b>掃描_v66.bat</b>。將相片同 selftest_last.log 傳畀 AI。</div>
+<div class='item'><div class='num'><span class='dot slate'>3</span></div><div>Telegram:先作廢舊 token,整個新嘅,永遠唔好傳畀 AI。</div></div>
+<div class='sub cmdrow'><div>喺 CMD 打:</div><div class='cmdbox'>cd %USERPROFILE%\Desktop\v6.6<br>python notify_v66.py --test</div><div class='grey'>你應該會收到測試訊息。</div></div>
+<div class='item'><div class='num'><span class='dot slate'>4</span></div><div>雙擊 <b>schedule_v66.bat</b>。之後星期二至六,香港時間朝早6:30應該有訊息。</div></div>
+<div class='sub'><b>冇收到訊息,或者訊息寫出錯:當日唔好落單。</b></div>
 <div class='item'><div class='num'><span class='dot slate'>5</span></div><div>TradingView:貼上指標。每個圖表一個警報,用日線圖。</div></div>
 </div>
 <div class='block'><div class='banner b3'><div class='l2'>記住:淨係做模擬交易</div><div class='r3'>V6.6 同舊嘅 V6.4.2 都唔好落真錢單。</div></div>
 <div class='amber'>你嘅微牛真戶口:任何貨幣嘅現金都永遠唔可以低過零。<br>低過零就係違規:即刻話 AI 知,同埋3個交易日內還清。<br>未還清之前,嗰個戶口唔准開新倉。</div>
-<div>仲有效:手上股票嘅止蝕,同12月4日起嘅禁買日。兩樣都喺清單。</div><div><b>落第一張模擬盤單前,睇晒清單「每日訊息」嘅9條規則。</b></div>
-<div class='panel'><div class='pl'>最重要嘅幾條:</div><div>淨係 Telegram 清單有,而且 TradingView 有收市提示,<br>兩邊係同一隻股、同一個引擎同埋同一個收市日,先買。</div><div>美股開市,香港時間:美國夏令晚上9:30,冬令晚上10:30。</div><div>開市時,以券商張單狀態為準。止蝕永遠用 Telegram 嘅。</div><div class='ind'><b>未成交:</b>取消張單。</div><div class='ind'><b>成交價喺止蝕或以下:</b>即刻賣,記錄兩筆交易,話 AI 知。</div><div class='ind'><b>成交價高過止蝕:</b>即刻自己落止蝕單,用嗰個止蝕價。</div><div><b>開市嗰陣睇唔住?咁當日就唔好落嗰張單。</b></div></div></div>
+<div>仲有效:AAPL 同 6160 嘅止蝕,同12月4日起嘅禁買日。</div><div>6160:12月11日前要交資料同書面答應止蝕,見清單「要你決定」。</div><div><b>落第一張模擬盤單前,睇晒清單「每日訊息」嘅9條規則。</b></div>
+<div class='panel'><div class='pl'>最重要嘅幾條:</div><div>淨係 Telegram 清單有,而且 TradingView 有收市提示,<br>兩邊係同一隻股、同一個引擎同埋同一個收市日,先買。</div><div>Telegram 寫「停開新倉」或者「倉位已滿」:當日唔好買。</div><div>美股開市,香港時間:美國夏令晚上9:30,冬令晚上10:30。</div><div>開市時,以券商張單狀態為準。止蝕永遠用 Telegram 嘅。</div><div class='ind'><b>未成交:</b>取消張單。</div><div class='ind'><b>成交價喺止蝕或以下:</b>即刻賣,記錄兩筆交易,話 AI 知。</div><div class='ind'><b>成交價高過止蝕:</b>即刻自己落止蝕單,用嗰個止蝕價。</div><div><b>開市嗰陣睇唔住?咁當日就唔好落嗰張單。</b></div></div></div>
 <div class='footer'>2026年11月27日。研究同決策支援,唔係投資建議。AI 唔會落單。全部完整寫喺電腦待辦清單。</div></div></body></html>

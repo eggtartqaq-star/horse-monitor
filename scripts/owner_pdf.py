@@ -48,18 +48,18 @@ def lead_bold(t):
 CSS = """
 @page { size: A4; margin: 0; }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: "WenQuanYi Zen Hei", sans-serif; font-size: 13pt; line-height: 15.6pt; color: #111; }
-.page { width: 210mm; height: 297mm; padding: 8mm 12mm 3mm 12mm; position: relative; overflow: hidden; }
+body { margin: 0; font-family: "WenQuanYi Zen Hei", sans-serif; font-size: 12.5pt; line-height: 14.6pt; color: #111; }
+.page { width: 210mm; height: 297mm; padding: 5.5mm 12mm 2mm 12mm; position: relative; overflow: hidden; }
 .banner { display: flex; justify-content: space-between; align-items: center; color: #fff; border-radius: 2mm; padding: 1.2mm 4mm; margin-bottom: 1.5mm; }
 .b1 { background: #C62828; min-height: 13mm; } .b2 { background: #37474F; } .b3 { background: #424242; }
 .banner .l1 { font-size: 20pt; font-weight: bold; line-height: 22pt; }
 .banner .r { text-align: right; font-weight: bold; font-size: 13pt; }
 .banner .l2 { font-size: 15pt; font-weight: bold; } .banner .r2 { font-size: 11.5pt; text-align: right; }
 .banner .r3 { font-size: 12pt; font-weight: bold; text-align: right; }
-.block { margin-bottom: 3mm; }
-.blk2 { font-size: 12pt; line-height: 15pt; }
+.block { margin-bottom: 2.5mm; }
+.blk2 { font-size: 11.5pt; line-height: 13.8pt; }
 b, .lead, .conseq, .you, .banner .l1, .banner .l2, .banner .r, .banner .r3, .tile .tn, .redbox .label, .panel .pl { -webkit-text-stroke: 0.45px currentColor; }
-.lead { font-weight: bold; margin: 0 0 2.5mm 0; }
+.lead { font-weight: bold; margin: 0 0 2mm 0; }
 .redbox { border: 1.5pt solid #C62828; background: #FDECEA; border-radius: 2mm; padding: 3.2mm 3mm 1.8mm 3mm; position: relative; }
 .redbox .label { position: absolute; top: -3mm; left: 4mm; background: #fff; color: #C62828; font-weight: bold; font-size: 11pt; padding: 0 1.5mm; line-height: 13pt; }
 .item { display: flex; margin: 0.4mm 0; } .num { flex: 0 0 7mm; }
@@ -69,17 +69,19 @@ b, .lead, .conseq, .you, .banner .l1, .banner .l2, .banner .r, .banner .r3, .til
 .div { border-top: 0.5pt solid #C62828; margin: 1.5mm 0; }
 .conseq { color: #B71C1C; font-weight: bold; } .you { font-weight: bold; }
 .tiles { display: flex; gap: 3mm; margin-top: 2mm; }
-.tile { flex: 0 0 58mm; background: #F5F5F5; border-radius: 2mm; padding: 1.2mm 3mm; }
-.tile .tl { font-size: 11pt; color: #555; line-height: 13pt; } .tile .tn { font-size: 18pt; font-weight: bold; line-height: 21pt; }
+.tile { flex: 0 0 58mm; background: #F5F5F5; border-radius: 2mm; padding: 1mm 3mm; }
+.tile .tl { font-size: 11pt; color: #555; line-height: 13pt; } .tile .tn { font-size: 16pt; font-weight: bold; line-height: 19pt; }
 .tile.note { flex: 1 1 auto; background: none; border-left: 1pt solid #999; border-radius: 0; color: #666; font-size: 11pt; line-height: 14pt; padding-top: 2mm; }
 .sub { margin-left: 7mm; } .grey { color: #555; font-size: 12pt; } .gtick { color: #2E7D32; font-weight: bold; }
 code { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; background: #EEEEEE; border: 0.5pt solid #BDBDBD; border-radius: 2mm; padding: 0.3mm 2.5mm; white-space: nowrap; }
-.cmdbox { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; background: #EEEEEE; border: 0.5pt solid #BDBDBD; border-radius: 2mm; padding: 1mm 3mm; display: inline-block; margin: 0.8mm 0 0.8mm 7mm; line-height: 14pt; }
+.cmdbox { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; background: #EEEEEE; border: 0.5pt solid #BDBDBD; border-radius: 2mm; padding: 0.8mm 3mm; display: inline-block; margin: 0.5mm 0 0.5mm 7mm; line-height: 13pt; font-size: 10.5pt; }
+.cmdrow { display: flex; align-items: center; gap: 3mm; margin: 0.5mm 0 0.5mm 7mm; } .cmdrow .cmdbox { margin: 0; }
 .amber { border-left: 3pt solid #F9A825; padding-left: 4mm; margin-bottom: 1.2mm; }
 .panel { background: #F5F5F5; border-radius: 2mm; padding: 1.5mm 3mm; margin-top: 1.2mm; }
 .panel .pl { font-size: 11pt; font-weight: bold; color: #555; }
 .ind { margin-left: 4mm; }
-.footer { text-align: center; color: #888; font-size: 8.5pt; line-height: 10pt; margin-top: 1.5mm; }
+.exc { color: #B71C1C; }
+.footer { text-align: center; color: #888; font-size: 8.5pt; line-height: 10pt; margin-top: 1mm; }
 .block:last-of-type { margin-bottom: 0; }
 """
 
@@ -96,21 +98,26 @@ def build(L):
         dot = f"<span class='dot red'>{n}</span>" if n else ""
         h.append(f"<div class='item'><div class='num'>{dot}</div><div>{fmt(g(k))}</div></div>")
     h.append(f"<div class='item done'><div class='num'><span class='tick'>✓</span></div><div>{fmt(g('L12'))}</div></div>")
-    h.append(f"<div class='div'></div><div class='conseq'>{fmt(g('L13'))}</div><div class='you'>{fmt(g('L14'))}</div></div>")
+    h.append(f"<div class='div'></div><div class='conseq'>{fmt(g('L13'))}</div><div class='exc'>{fmt(g('L13b'))}</div>"
+             f"<div class='you'>{fmt(g('L14'))}</div></div>")
     h.append(f"<div class='tiles'><div class='tile'><div class='tl'>{fmt(g('L15'))}</div><div class='tn'>{fmt(g('L16'))}</div></div>"
              f"<div class='tile'><div class='tl'>{fmt(g('L17'))}</div><div class='tn'>{fmt(g('L18'))}</div></div>"
              f"<div class='tile note'>{fmt(g('L19'))}<br>{fmt(g('L20'))}</div></div></div>")
     # Block 2
     h.append(f"<div class='block blk2'><div class='banner b2'><div class='l2'>{fmt(g('L21'))}</div><div class='r2'>{fmt(g('L22'))}</div></div>")
-    steps = [("1", "L23", [("L24", "")]), ("2", "L25", [("L26", "tick"), ("L27", "")]), ("3", "L28", [("L29", "cmd")]),
-             ("4", "L30", []), ("5", "L31", [])]
+    steps = [("1", "L23", [("L23b", ""), ("L23c", "grey"), ("L24", "")]), ("2", "L25", [("L26", "tick"), ("L27", "")]),
+             ("3", "L28", [("L29", "cmd")]), ("4", "L30", [("L30b", "warn")]), ("5", "L31", [])]
     for n, k, subs in steps:
         h.append(f"<div class='item'><div class='num'><span class='dot slate'>{n}</span></div><div>{fmt(g(k))}</div></div>")
         for sk, kind in subs:
             if kind == "cmd":      # Telegram test: lead line, one grey box with both commands, result line
                 cmds = "<br>".join(html.escape(re.sub(r"^<<|>>$", "", g(x))) for x in ("L29b", "L29c"))
-                h.append(f"<div class='sub'>{fmt(g('L29a'))}</div><div class='sub cmdbox'>{cmds}</div>"
-                         f"<div class='sub grey'>{fmt(g('L29d'))}</div>")
+                h.append(f"<div class='sub cmdrow'><div>{fmt(g('L29a'))}</div><div class='cmdbox'>{cmds}</div>"
+                         f"<div class='grey'>{fmt(g('L29d'))}</div></div>")
+            elif kind == "grey":
+                h.append(f"<div class='sub grey'>{fmt(g(sk))}</div>")
+            elif kind == "warn":
+                h.append(f"<div class='sub'><b>{fmt(g(sk))}</b></div>")
             elif kind == "tick":
                 h.append(f"<div class='sub grey'><span class='gtick'>✓</span> {fmt(g(sk))}</div>")
             else:
@@ -119,8 +126,8 @@ def build(L):
     # Block 3
     h.append(f"<div class='block'><div class='banner b3'><div class='l2'>{fmt(g('L32'))}</div><div class='r3'>{fmt(g('L33'))}</div></div>")
     h.append(f"<div class='amber'>{fmt(g('L34'))}<br>{fmt(g('L35'))}<br>{fmt(g('L36'))}</div>")
-    h.append(f"<div>{fmt(g('L37'))}</div><div><b>{fmt(g('L38'))}</b></div>")
-    h.append(f"<div class='panel'><div class='pl'>{fmt(g('L39'))}</div><div>{fmt(g('L40'))}<br>{fmt(g('L41'))}</div>"
+    h.append(f"<div>{fmt(g('L37'))}</div><div>{fmt(g('L37b'))}</div><div><b>{fmt(g('L38'))}</b></div>")
+    h.append(f"<div class='panel'><div class='pl'>{fmt(g('L39'))}</div><div>{fmt(g('L40'))}<br>{fmt(g('L41'))}</div><div>{fmt(g('L41b'))}</div>"
              f"<div>{fmt(g('L42'))}</div><div>{fmt(g('L43'))}</div>"
              f"<div class='ind'>{lead_bold(g('L44'))}</div><div class='ind'>{lead_bold(g('L45'))}</div>"
              f"<div class='ind'>{lead_bold(g('L46'))}</div><div><b>{fmt(g('L47'))}</b></div></div></div>")
@@ -130,9 +137,15 @@ def build(L):
 
 if __name__ == "__main__":
     L = load(sys.argv[1])
-    need = [f"L{i:02d}" for i in range(1, 49) if i != 29] + ["L29a", "L29b", "L29c", "L29d"]
+    need = ([f"L{i:02d}" for i in range(1, 49) if i != 29] + ["L29a", "L29b", "L29c", "L29d"]
+            + ["L13b", "L23b", "L23c", "L30b", "L37b", "L41b"])
+    extra = [k for k in L if k not in need]
     missing = [k for k in need if k not in L]
     if missing:
         print("missing lines:", missing)
+        sys.exit(1)
+    if extra:                       # a line the layout does not place would be dropped silently
+        print("lines not placed by build():", extra)
+        sys.exit(1)
     open(sys.argv[2], "w", encoding="utf-8").write(build(L))
     print("lines", len(L), "-> ", sys.argv[2])

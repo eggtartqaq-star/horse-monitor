@@ -17,5 +17,9 @@ const { chromium } = require('playwright');
              footerBottom: foot ? Math.round(foot.getBoundingClientRect().bottom) : null };
   });
   console.log(JSON.stringify(m), '(one A4 page = 1123 px; need lastBlockBottom <= footerTop and footerBottom <= 1123)');
+  if (!(m.lastBlockBottom <= m.footerTop && m.footerBottom <= 1123)) {
+    console.error('OVERFLOW: content does not fit one A4 page');
+    await b.close(); process.exit(1);
+  }
   await b.close();
 })();
