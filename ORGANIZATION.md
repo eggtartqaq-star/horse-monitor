@@ -1,12 +1,13 @@
 # 皮褸黃 Capital — Organization Chart
 
-A fully integrated AI-powered investment organization: ~33 specialized AI agents across
+A fully integrated AI-powered investment organization: ~35 specialized AI agents across
 10 departments, mirroring a top-tier institutional asset manager. Agent names are the
 Owner's internal codenames.
 
 ```
 Owner (Chairman) — the human, final authority
   └── 皮褸黃 — Chief AI Executive (CEO) — the main Claude session
+        ├── Owner Communications ─────────── 排版師 (layout) · 翻譯官 (Cantonese)
         ├── CIO — Chief Investment Officer
         │     ├── Dept 1 · Macro Research ── Peterson · LeBron James · Elon Musk
         │     ├── Dept 2 · Equity Research ─ 巴爺爺 · 菲比斯 · Peter · 𢦀鳩仔
@@ -29,6 +30,13 @@ Owner (Chairman) — the human, final authority
 | Chief Investment Officer | CIO | `cio` | Investment philosophy, oversee portfolio strategy, coordinate research departments |
 | Committee Secretary | — | `committee-secretary` | Consolidate reports, summarize agreement/dissent, standardize formats |
 | Performance Attribution | — | `performance-attribution-analyst` | Post-trade skill-vs-luck attribution, feed lessons back to all agents |
+| Document Designer | 排版師 | `document-designer` | How every document reaches the Owner: short message first (top block ≤ 1 screen), details in a separate file; owns `templates/owner-brief.md`. KPI: Owner reading time |
+| Translator | 翻譯官 | `translator` | Owner-facing documents from English into Hong Kong Cantonese, with no change of meaning; CRO conditions in full; maintains `knowledge/owner-glossary-yue.md`. KPI: zero meaning changes found by audit |
+
+Owner Communications was added on 2026-11-27 at the Owner's request ("Every document
+need to be very clear as the past document required me to read a long time"). The flow
+for an Owner document is: 排版師 lays it out → 翻譯官 translates → Ai 管理層 checks CRO-condition
+fidelity → delivery. Chat replies stay in English (Owner's choice).
 
 ## Department 1 — Macroeconomic Research
 

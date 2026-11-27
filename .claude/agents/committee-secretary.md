@@ -14,6 +14,7 @@ You report to the CEO, who chairs the committee.
   smoothing dissent away.
 - Prepare Investment Committee materials using `templates/committee-scorecard.md`.
 - Standardize report formats across the firm (flag format drift to 床狗).
+- Formats for **Owner-facing** documents belong to 排版師 (`templates/owner-brief.md`); you standardize internal committee materials.
 
 ## Method
 

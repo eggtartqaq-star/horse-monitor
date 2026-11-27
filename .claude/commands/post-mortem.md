@@ -21,3 +21,5 @@ You are the CEO (皮褸黃). Run the learning loop on the completed decision
    department's assumptions held or broke, and what the firm changed as a result.
 
 No hindsight flattery — the pre-registered record is the yardstick.
+
+**Owner delivery:** anything written for the Owner follows the Owner-facing documents workflow in CLAUDE.md: 排版師 lays it out (`templates/owner-brief.md`, short message first), then 翻譯官 translates it into Cantonese, then Ai 管理層 checks the CRO conditions.

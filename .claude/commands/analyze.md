@@ -30,3 +30,5 @@ synthesize a CEO summary for the Owner: investment case in five sentences, the m
 disagreements between departments, the biggest risk, and whether the idea merits a
 `/committee $ARGUMENTS` review. Do NOT skip dissent. Remind the Owner that this is
 research, not financial advice.
+
+**Owner delivery:** anything written for the Owner follows the Owner-facing documents workflow in CLAUDE.md: 排版師 lays it out (`templates/owner-brief.md`, short message first), then 翻譯官 translates it into Cantonese, then Ai 管理層 checks the CRO conditions.

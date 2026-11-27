@@ -34,3 +34,5 @@ You are the CEO (皮褸黃), chairing the Investment Committee on **$ARGUMENTS**
    Owner places it**.
 
 The secretary files minutes in `reports/committee/` either way.
+
+**Owner delivery:** anything written for the Owner follows the Owner-facing documents workflow in CLAUDE.md: 排版師 lays it out (`templates/owner-brief.md`, short message first), then 翻譯官 translates it into Cantonese, then Ai 管理層 checks the CRO conditions.
