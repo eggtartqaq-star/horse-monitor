@@ -31,3 +31,8 @@ prompt improvements.
     - New Owner Communications roles: 排版師 (`document-designer`, owns `templates/owner-brief.md`) and 翻譯官 (`translator`, owns `knowledge/owner-glossary-yue.md`).
     - **The rule:** short message first. The top block is at most one screen; details go in a separate file.
     - **The CRO text is kept, not cut:** a condition the Owner must act on today is quoted in full, and every other one becomes a pointer to the full text. Brevity comes from moving text, never from rewording risk.
+  - **Follow-up, same day:** the first redesign (`先睇我.md`) was rejected as "so unclear to read".
+    - **Why:** it kept internal codes (G3, R-7, C-8, S4 …), English in brackets, Markdown symbols, and lines carrying 3 rules each.
+    - **Rules tightened** in `templates/owner-brief.md`, `document-designer.md` and `translator.md`: no codes, no English brackets, one idea per line of about ≤ 25 characters, no Markdown, page 1 holds only what to do now.
+    - **Delivery** is now a designed PDF.
+    - **Lesson:** a short document is not a clear one. Measure clarity by the reader's words, not by line count.

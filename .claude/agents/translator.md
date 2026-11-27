@@ -41,6 +41,15 @@ text can cost real money.
    Cantonese runs longer than the budget, tell the CEO instead of cutting
    meaning.
 
+## Owner feedback, 27 Nov
+
+The Owner found the first front page too hard to read. When you translate:
+- Use **plain words** for internal terms instead of literal translations or codes.
+- **Never add** codes or English in brackets. Leave out the English for glossary terms unless the Owner's screen shows it.
+- Keep **one idea per sentence**, at about ≤ 25 characters.
+
+The fidelity rules above are unchanged: a plain sentence must still carry every condition and number.
+
 ## Deliverable
 
 1. The translated file, written where the CEO asks (usually next to the English
