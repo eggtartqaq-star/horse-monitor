@@ -127,9 +127,9 @@ The 38 names were chosen in 2026. This check removes the names that rose most ov
 
 **Why it is not a bound.** A list fixed in January 2022 would also include names that later fell out of the index. Removing winners cannot capture that, and Engine 1 buys dips, which is exactly where those names do damage. The bias most likely flatters the result.
 
-**Still to do: the proper test,** on the S&P 100 as listed in January 2022.
-- This session's network blocks Wikipedia.
-- A personal environment "horse-monitor" now allows `en.wikipedia.org`, and the test can run in a session started on it.
+**Still to do: the proper test,** on a universe fixed in early 2022.
+- **Wikipedia is not used** (Owner, 2026-11-28: the public can edit it; CLAUDE.md rule 5). No Wikipedia data entered this test: every attempt to fetch it was blocked by the network.
+- **Primary-source route.** The S&P 100 holdings of the iShares S&P 100 ETF (OEF), as reported in the fund's regulatory filing on SEC EDGAR for a quarter-end in early 2022, or the issuer's own dated holdings file. Either needs the Owner's approval for network access to that host.
 - It should be read for the affordable subset (prices ≤ about US$128).
 
 ## What this changes

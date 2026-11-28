@@ -85,6 +85,11 @@ follow the same short-message-first rule.
 5. **No invented numbers.** Every figure must come from a fetched source or a config
    file, dated and cited. Mark estimates as estimates. This is research and decision
    support, not financial advice; markets cannot be reliably predicted.
+   - **Sources the firm does not use** (Owner, 2026-11-28: "We don't use Wikipedia
+     people can edit from the content in it"): Wikipedia and any other site that the
+     public can edit, plus tradingkey.com. Use primary sources instead: the company,
+     the exchange or index provider, the fund issuer, a regulator's filing (e.g. SEC
+     EDGAR), or the broker's read-only data.
 
 ## State files
 
