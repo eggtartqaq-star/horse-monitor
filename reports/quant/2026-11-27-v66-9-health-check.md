@@ -93,3 +93,17 @@
 No CORE_FILES were changed, and the fingerprint is `2b7b62182068`.
 
 *Research and decision support, not financial advice. No agent of this firm places orders.*
+
+---
+
+## Addendum, 2026-11-28: merged into `selftest.py`
+
+- **Why now:** the Owner chose to keep and develop V6.6 and asked for the next PC package.
+- **What changed:**
+  - X01–X10 now live in `selftest.py` (function `_extra_checks_1128`), and `selftest_extra.py` is removed;
+  - `selftest.py` passes **163** checks, normally and under `-O`.
+- **Mutation sweep, re-run with `selftest.py` alone:** **23 / 23 caught** (`scratchpad/mut70/out_merged.txt`).
+- **What is unchanged:** the rules fingerprint `2b7b62182068`.
+- **Updated to match:**
+  - `results/release_stamp.txt`, tests line: `selftest.py=c87d5b143531`;
+  - the README, checklist C4 and `先睇我.pdf` now say 163.
