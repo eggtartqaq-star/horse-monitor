@@ -1,0 +1,2 @@
+﻿run_utc,bar_date,market,spy_vs_ma200_pct,n_live,live,held_signals,missing,data_source,earnings_check,version,fingerprint
+2026-11-27 21:03,2026-11-25,bear,-1.93,0,,,,Webull read-only daily bars,off (no Yahoo in cloud),V6.6.9,2b7b62182068
