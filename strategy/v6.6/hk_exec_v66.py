@@ -18,6 +18,7 @@ V6.6 香港實際執行測試(2026-11-28)—— 研究工具,唔係規則指紋�
   Lab   = 回測原樣(止盈盤中成交、到期收市出)
   HK-1  = 到期改次日開市出;止盈照盤中(等於券商有 OCO,可以同時掛止蝕同止盈)
   HK-2  = HK-1 + 止盈要次日開市先賣(冇 OCO;F-8)—— 呢個先係你而家實際做到嘅
+  HK-2-slot = HK-2,但「聽日開市要賣」嘅倉喺今晚掃描唔計佔位(Tom 2026-11-28 #8;要 CRO 定嘅營運規則)
 設定同穩健度測試一樣(robustness_v66.live_cfg:資金 HK$12,500、基數 HK$10,000、每邊最低 US$0.35 + 10bp(估算)、
   實盤入場、開市單、留 30% 現金、其餘 T-bill)。
 
@@ -66,10 +67,17 @@ PATCHES = [
      "            if HK_TIME:\n"
      "                hk_pending[id(p)] = \"滿60日→次日開市\"; return False\n"
      "            close_trade(p, d, c, \"滿60日\"); return True"),
+    # Tom 2026-11-28 #8:HK-2-slot —— 已決定聽日開市賣嘅倉,喺今晚掃描唔計佔位(營運規則問題,唔係市場成本)
+    ("            if not unlimited and len(open_pos) + len(pending) >= cfg.max_positions:",
+     "            if not unlimited and (len([q for q in open_pos if id(q) not in hk_pending]) if HK_SLOT\n"
+     "                                  else len(open_pos)) + len(pending) >= cfg.max_positions:"),
+    # Tom 2026-11-28 #4:探針 —— 完結時唔可以有殘留嘅 hk_pending
+    ("    tr = pd.DataFrame(trades)",
+     "    assert not hk_pending, \"stale hk_pending\"\n    tr = pd.DataFrame(trades)"),
 ]
 
 
-def make_simulate(hk_target, hk_time):
+def make_simulate(hk_target, hk_time, hk_slot=False):
     src = textwrap.dedent(inspect.getsource(lab.simulate))
     for old, new in PATCHES:
         n = src.count(old)
@@ -78,7 +86,7 @@ def make_simulate(hk_target, hk_time):
             sys.exit(1)
         src = src.replace(old, new)
     ns = dict(vars(lab))
-    ns.update(HK_TARGET=hk_target, HK_TIME=hk_time)
+    ns.update(HK_TARGET=hk_target, HK_TIME=hk_time, HK_SLOT=hk_slot)
     exec(compile(src, "<simulate_hk>", "exec"), ns)
     return ns["simulate"]
 
@@ -107,11 +115,12 @@ def main():
         if h_ref != h_new:
             sys.exit(1)
 
-    variants = [("Lab(回測原樣)", False, False), ("HK-1(到期次日開市;止盈照盤中=有OCO)", False, True),
-                ("HK-2(到期同止盈都次日開市;冇OCO,你而家嘅做法)", True, True)]
+    variants = [("Lab(回測原樣)", False, False, False), ("HK-1(到期次日開市;止盈照盤中=有OCO)", False, True, False),
+                ("HK-2(到期同止盈都次日開市;冇OCO,你而家嘅做法)", True, True, False),
+                ("HK-2-slot(同 HK-2,但聽日開市要賣嘅倉今晚唔計佔位)", True, True, True)]
     rows, trades = [], {}
-    for name, ht, hm in variants:
-        tr, e, rej = run(make_simulate(ht, hm), sig, cfg, tb, first, last)
+    for name, ht, hm, hs in variants:
+        tr, e, rej = run(make_simulate(ht, hm, hs), sig, cfg, tb, first, last)
         done = tr[tr["reason"] != "數據結束"]
         xa, st, sb = RB.excess_cagr(e, tb, first, last)
         xo, _, _ = RB.excess_cagr(e, tb, IS.OOS_START, last)
@@ -124,7 +133,7 @@ def main():
                      "交易合計US$": round(done["pnl_usd"].sum(), 1), "最大回撤%": round(st["maxDD%"], 2),
                      "交易指紋": lab.trade_hash(tr)})
         trades[name] = tr
-        tr.to_csv(os.path.join(a.out, f"trades_{['lab', 'hk1', 'hk2'][len(trades) - 1]}.csv"), index=False,
+        tr.to_csv(os.path.join(a.out, f"trades_{['lab', 'hk1', 'hk2', 'hk2slot'][len(trades) - 1]}.csv"), index=False,
                   encoding="utf-8-sig")
     res = pd.DataFrame(rows)
     res.to_csv(os.path.join(a.out, "summary.csv"), index=False, encoding="utf-8-sig")
