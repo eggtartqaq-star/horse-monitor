@@ -101,3 +101,19 @@ brackets in the long detail files only. In Owner front pages and PDFs, give no E
 | Webull | 微牛 | as on 先睇我 |
 | "3 of 4 votes" | 4票有3票 | |
 | "by <date>" | <日期>或之前 | inclusive; "before <date>" = <日期>前 |
+
+## Added 2026-11-28 (Webull fee sheet, `reports/owner-summaries/2026-11-28-webull-fees.txt`)
+
+| English | Cantonese | Note |
+|---|---|---|
+| commission | 佣金 | as on the Webull HK screen |
+| platform fee | 平台費 | as on the Webull HK screen |
+| regulatory fee (SEC fee on sells) | 證監會規費 / 規費 | on-screen label; for US stocks it is the US SEC's fee on sells |
+| detail fee page | 詳細收費頁 | Webull's 「詳細費用」 page |
+| DAY (Webull screen label) | 「當日有效」 | same meaning as 全日有效(DAY) above; quote the screen label when you point to a Webull order |
+| good-till-cancelled (GTC) | 長期有效 | plain word; the broker's own label may differ |
+| overnight session | 夜盤 | Webull 全時段交易 orders can fill here |
+| regular hours | 正常時段 | |
+| spread and slippage | 買賣差價同滑價 | |
+| promotion end date | 優惠完結日期 | |
+| minimum fee per side | 每次買或賣最少收 | "per side" = each buy and each sell, not per round trip |
