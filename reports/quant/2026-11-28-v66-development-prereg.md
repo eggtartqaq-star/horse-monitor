@@ -117,3 +117,26 @@
 - **Expected outcome, stated now (amendment 7):** given the data's power, all hypotheses will probably fail P5. That will be reported as it is, without a retry.
 
 **The marks are now fixed.** No addendum may loosen them once a verdict run exists.
+
+### Addendum 1 (CEO, 2026-11-28): H7, a combined V6.7 candidate. Added before any verdict run; awaiting sign-off.
+
+**Why:** the Owner asked whether the failure lies in the rules, and approved adding a V6.7 candidate. The diagnosis is in `reports/quant/2026-11-28-v66-diagnosis.md`; it is descriptive, on already-seen data, and is not evidence.
+- Engine 2's every-signal edge sits almost entirely in the 10 hindsight risers: +3.49%/trade, against +0.31% on the other names.
+- The account's size rule keeps only the affordable names.
+
+**Owner fact (28 Nov):** Webull HK allows **whole US shares only**. A fractional-share hypothesis (H6 in the diagnosis) is therefore **not registered**.
+
+**H7: "V6.7 candidate".** One run, judged as a single hypothesis:
+- **Engine 1 only** (`engines=("E1",)`). Engine 2 is off.
+- **Universe fixed by rule:** the S&P 100 constituents per the OEF N-PORT filing for early 2022 (the same list as P3 and H5). It would be refreshed once a year when live (amendment 14).
+- **Everything else unchanged:** whole shares; 10% notional cap on the HK$10,000 base; 2 slots; 1% risk; HK-2 execution basis; real cost per amendment 3.
+
+**How H7 is judged:**
+- It must pass **every** mark in §1 and §5 (P1, P2, P3/amendment 9, P4/P4b, P5, the 100-trade floor, the best-ticker check) **on the 2022 list only**.
+- Its 38-name result is descriptive only, already seen through H3.
+
+**The family** becomes H3, H4, H5 and H7 (m = 4). Holm therefore gets stricter, not looser. No mark is changed.
+
+**Larger base:** with whole shares, affordability can only improve through a larger sizing base. Any such test is re-registered by a further addendum, signed before running, and only after the Owner's dated LNW meets the CRO's condition (≥ HK$250,000 or ≥ HK$500,000).
+
+**Sign-off:** Math King and the CRO append below.
