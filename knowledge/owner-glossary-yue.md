@@ -108,7 +108,7 @@ brackets in the long detail files only. In Owner front pages and PDFs, give no E
 |---|---|---|
 | commission | 佣金 | as on the Webull HK screen |
 | platform fee | 平台費 | as on the Webull HK screen |
-| regulatory fee (SEC fee on sells) | 證監會規費 / 規費 | on-screen label; for US stocks it is the US SEC's fee on sells |
+| regulatory fee | 證監會規費 / 規費 | on-screen label. *Derived, not verified:* it looks like the US SEC's fee on sells, but an overnight **buy** was also charged (2026-11-28 audit). Say 「似係…但未核實」 |
 | detail fee page | 詳細收費頁 | Webull's 「詳細費用」 page |
 | DAY (Webull screen label) | 「當日有效」 | same meaning as 全日有效(DAY) above; quote the screen label when you point to a Webull order |
 | good-till-cancelled (GTC) | 長期有效 | plain word; the broker's own label may differ |
