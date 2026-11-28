@@ -53,8 +53,17 @@ def run_one(sig, cfg, tb, first, last):
     return tr, eq["equity"]
 
 
-def ret(e, a, b):
+def anchored(e, a, b, floor):
+    """Tom 2026-11-27 R-1:窗口回報要由「窗口開始之前最後一個收市」計起,唔係由窗口第一日收市 ——
+    否則每個窗口都漏咗第一個交易日嘅回報(例:2024-01-02 系統 −0.51%,2024 年超額由 −0.57% 變咗 −0.02%)。
+    floor = 期間第一日:窗口由 floor 開始就由 floor 收市計(系統同 T-bill 用同一個起點)。"""
     w = IS.window(e, a, b)
+    pre = e[(e.index < a) & (e.index >= floor)]
+    return pd.concat([pre.iloc[-1:], w]) if len(pre) else w
+
+
+def ret(e, a, b, floor):
+    w = anchored(e, a, b, floor)
     return (w.iloc[-1] / w.iloc[0] - 1) * 100 if len(w) > 1 else np.nan
 
 
@@ -82,18 +91,41 @@ def main():
     print(f"\n基準(全期):系統 CAGR {st_all['CAGR%']:.2f}%,T-bill {sb_all['CAGR%']:.2f}%,超額 {x_all:+.2f}%/年;"
           f"樣本外(2025-01-01 起)超額 {x_oos:+.2f}%/年;交易 {len(done0)}")
 
-    # A. 逐年
+    # Tom 2026-11-27 R-3:冇交易嘅同一個戶口(留 30% 現金、其餘 T-bill)—— 將「留底現金唔收息」同「交易」拆開
+    _, en = run_one(sig, live_cfg(engines=()), tb, first, last)
+    xn_all, _, _ = excess_cagr(en, tb, first, last)
+    xn_oos, _, _ = excess_cagr(en, tb, IS.OOS_START, last)
+    open_end = tr0[tr0["reason"] == "數據結束"]
+    print(f"   拆開:冇交易(只係留底現金唔收息)超額 {xn_all:+.2f}%/年(樣本外 {xn_oos:+.2f}%);"
+          f"交易本身 {x_all - xn_all:+.2f}%/年(樣本外 {x_oos - xn_oos:+.2f}%)")
+    print(f"   已完成交易盈虧:引擎一 US${done0[done0['engine'] == 'E1']['pnl_usd'].sum():+.1f}、"
+          f"引擎二 US${done0[done0['engine'] == 'E2']['pnl_usd'].sum():+.1f};"
+          f"期末未平倉 {len(open_end)} 筆按市值 US${open_end['pnl_usd'].sum():+.1f}")
+    dd = e0 / e0.cummax() - 1
+    trough = dd.idxmin()
+    peak = e0[:trough].idxmax()
+    rec = e0[trough:][e0[trough:] >= e0[peak]]
+    rel = e0 / IS.bench_equity(tb, first, last, CAP_HKD / FX)
+    rdd = rel / rel.cummax() - 1
+    print(f"   全期最大回撤 {dd.min() * 100:.2f}%(高位 {peak.date()} → 低位 {trough.date()} → "
+          f"{'收復 ' + str(rec.index[0].date()) if len(rec) else '未收復'});"
+          f"相對 T-bill 最大回撤 {rdd.min() * 100:.2f}%({rdd.idxmin().date()}),"
+          f"戶口高過 T-bill 線嘅日子 {(rel.iloc[1:] > 1).mean() * 100:.1f}%")
+
+    # A. 逐年(Tom R-1:由上一年最後一個收市計起;2022 係 11-30 起嘅零碎月份,都列出,令交易數加埋 = 全期)
     rows = []
     for y in sorted(set(e0.index.year)):
         a_, b_ = max(pd.Timestamp(f"{y}-01-01"), first), min(pd.Timestamp(f"{y}-12-31"), last)
-        if (b_ - a_).days < 60:
-            continue
         t = tr0[(pd.to_datetime(tr0["entry_date"]) >= a_) & (pd.to_datetime(tr0["entry_date"]) <= b_)]
         t = t[t["reason"] != "數據結束"]
-        rows.append({"年": y, "由": str(a_.date()), "至": str(b_.date()), "系統%": round(ret(e0, a_, b_), 2),
-                     "T-bill%": round(ret(tb, a_, b_), 2), "超額%": round(ret(e0, a_, b_) - ret(tb, a_, b_), 2),
-                     "SPY%": round(ret(spy, a_, b_), 2), "交易": len(t),
-                     "最大回撤%": round(IS.stats(e0, a_, b_, CAP_HKD / FX)["maxDD%"], 2)})
+        w = anchored(e0, a_, b_, first)
+        rows.append({"年": y, "由": str(a_.date()), "至": str(b_.date()), "系統%": round(ret(e0, a_, b_, first), 2),
+                     "T-bill%": round(ret(tb, a_, b_, first), 2),
+                     "超額%": round(ret(e0, a_, b_, first) - ret(tb, a_, b_, first), 2),
+                     "冇交易戶口%": round(ret(en, a_, b_, first), 2),
+                     "交易貢獻%": round(ret(e0, a_, b_, first) - ret(en, a_, b_, first), 2),
+                     "SPY%": round(ret(spy, a_, b_, first), 2), "交易": len(t),
+                     "年內最大回撤%": round((w / w.cummax() - 1).min() * 100, 2)})
     yr = pd.DataFrame(rows)
     yr.to_csv(os.path.join(a.out, "yearly.csv"), index=False, encoding="utf-8-sig")
     print("\nA. 逐年(系統 vs T-bill,同一個戶口)\n" + yr.to_string(index=False))
@@ -103,12 +135,16 @@ def main():
     wf = []
     for s in starts:
         e_ = s + pd.DateOffset(months=6) - pd.Timedelta(days=1)
-        wf.append({"由": str(s.date()), "至": str(e_.date()), "超額%": ret(e0, s, e_) - ret(tb, s, e_)})
+        wf.append({"由": str(s.date()), "至": str(e_.date()),
+                   "超額%": ret(e0, s, e_, first) - ret(tb, s, e_, first)})
     wf = pd.DataFrame(wf)
     wf.to_csv(os.path.join(a.out, "rolling6m.csv"), index=False, encoding="utf-8-sig")
     win = (wf["超額%"] > 0).mean() * 100
     print(f"\nB. 滾動 6 個月窗:{len(wf)} 個,贏 T-bill {win:.0f}%;超額中位數 {wf['超額%'].median():+.2f}%,"
           f"最差 {wf['超額%'].min():+.2f}%,最好 {wf['超額%'].max():+.2f}%(每 6 個月,唔係年化)")
+    # Tom R-2:窗口重疊 5 個月 → 獨立窗口只有約 len/6 個;6 個起步相位嘅「唔重疊」贏 T-bill 數
+    ph = [f"{int((wf['超額%'].iloc[p::6] > 0).sum())}/{len(wf['超額%'].iloc[p::6])}" for p in range(6)]
+    print(f"   唔重疊窗口(6 個起步相位)贏 T-bill:{', '.join(ph)}")
 
     # C. 參數 ±20%(組合層面,實盤設定)
     grid = [("base", {})]
@@ -152,6 +188,22 @@ def main():
           f"{first.date()} → {last.date()})\n" + dw.to_string(index=False))
     tw = pd.Series(tot).sort_values(ascending=False).head(10).mul(100).round(0)
     print("   升幅頭 10 名(%):" + ", ".join(f"{k} {v:+.0f}" for k, v in tw.items()))
+    # Tom R-8:剔走嘅股入面,邊啲本身就冇交易?(收市訊號日,用訊號價計 position_plan = 0 股 → 掃描器唔會列出)
+    cfg0 = live_cfg()
+    aff = []
+    for tk in rank[:10]:
+        df = sig[tk][(sig[tk].index >= first) & (sig[tk].index <= last)]
+        n_sig = n_ok = 0
+        for d, e in zip(df.index, df["sig"]):
+            s = lab.build_signal(e, cfg0)
+            if not s:
+                continue
+            n_sig += 1
+            f0 = lab.raw_factor(tk, d)
+            n_ok += R.position_plan(df.at[d, "Close"] * f0, s["stop"] * f0, account_hkd=cfg0.account_hkd)[0] > 0
+        aff.append(f"{tk} {int((done0['ticker'] == tk).sum())} 筆/買得起 {n_ok} of {n_sig} 訊號日")
+    print("   剔走嘅股,基準交易數 / 買得起 1 股嘅訊號日:" + "; ".join(aff))
+    print(f"   基準有完成交易嘅股:{done0['ticker'].nunique()} / {len(R.TICKERS)}")
 
     # 每隻股貢獻(基準)
     if len(done0):

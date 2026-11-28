@@ -1,49 +1,83 @@
-# V6.6 robustness test — does the "small add-on" verdict survive? (2026-11-27)
+# V6.6 robustness test — does the "small add-on" verdict survive? (2026-11-27, revised 2026-11-28)
 
-**Run by:** CEO (皮褸黃), with review by Tom (backtest engineer) pending. **Asked by:** the Owner (27 Nov), who chose the "honest robustness test".
-**Script:** `strategy/v6.6/robustness_v66.py`. It is a research tool outside the rules fingerprint; fingerprint `2b7b62182068` is unchanged.
-**Output:** `strategy/v6.6/results/robustness/*.csv`. A re-run is byte-identical.
+**Run by:** CEO (皮褸黃). **Reviewed by:** Tom (backtest engineer), PASS WITH CORRECTIONS (`reports/quant/2026-11-27-v66-robustness-tom-review.md`). This revision applies his F-1 to F-10.
+**Asked by:** the Owner (27 Nov), who chose the "honest robustness test".
+
+**Script:** `strategy/v6.6/robustness_v66.py`, with Tom's corrections. It is a research tool outside the rules fingerprint; fingerprint `2b7b62182068` is unchanged.
+**Output:** `strategy/v6.6/results/robustness/*.csv`.
+
 **Data:**
 - `strategy/v6.6/data/*.csv`: Webull read-only daily bars, 38 stocks plus SPY, pulled 2026-11-24.
-- T-bill: `data/TBILL.csv`, built from BIL with 4 dividend days corrected (see `income_study.py`).
-- Tradable window: 2022-11-30 → 2026-11-23, after SPY's 200-day average becomes valid.
+- T-bill: `data/TBILL.csv`, built from BIL with 4 dividend days corrected (`income_study.py`).
+- Window: 2022-11-30 → 2026-11-23.
 
-**Set-up** (identical to income study scenario A, which this reproduces exactly: 3.29% vs 4.49%, 130 trades):
+**Set-up** (identical to income study scenario A, reproduced exactly: 3.29% vs 4.49%, 130 trades):
 - capital HK$12,500 on a HK$10,000 sizing base;
-- fees US$0.35 minimum + 10 bp per side (CRO estimate; the real fee is unverified, gate V-1);
-- live entry rule (limit ≤ the maximum limit; no buy if the open is at or below the stop);
-- open-only orders (cancel if not filled);
-- 30% settled cash kept; other idle cash earns T-bill yield.
+- **fees US$0.35 minimum + 10 bp per side (CRO estimate, unverified; gate V-1)**;
+- live entry rule;
+- open-only orders;
+- HK$3,000 settled cash kept at 0% (30% of the sizing base = 24% of capital);
+- other idle cash in T-bills.
 
-## Verdict: WEAKER than the 26 Nov wording. T-bills are the income; the trading part has added nothing over four years.
+## Verdict: WEAKER than the 26 Nov wording. Do not call it an add-on; T-bills are the income.
 
-- **Trading made essentially nothing.** Total trade P&L over 4 years and 130 trades: **US$ −0.3** (estimate, before interest). The system's whole return is the interest on idle cash.
-- **It earned less than plain T-bills.** It returned **3.29% a year vs 4.49%** for putting the same HK$12,500 in T-bills: **−1.20% a year**, about HK$150 a year (derived estimate). The cost comes from fees and from the 30% cash that earns no interest.
-- **It beat T-bills in one year of four (2025), and in 38% of 6-month windows.**
-- **Changing any one setting by ±20% moves the result by up to about ±1% a year.** Only 1 of 14 variants turned the full-period result positive (shorter E1 holding), which looks like noise rather than an edge.
-- **Removing the hindsight winners does not change the picture.** The system was not riding them. The stock-selection bias is real, but it is not what decides this verdict.
+> **At the CRO's estimated fee, from 2022-11 to 2026-11:**
+> - The trading itself made about zero: −0.2% a year. Engine 1 made +US$81 and Engine 2 lost −US$82.
+> - Keeping HK$3,000 as settled cash at 0% cost about another 1.0% a year.
+> - Net: about 1.2% a year (**HK$168 a year**) less than plain T-bills, and **the account was behind the T-bill line on every single day**.
+> - With zero commission it would roughly match T-bills (+0.2% a year). That is still not enough to call it an add-on.
 
-The 26 Nov study said the system "**might** add a little" as a small sleeve. This test does not support "add": over this sample the expected addition is **zero to negative** against T-bills. The rest of the 26 Nov verdict stands: it is not an income source for living costs, and the income is the T-bill interest.
+**Supporting points:**
+- It beat T-bills in **one calendar year of four** (2025). It beat them in 38% of 6-month windows, which amounts to only about 7 independent windows.
+- The fee moves the result more than any setting change does. Real fees are unknown until the Owner's contract note (V-1).
+- The only positive recent result (+0.55% a year since 2025) turns negative under every change to Engine 1's entry settings. It rests on one year.
+- Stock-selection bias (38 names picked in 2026) most likely **flatters** these figures. The true result is more likely below −1.2% than above it.
 
-## A. Year by year (same account, system vs T-bill)
+The 26 Nov study said the system "**might** add a little". This test does not support that wording. The rest of the 26 Nov verdict stands: it is not an income source for living costs, and the income is the T-bill interest. The CRO's recommendation (B), paper only, is unchanged.
 
-| Year | System | T-bill | Excess | SPY | Trades | Max drawdown |
-|---|---|---|---|---|---|---|
-| 2023 | 0.93% | 4.93% | **−4.00%** | 26.71% | 34 | −2.88% |
-| 2024 | 5.12% | 5.14% | −0.02% | 25.59% | 30 | −2.03% |
-| 2025 | 5.86% | 4.13% | **+1.73%** | 18.01% | 37 | −1.32% |
-| 2026 to 23 Nov | 2.16% | 3.21% | −1.05% | 6.55% | 26 | −1.62% |
+## The numbers that matter most (Tom F-3)
 
-- Risk was small every year: the worst drawdown was under 3%.
-- The 2025 gain (the out-of-sample year in the income study) is the only positive year. The out-of-sample figure (+0.55% a year since 2025-01-01) therefore rests on one year.
+| Measure | Value |
+|---|---|
+| System vs plain T-bills, full period | 3.29% vs 4.49% a year: **−1.20% a year (−HK$168 a year)** |
+| … of which: cash reserve earning 0% (same account, no trades) | **−1.03% a year** (since 2025: −0.86%) |
+| … of which: the trading itself | **−0.18% a year** (since 2025: +1.40%) |
+| Completed-trade P&L (130 trades) | E1 +US$81.4, E2 −US$81.7, net −US$0.3. Gross +US$117.1 against fees US$117.4. Two positions still open at the end: −US$6.2 at market. |
+| Days the account was above the T-bill line | **0%** |
+| Worst drawdown vs T-bills | **−6.66%** (2024-08-05); ended at about −4.5% |
+| Worst absolute drawdown | **−3.49%**: peak 2022-12-14, low 2023-03-13, recovered 2023-09-01 (260 days under water) |
+| Monthly excess vs T-bills | t = −0.91 over 49 months; 39% of months positive |
+
+**Fee is the hinge (Tom F-7).** The same account under the three fee scenarios in `results/income_scenarios.csv`:
+
+| Fee scenario | Full period vs T-bills |
+|---|---|
+| no minimum commission (webull0) | **+0.18% a year** |
+| US$0.35 minimum (real35, CRO estimate) | −1.20% a year |
+| US$1 minimum (min1) | −3.92% a year |
+
+## A. Year by year (each year measured from the previous close; Tom F-1)
+
+| Year | System | T-bill | Excess | No-trade account | Trading contribution | SPY | Trades | In-year max drawdown |
+|---|---|---|---|---|---|---|---|---|
+| 2022 (from 30 Nov) | −0.72% | 0.36% | −1.09% | 0.28% | −1.00 pp | −5.76% | 3 | −0.95% |
+| 2023 | 0.94% | 4.94% | **−4.01%** | 3.76% | −2.82 pp | 26.18% | 34 | −2.88% |
+| 2024 | 4.58% | 5.16% | **−0.57%** | 3.97% | +0.62 pp | 24.89% | 30 | −2.03% |
+| 2025 | 5.81% | 4.15% | **+1.66%** | 3.23% | +2.58 pp | 17.72% | 37 | −1.32% |
+| 2026 to 23 Nov | 2.58% | 3.26% | −0.68% | 2.56% | +0.02 pp | 6.75% | 26 | −1.62% |
+
+- Trades add up to 130.
+- The first revision reported 2024 as −0.02%. That was wrong: it dropped the first trading day of each year.
 
 ## B. Rolling 6-month windows (start each month; rules fixed, no refitting)
 
 | Windows | Beat T-bill | Median excess | Worst | Best |
 |---|---|---|---|---|
-| 42 | **38%** | −0.22% | −3.85% | +3.68% |
+| 42 (overlapping) | **38%** | −0.33% | −3.85% | +3.57% |
 
-The figures are 6-month excess returns, not annualised. A real edge would beat T-bills in clearly more than half the windows.
+- The windows overlap by 5 of 6 months, so there are only **about 7 independent windows** (Tom F-2).
+- The six non-overlapping start phases beat T-bills 4/7, 2/7, 3/7, 2/7, 2/7 and 3/7.
+- A real edge would beat T-bills in clearly more than half.
 
 ## C. Settings ±20%, one at a time (portfolio level, live settings)
 
@@ -53,18 +87,26 @@ The figures are 6-month excess returns, not annualised. A real edge would beat T
 | E2 score min ×0.8 / ×1.2 | −0.58% / −1.31% | +1.52% / +0.47% | 130 / 133 |
 | E2 trailing ATR ×0.8 / ×1.2 | −1.87% / −0.97% | +2.18% / +1.76% | 156 / 126 |
 | E1 score min ×0.8 / ×1.2 | −2.01% / −1.48% | −0.52% / −1.74% | 152 / 109 |
-| E1 minimum R ×0.8 / ×1.2 | −1.76% / −0.83% | −0.51% / +0.05% | 127 / 125 |
+| E1 minimum R ×0.8 / ×1.2 * | −1.76% / −0.83% | −0.51% / +0.05% | 127 / 125 |
 | E1 ATR stop ×0.8 / ×1.2 | −1.06% / −2.20% | −0.52% / −1.24% | 153 / 123 |
 | E1 max hold ×0.8 / ×1.2 | **+0.45%** / −1.58% | +3.02% / +1.28% | 139 / 127 |
 | E2 max hold ×0.8 / ×1.2 | −1.15% / −1.12% | +0.99% / +0.99% | 131 / 130 |
 
-- **Full period:** 13 of 14 variants stay negative.
-- **Since 2025:** the results scatter on both sides of zero, which is what noise looks like.
-- **Do not adopt the one positive variant (E1 max hold ×0.8).** Picking the best of 14 variants after the fact is exactly the overfitting the firm's audits warn about (V6.4 audit, U-9).
+\* The E1 limit price in `lab.py` keeps a hard-coded R ≥ 2 (it mirrors `sizing_v66.py:55`), so these rows are only half wired. Tom's probe, with the limit following min_r, gives:
+- ×0.8: −1.78% / −0.79% / 147 trades;
+- ×1.2: −1.89% / −0.54% / 123 trades.
 
-## D. Hindsight-winner test (a proxy for stock-selection bias)
+`lab.py` was not changed; it is a core file.
 
-The 38 names were chosen in 2026 (Tom 11-24, F-01). The proxy removes the names that rose most over the window and re-runs.
+**Reading:**
+- The moves against base range from −1.00 to +1.65 pp over the full period, and from −2.29 to +2.47 pp since 2025.
+- Only 1 of 14 variants turns the full period positive. That hurdle includes the ~1%/yr reserve cost: measured on the trading alone, 3–4 of 14 are positive. That pattern fits **no edge**, not a negative edge.
+- **Since 2025, every E1 entry change, in either direction, turns +0.55% negative** (6 of 6 after Tom's probe). The recent gain sits on a narrow peak.
+- **Do not adopt the one positive variant (E1 max hold ×0.8).** Picking the best of 14 after the fact is overfitting (V6.4 audit, U-9). The "since 2025" figures were already seen in the 26 Nov study, so they are descriptive only, not a clean holdout.
+
+## D. Winner-dependence check (not a bound; Tom F-8, F-9)
+
+The 38 names were chosen in 2026. This check removes the names that rose most over the window and re-runs.
 
 | Removed | Names | Full-period excess / yr | Since 2025 / yr | Trades |
 |---|---|---|---|---|
@@ -72,34 +114,39 @@ The 38 names were chosen in 2026 (Tom 11-24, F-01). The proxy removes the names 
 | top 5 risers | PLTR MU NVDA AVGO AMD | −1.91% | +0.80% | 135 |
 | top 10 risers | + META MSTR LLY SHOP GOOGL | −1.04% | +0.16% | 136 |
 
-- **Top-10 rises over the window:** PLTR +2025%, MU +1149%, NVDA +879%, AVGO +503%, AMD +484%, META +411%, MSTR +326%, LLY +279%, SHOP +229%, GOOGL +182%.
-- **Who made and lost money:**
-  - best: INTC +US$51.0, AMD +19.5, MU +18.8, XOM +15.2, WMT +12.1;
-  - worst: NFLX −38.3, NKE −17.9, PFE −14.5.
-  - Several big risers made almost nothing for the system.
-- **Reading:** the result barely depends on the hindsight winners, because the system trades short swings and does not hold trends. This is a harsh bound, not an estimate of the bias.
-- **Still to do:** the proper test, a universe fixed in January 2022 (the S&P 100 as listed then). This session's network blocks Wikipedia.
-  - A personal environment, "horse-monitor", was created today with `en.wikipedia.org` allowed. It is unused so far.
-  - Starting a helper session on it was refused by this session's permission check. The test can run in the Owner's next session on that environment.
+**Why so little changes: affordability, not holding period.**
+- The 10% cap on a HK$10,000 base is about US$128 per position, so **21 of the 38 names never completed a trade**.
+- Of the 10 removed names, NVDA, AVGO, META, MSTR and LLY had 0 trades. Their price was above the cap on almost every signal day (affordable on 1/131, 0/148, 0/159, 1/45 and 0/152 signal days).
+- The effective universe was **17 lower-priced names**.
+
+**Where the system could afford a riser, it made money from it:**
+- AMD +US$19.5 and MU +US$18.8 are the #2 and #3 contributors.
+- The top-5 risers made +US$32.7 in total.
+- Removing them costs 0.71 pp a year (−1.20% → −1.91%).
+- The best contributor overall was INTC (+US$51.0); the worst were NFLX −US$38.3, NKE −17.9 and PFE −14.5.
+
+**Why it is not a bound.** A list fixed in January 2022 would also include names that later fell out of the index. Removing winners cannot capture that, and Engine 1 buys dips, which is exactly where those names do damage. The bias most likely flatters the result.
+
+**Still to do: the proper test,** on the S&P 100 as listed in January 2022.
+- This session's network blocks Wikipedia.
+- A personal environment "horse-monitor" now allows `en.wikipedia.org`, and the test can run in a session started on it.
+- It should be read for the affordable subset (prices ≤ about US$128).
 
 ## What this changes
 
-1. **Owner-facing wording:**
-   - The 26 Nov study said "a small add-on that might add a little". It should now read: "**over 2022-11 to 2026-11 the trading added nothing; with fees and the 30% cash buffer it earned about 1.2% a year less than plain T-bills**".
-   - The 5-year bootstrap (28–75% chance of trailing T-bills) is consistent with this; this test points to the high end of that range.
-2. **Nothing changes in the rules or the package.** The CRO's recommendation (B) stands: paper only, and no real money in V6.6.
-3. **Paper trading still has value as a forward test.**
-   - These four years are the only evidence so far.
-   - Forward paper results, and the cloud shadow log (item 3 of today's plan), are the only way to learn whether 2025 was the start of something or luck.
-   - Today SPY is below its 200-day average, so the system is idle.
-4. **For living income:** the T-bill (or the broker's cash interest, which the Owner says Futu pays) is the income. This test adds weight to that.
+1. **Owner-facing wording.** Replace "a small add-on that might add a little" with the quoted verdict above.
+2. **Nothing changes in the rules or the package.** CRO recommendation (B) stands: paper only, no real money in V6.6.
+3. **What could change the verdict:**
+   - a real fee near zero (V-1). Even then it is only about level with T-bills.
+   - forward evidence that 2025 was not luck: paper trading plus the cloud shadow log. The shadow log is paused until the Webull connector is attached.
+   - cash interest on the reserve. The Owner says Futu pays interest on cash; this is not modelled. If the reserve earned the T-bill rate, most of the −1.03% would disappear, leaving the trading at about −0.2% a year: still no add-on.
+4. **For living income:** T-bills, or the broker's cash interest, are the income.
 
 ## Limits
 
-- The sample covers about 4 years and 130 trades; confidence intervals are wide (income study §3).
-- The fee is an estimate until V-1 (contract note).
-- Data comes from Webull, while the live system uses Yahoo. The two have not yet been cross-checked; the shadow log will do it.
-- T-bill withholding tax is not applied in the base case. A 30% withholding scenario is in the income study.
-- The −40% gap and other tails are covered by Mario's stress work, not here.
+- About 4 years and 130 trades; wide confidence intervals (income study §3). The bootstrap's 28–75% chance of trailing T-bills over 5 years is at its high end (75%) for this fee.
+- Webull data here; the live system uses Yahoo. The two have not been cross-checked yet.
+- T-bill withholding tax is not applied in the base case (see the income study).
+- Tails (gaps, −40% names) are covered by Mario's stress work, not here.
 
 *Research and decision support, not financial advice. Markets cannot be reliably predicted. No agent of this firm places orders.*
