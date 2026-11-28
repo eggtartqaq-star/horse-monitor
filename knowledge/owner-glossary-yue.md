@@ -117,3 +117,36 @@ brackets in the long detail files only. In Owner front pages and PDFs, give no E
 | spread and slippage | 買賣差價同滑價 | |
 | promotion end date | 優惠完結日期 | |
 | minimum fee per side | 每次買或賣最少收 | "per side" = each buy and each sell, not per round trip |
+
+## Added 2026-11-28 (CRO V-1 ruling, `reports/risk/2026-11-28-v1-ruling.md`: README top box and 轉用條件; 電腦待辦清單 D1 and G3)
+
+| English | Cantonese | Note |
+|---|---|---|
+| edge | 優勢 | "not proof of an edge" = 唔證明有優勢 |
+| in-sample / out-of-sample (OOS) | 樣本內 / 樣本外 | |
+| 90% confidence interval | 90% 區間 | as in README 第七節 |
+| per side (detail files) | 每邊 | front pages and PDFs use 每次買或賣 (above) |
+| assumed (cost) | 假設嘅 | bold it; the 10 bp spread and slippage is an assumption, not measured |
+| HK-2 (realistic Hong Kong execution basis) | 按香港實際落單情況計(HK-2) | keep the code in detail files: V1-b and K-6 name the HK-2 row |
+| slippage estimate | 滑價估算 | Messi, V1-b |
+| primary (data) | 第一手 | |
+| measured cost | 量度到嘅成本 | V1-b |
+| re-review (CRO) | 重新審核 | |
+| pricing page | 收費頁 | webull.hk/pricing |
+| monthly reconciliation | 每月核對 | C-7 |
+| switch conditions | 轉用條件 | CRO's 8-row table, 28 Nov; replaces the top box's five |
+| supersede | 取代 | |
+| written sign-off | 書面簽署 | |
+| veto (real money) | 否決 | |
+| 2022 universe | 2022 年股票名單 | K-6 |
+| network approval | 批准連網 | K-6: SEC EDGAR or the issuer |
+| stop persistence | 止蝕單持續有效 | switch condition 7 |
+| working (order) | 掛緊 | "working stop" = 掛緊嘅止蝕單 |
+| expired (order) | 已失效 | not yet checked against the Webull screen label |
+| re-place (an order) | 重新落 | |
+| validity (order field) | 有效期 | Webull screen label, quote it 「有效期」 |
+| keep (V6.6), KEEP | 保留 V6.6 | Owner's 28 Nov decision; the decision page called this option 暫停 |
+| binding | 一定要遵守 | |
+| resume paper | 恢復模擬盤 | |
+| real account (app) | 真戶口 | as in 電腦待辦清單 G3 |
+| cap A | 上限 A | the 10% notional cap; not B1 (A), the account choice |
