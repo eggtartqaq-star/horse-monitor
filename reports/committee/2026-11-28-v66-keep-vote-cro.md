@@ -32,3 +32,7 @@
 - **Risk score:** V6.6.9 at A, code: 76, unchanged [B7 §6]. Real money: do not deploy (S4 at the estimated fee; V-1 to V-3, C-6, C-7 and R-3 open).
 
 *Research and decision support, not financial advice. No agent places orders. Figures are from the cited files; [E] marks my estimate.*
+
+## Addendum 2026-11-28 (D-5)
+- **Ruling (a):** if no V-1 contract note has been read by 2026-12-31 under K-2 (shown as PAUSE on the decision page), V6.6 is RETIRED automatically on Q-3 terms on 2027-01-01, with no committee re-vote. A note that arrives later can only support re-activation under Q-3 (fresh V-2 and V-3, plus my written sign-off).
+- **Reason:** a deadline with no consequence is the open-ended keep I called a zombie (reason 4), and retiring costs nothing because no capital is in V6.6.

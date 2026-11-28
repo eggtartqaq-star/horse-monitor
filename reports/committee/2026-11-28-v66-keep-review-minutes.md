@@ -58,6 +58,7 @@
   - The Owner sends one Webull contract note by **2026-12-31**. Any past trade's note shows the fee, e.g. the AVGO purchase.
   - Tom runs `lab.py --mode feecheck --tif open`.
   - **S4 → RETIRE** as above. **Pass** → the committee looks again; no real money, and every gate still applies.
+  - **No note read by 2026-12-31 → RETIRE automatically** on Q-3 terms on 2027-01-01, with no re-vote. A later note can only support re-activation. This is the CRO's ruling on audit finding D-5, in the addendum to his vote. (The decision page calls this option PAUSE; the CRO's vote calls it KEEP WITH CHANGES, K-2. They are the same option.)
 
 **Why the chair recommends RETIRE now.**
 - Even the best fee case only roughly matches T-bills.

@@ -306,3 +306,5 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **All agree:** no paper orders from now; revoke the leaked Telegram token whatever the outcome; no rule changes; no real money; the 2022-universe test is deferred; S4 → RETIRE automatically.
   - **Not affected:** AVGO G-2 (the 3 Dec close) and the 6160 conditions.
   - **Pending:** the Owner's decision. Nothing has changed yet.
+  - **CRO ruling D-5 (2026-11-28):** under PAUSE (= KEEP WITH CHANGES, K-2), if no V-1 contract note has been read by 2026-12-31, V6.6 is RETIRED automatically on Q-3 terms on 2027-01-01, with no re-vote. A later note can only support re-activation (`reports/committee/2026-11-28-v66-keep-vote-cro.md`, addendum).
+  - **Owner decision page** delivered: `reports/owner-summaries/2026-11-28-V6.6-決定.pdf`. Ai 管理層 PASS WITH CORRECTIONS (`reports/committee/2026-11-28-v66-decision-page-audit.md`, D-1 to D-5 applied).
