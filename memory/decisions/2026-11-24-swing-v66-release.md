@@ -328,3 +328,12 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **DAY stop:** paper trading is allowed under D-1 to D-4 (re-place the stop every trading day before the open; one working sell; a missed stop is S2; the Owner acts every day a position is open). B′'s M-2 is NOT MET, so B′ stays OFF.
   - **Package:** the PC tests package is cleared, on condition that the doc updates and D-1 to D-4 travel with it.
   - **Pre-registration:** both sign-offs are in, and the CEO accepted all amendments. H1 is withdrawn; the verdict family is H3, H4, H5.
+- **2026-11-28: V1-b MET as worded** (CRO, addendum to `reports/risk/2026-11-28-v1-ruling.md`; inputs `reports/execution/2026-11-28-slippage-estimate.md` and `reports/quant/2026-11-28-v1b-rerun.md`).
+  - **At 10.8 bp per side all-in:** ALL +0.635% per trade, HK-2 +0.377% (−0.23%/yr vs T-bills).
+  - **CRO stress at 14.2 bp:** ALL +0.567%, HK-2 +0.309% (−0.36%/yr). Still not an edge.
+  - **New binding conditions:**
+    - **V1-e:** the K-6 HK-2 control also runs at 14.2 bp, and can only veto.
+    - **V1-f:** after 20 real fills, a mean cost above 10.8 bp means a re-run before the next entry; above 13 bp, CRO re-review.
+  - **Pre-registration amendment 3 is fixed at 10.8 bp** and can only go up.
+  - **Switch row 6** stays open: K-6 is pending the 2022 list. Real money: do not deploy.
+  - **Doc follow-up:** V1-e and V1-f go into the README and checklist with the next Owner package (翻譯官, then the Ai 管理層 L-009 check). They bind only before real money.
