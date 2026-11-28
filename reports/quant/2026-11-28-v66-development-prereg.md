@@ -140,3 +140,28 @@
 **Larger base:** with whole shares, affordability can only improve through a larger sizing base. Any such test is re-registered by a further addendum, signed before running, and only after the Owner's dated LNW meets the CRO's condition (≥ HK$250,000 or ≥ HK$500,000).
 
 **Sign-off:** Math King and the CRO append below.
+
+### CRO John, addendum 1 (2026-11-28)
+
+**SIGNED WITH AMENDMENTS** (risk only; no mark is loosened). H7 is cap A only: B′ is an E2 exception and cannot apply. No combination with H4 is allowed. My H2 and larger-base conditions carry over unchanged.
+1. **Sector clustering.** Dip-buys arrive together in a sell-off, and whole shares at ≤ US$128.21 tilt the 2022 list toward a few sectors. Report position-days by GICS sector, the nights with both slots in one sector, and the number of distinct names traded. If more than 35% of position-days fall in one sector (`max_sector`), I review before candidate status.
+2. **Gaps through the stop.** Report the losses beyond 1R (count, and the worst in R and in % of base) against the control. Also report trades held over an earnings date where dates are on file; the lab has no earnings guard. Before candidate status, Mario stresses a two-position, same-sector overnight gap against the −10% breaker and the 20% budget.
+3. **Holding period and workload.** E1 exits are mostly day-10 sales at the next open, done by hand under F-8, with DAY stops re-placed daily (D-1 to D-4). Report exits per month and the share of trading days that need an action from the Owner. That workload is part of the candidate review.
+4. **Universe refresh (when live).** A name that leaves the list while held gets no new entries and runs to its normal exit. A pass is a candidate only: it still needs the V6.7 gates, forward evidence, and every real-money gate in `reports/risk/2026-11-28-v1-ruling.md` §2.
+
+### Math King, addendum 1 (2026-11-28)
+
+**SIGNED WITH AMENDMENTS (A1-1 to A1-4).** A combination is acceptable here for two reasons. First, it is registered before any verdict run. Second, it adds no new run: under my amendment 5, H3 is already judged on the 2022 list, and H7's configuration (E1 only, 2022 list, whole shares, 10% cap, 2 slots, HK-2, amendment-3 cost) is that same run. §2's "no combination of rule changes" still bars any other pairing (for example E1 + H4 slots).
+- **A1-1. One run, counted once.** H3 (2022-list verdict) and H7 are the same simulation. It is run once, has one p-value, and counts once in Holm, so m = 3 (H3/H7, H4, H5). Keeping m = 4 is conservative and also acceptable. In either case, one result is never reported as two passes.
+- **A1-2. Control on the 2022 list:** for P4b and the side-by-side report, the control is `live_cfg` on the 2022 list, i.e. the H5 run from the same batch.
+- **A1-3. No rescue at the trade floor:** E1 took 81 account trades on the 38 names with E2 present (diagnosis §2). If H7 has fewer than 100 completed trades, it is "not evaluable" and counts as a fail (amendment 10). No re-run with more slots, a higher cap or a longer window.
+- **A1-4. Tested ≠ live:** the run tests the 2022-fixed list. The annual refresh is untested, and any V6.7 candidate document and the shadow log label it so.
+- The diagnosis's "affordable E1 +0.75%, t 1.5" is on seen names. Amendment 9 (≥ 30 trades on names outside the 38, P&L > 0) is therefore the binding guard for H7.
+
+### CEO decision on addendum 1, 2026-11-28
+
+**Accepted:** the CRO's addendum-1 amendments and Math King's A1-1 to A1-4.
+- **H3 and H7 are one simulation** (E1 only on the 2022 list): one p-value, counted once in Holm.
+- **The CEO keeps m = 4 for the Holm correction** (Math King's conservative option).
+- **The control** is `live_cfg` on the 2022 list, i.e. the H5 run from the same batch.
+- **The marks are now fixed for every hypothesis.** The only remaining blockers are: the 2022 list (the Owner's environment edit for SEC EDGAR), the SPLITS extension and price-step check (amendment 12), and Messi's slippage estimate (amendment 3 / V1-b).
