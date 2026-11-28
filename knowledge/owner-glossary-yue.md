@@ -80,3 +80,24 @@ brackets in the long detail files only. In Owner front pages and PDFs, give no E
 | switch day | 轉用日 | CRO R-5 |
 | Task Scheduler | 工作排程器 | Windows label: copy as shown on screen |
 | estimate | 估算 | add 「(估算)」 to every derived number (CLAUDE.md rule 5) |
+
+## Added 2026-11-28 (V6.6 keep/retire decision brief, `reports/owner-summaries/2026-11-28-v66-decision.txt`)
+
+| English | Cantonese | Note |
+|---|---|---|
+| retire (a system) | 退役 | CEO, 28 Nov |
+| archive | 封存 | "archived, not deleted" = 封存,唔會刪除 |
+| pause | 暫停 | |
+| paper order | 模擬盤單 | |
+| real fee | 真實收費 | as in 電腦待辦清單 D |
+| committee record | 委員會紀錄 | |
+| T-bill / plain T-bills | 美國國庫券 / 淨係買美國國庫券 | front pages and PDFs; older detail files keep "T-bill" |
+| broker cash interest | 券商嘅現金利息 | 電腦待辦清單 says 閒置現金利息 |
+| restart (re-activate) | 重新啟用 | "restart terms" = 重新啟用嘅條件 |
+| Windows daily task | Windows 每日排程 | the task `schedule_v66.bat` creates |
+| cloud task | 雲端排程 | |
+| revoke (a token) | 作廢 | as on 先睇我 |
+| leaked | 洩露咗 | |
+| Webull | 微牛 | as on 先睇我 |
+| "3 of 4 votes" | 4票有3票 | |
+| "by <date>" | <日期>或之前 | inclusive; "before <date>" = <日期>前 |

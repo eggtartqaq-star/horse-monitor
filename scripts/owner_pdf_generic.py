@@ -29,6 +29,10 @@ EXTRA = """
 .tline { margin: 0.4mm 0; } .gline { color: #555; font-size: 11pt; line-height: 13.5pt; margin: 0.4mm 0; }
 .cline { color: #B71C1C; font-weight: bold; margin: 0.6mm 0; } .sline { font-weight: bold; margin: 0.6mm 0; }
 .sline, .cline { -webkit-text-stroke: 0.45px currentColor; }   /* the CJK font has no bold face */
+body { font-size: 14pt; line-height: 17.5pt; }                    /* one-page briefs are short: larger type */
+.redbox { margin-top: 3.5mm; }                                     /* keep the box label clear of the banner */
+.redbox .tline, .redbox .gline { margin-left: 7mm; }              /* lines under a numbered item are its sub-lines */
+.block { margin-bottom: 4mm; }
 .tiles .tile.note { flex: 1 1 auto; }
 .panel { margin-bottom: 1.2mm; }
 """
