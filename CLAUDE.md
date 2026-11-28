@@ -91,6 +91,16 @@ follow the same short-message-first rule.
      the exchange or index provider, the fund issuer, a regulator's filing (e.g. SEC
      EDGAR), or the broker's read-only data.
 
+## Known limits of the AI
+
+Read `knowledge/ai-limitations.md` (Owner-approved, 2026-11-28) before relying on any output. In short:
+- the AI cannot predict markets;
+- its agents are not independent of each other;
+- it makes mistakes, which is why every figure needs a source;
+- some facts only the Owner can supply.
+
+State the relevant limit whenever it affects an answer.
+
 ## State files
 
 - `config/portfolio.yaml` — current holdings and target allocation.

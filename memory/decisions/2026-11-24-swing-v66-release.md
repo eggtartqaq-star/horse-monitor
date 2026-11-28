@@ -308,3 +308,13 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **Pending:** the Owner's decision. Nothing has changed yet.
   - **CRO ruling D-5 (2026-11-28):** under PAUSE (= KEEP WITH CHANGES, K-2), if no V-1 contract note has been read by 2026-12-31, V6.6 is RETIRED automatically on Q-3 terms on 2027-01-01, with no re-vote. A later note can only support re-activation (`reports/committee/2026-11-28-v66-keep-vote-cro.md`, addendum).
   - **Owner decision page** delivered: `reports/owner-summaries/2026-11-28-V6.6-決定.pdf`. Ai 管理層 PASS WITH CORRECTIONS (`reports/committee/2026-11-28-v66-decision-page-audit.md`, D-1 to D-5 applied).
+- **Owner decision, 2026-11-28: KEEP AND DEVELOP V6.6.** The Owner answered the decision page with "Keep and develop it", and on what to upgrade, "Both" (the firm and V6.6): "continue to upgrade your system shouldn't be stopped".
+  - **This is an Owner override** of the committee recommendation (RETIRE, 3 of 4) and of CRO K-7 ("no rule changes now"), under rule 2: the Owner is final authority.
+  - **Dissent stands on record:** the CIO, Morris and Math King voted RETIRE; the CRO voted KEEP WITH CHANGES.
+  - **Not overridden:**
+    - the CRO's veto on any real money before every gate (V-1, V-2, V-3, C-6, C-7, R-3, written CRO sign-off);
+    - read-only broker access;
+    - the rule-change process: new fingerprint, Tom, CRO diff review, PC gates.
+  - **No longer apply:** the PAUSE and RETIRE paths (K-2, K-3, D-5) and the decision page's "skip setup / no paper orders".
+  - **Paper trading** may resume under the existing rules (R-5, R-6, C-8, F-8) once the leaked Telegram token is revoked (K-1 security item, still required).
+  - **Development plan:** evidence first, with pass marks pre-registered before any run (`reports/quant/2026-11-28-v66-development-prereg.md`). Nothing is re-tuned to rescue a failed hypothesis.
