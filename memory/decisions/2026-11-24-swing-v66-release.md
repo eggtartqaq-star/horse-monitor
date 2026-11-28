@@ -286,3 +286,17 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **F-8 ruling, binding:** for E1, keep only the broker stop and never place a second sell for the same shares unless the broker links them as OCO. At the target, cancel the stop first and then sell; if the sale does not fill, re-place the stop at once. Without OCO, a second sell can short in a margin account, which breaches `leverage: none`.
   - **Deferred to Tom, before the first forward review:** measure lab vs executable from HK. A target touched overnight will be missed, and the day-10 exit happens in the HK evening. The variant to test is exiting at the next open.
 - **Audit diff-check** (`reports/committee/2026-11-26-v66-8-audit.md` §4): PASS WITH CORRECTIONS. F-1 to F-8 applied: (B) wording per R-5; the A1 structural item marked as waived per R-7; R-7 summary in the README; Pine shares "never more than Telegram"; stale labels fixed.
+- **2026-11-27/28: cloud tests the Owner chose** ("Is there any things that you can do in current for upgrading or testing the system?"). Code is unchanged throughout: fingerprint `2b7b62182068`, selftest 153.
+  - **Health check** (`reports/quant/2026-11-27-v66-9-health-check.md`): mutation sweep went from 13/23 to 23/23 caught, with 10 cloud tests in `selftest_extra.py`. They were gaps in the tests, not bugs in the code. Golden margin is now 0.05.
+  - **Robustness** (`reports/quant/2026-11-27-v66-robustness.md`, Tom PASS WITH CORRECTIONS, applied). At the CRO's estimated fee, 2022-11 to 2026-11:
+    - the trading made about zero (−0.2%/yr);
+    - the 0%-interest reserve cost about another 1.0%/yr;
+    - net −1.2%/yr (−HK$168/yr) against plain T-bills, and the account was behind the T-bill line every day.
+    - **Wording change:** do not call it an add-on; T-bills are the income. Recommendation (B), paper only, is unchanged.
+  - **B′ gate B-7: MET WITH CONDITIONS** (CRO, `reports/risk/2026-11-28-b7-ruling.md`; inputs `reports/risk/2026-11-27-bprime-var.md` and `…-bprime-stress.md`).
+    - The binding conditions on any future enablement are quoted in full in the ruling §3: V-a (amended), V-b, M-1, M-2 (amended), M-3 (amended), M-4 (amended), J-1 to J-4.
+    - **B′ remains OFF.** This is not an enabling note. B′ still needs V-1, V-2, V-3 and the CRO's separate written approval.
+    - **CRO view:** build nothing for B′ until A passes the fee test (V-1).
+  - **Cloud shadow log** (`reports/quant/2026-11-27-shadow-log-setup.md`): built and tested. First record: 2026-11-25, bear.
+    - Scheduled task `trig_01SyUEo4RbQgSLndoGEqjRxa` is **paused** at the Owner's choice until the Owner attaches the Webull connector.
+  - **Owner rule, 2026-11-28:** no Wikipedia or other publicly editable sources (CLAUDE.md rule 5). The 2022-universe test moves to a primary source and waits on the Owner's approval.
