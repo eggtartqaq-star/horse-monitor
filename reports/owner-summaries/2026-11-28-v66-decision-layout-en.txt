@@ -1,0 +1,68 @@
+# Layout (English): V6.6 decision brief, one A4 page. 排版師, 2026-11-28.
+# Renderer: scripts/owner_pdf_generic.py. Lines starting with # are never printed.
+# Order: 翻譯官 translates the text after each TAB (keep tags, tabs and every "|" banner/tile divider) -> Ai 管理層 checks the CRO lines -> CEO renders.
+#
+# NOTES FOR 翻譯官
+# - Terms: retire = 退役. archive = 封存. pause = 暫停. contract note = 成交單據. ledger = 記錄簿. paper order = 模擬盤單.
+#   real fee = 真實收費. committee record = 委員會紀錄. Webull = 微牛 (as on 先睇我). T-bills: pick one plain term (e.g. 美國國庫券) and use it everywhere.
+# - Copy exactly, untranslated: V6.6, AVGO, Telegram, token, Windows, schedule_v66.bat, 電腦待辦清單, 先睇我, 「Telegram token」, CRO, every number.
+# - Date style: 12月31日(星期四). "3 of 4 votes" = 4票有3票.
+# - Do not add 「(估算)」 inside the tiles: the B3 banner already says all figures are estimates.
+# - Aim for about 25 characters a line. Lines already at the limit: the Windows line, the 31 Dec line, the last grey pointer line.
+# - Never drop words from: the whole BOX in block 2; the four lines under choice 2; "The CRO accepts it too". Shorten other lines first.
+#
+# NOTES FOR Ai 管理層 (CRO mapping; sources: reports/committee/2026-11-28-v66-keep-vote-cro.md, reports/committee/2026-11-28-v66-keep-review-minutes.md)
+# - K-1 (vote line 16), quoted in full: block 2 box items 1 and 2. Stricter than the source: "now", and the task stays off with no "until".
+# - K-2 (line 17), Owner's parts quoted in full: "by 31 Dec ... contract note" (choice 2) and "no paper orders" (box item 3, unconditional for now).
+#   The firm's own steps (Tom's fee-check run; HK-2 at the real fee "for information") are left out of the page. The "before any paper order after SPY regains MA200" clause is covered by box item 3.
+# - K-3 (line 18), quoted in full: "Fee too high: it retires automatically, as above, with no changes to rescue it." "Too high" means the S4 result.
+#   "As above" means the RETIRE lines in choice 1 (the minutes' Q-3 terms). The rationale ("S4 bars trading at any cap") is left out.
+# - Veto (line 31), "any real money in V6.6 before every gate is met": box item 4. Minutes line 60 ("Pass: no real money, every gate still applies") is covered by item 4 plus the pointer.
+# - "RETIRE now is also acceptable on risk grounds" (line 30): choice 1, "The CRO accepts it too."
+# - Pointer only, via the last grey line ("the 28 Nov committee record"): K-4, K-5 (including the 2027-05-28 checkpoint and the LNW HK$125,000 point), K-6, K-7,
+#   and the minutes' restart terms (line 55). Choice 1 says only "strict conditions", with no partial list.
+#
+# NUMBER SOURCES
+# - 3 of 4: minutes line 46. 31 Dec: vote line 17, minutes line 58. Thursday: derived (3 Dec 2026 is a Thursday per 先睇我, plus 28 days).
+# - About zero, 1.2% a year, HK$168, HK$12,500, 4 years: reports/quant/2026-11-27-v66-robustness.md lines 15, 27, 42; review pack line 22.
+#   Wording note: 1.03 of the 1.2 points is the HK$3,000 cash reserve earning 0%, so the page does not say the gap is caused by fees.
+# - Further behind from Hong Kong: minutes lines 17 to 18; CRO dissent, vote line 25.  Program works: minutes line 22.
+# - About 10 minutes: 電腦待辦清單 line 197 (E1 estimate). 70 minutes: the 先睇我 setup block.
+
+B1	Decide: keep V6.6 or not | Neither choice puts money at risk | If you pause: one note by Thu 31 Dec
+LEAD	The committee recommends retiring V6.6 now.
+BOX	Choose one, then tell the AI
+N	Retire now: 3 of 4 votes. The CRO accepts it too.
+T	It is archived, not deleted. Your ledger is kept.
+T	The Windows daily task and the cloud task are removed.
+T	Restarting it later has strict conditions.
+N	Pause until Webull's real fee is known: the CRO's choice.
+T	By Thu 31 Dec, send the AI one Webull contract note.
+G	Any past trade's note will do, for example your AVGO purchase.
+T	Fee too high: it retires automatically, as above, with no changes to rescue it.
+T	Fee low enough: the committee looks at it again.
+ENDBOX
+
+B2	Do now, whichever you choose | About 10 minutes in all
+BOX	The CRO's conditions for now
+N	Telegram: the old token leaked. Cancel it and make a new one.
+G	How: steps 1 to 3 under 「Telegram token」 in 電腦待辦清單.
+G	Never send the new token to the AI.
+N	Keep the Windows daily task off. Don't run schedule_v66.bat.
+G	Already ran it? Tell the AI.
+N	Place no V6.6 paper orders.
+N	Put no real money into V6.6.
+ENDBOX
+T	No need to do the 70-minute computer setup on 先睇我.
+T	Everything else on 先睇我 still stands.
+S	AVGO is not affected, and its deadline comes first.
+
+B3	Why retire? | All figures are estimates, at the CRO's estimated fee
+TILE	Tested on the past 4 years, the trading made | about zero
+TILE	Compared with plain T-bills | about 1.2% a year less | That is about HK$168 a year, on HK$12,500.
+T	Traded from Hong Kong, it falls further behind.
+T	The program itself works correctly.
+T	The income is T-bill or broker cash interest.
+G	Restart terms and the CRO's other conditions: the 28 Nov committee record.
+
+FOOT	28 Nov 2026. Research and decision support, not investment advice. The AI places no orders.
