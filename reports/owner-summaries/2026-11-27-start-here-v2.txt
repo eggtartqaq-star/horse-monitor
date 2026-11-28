@@ -26,7 +26,7 @@ L23b	由 V6.4.2 資料夾複製 dual_engine_v6_4.py 入去,唔好改佢。
 L23c	之前裝過 v6.6:唔好覆蓋 owner_settings.json 同 ledger。
 L24	然後喺 CMD 打:<<pip install yfinance pandas numpy requests ta>>
 L25	雙擊電腦檢查_v66.bat,再將報告傳畀 AI。
-L26	應該見到:153 項過,0 項唔過,同埋「一致」。
+L26	應該見到:163 項過,0 項唔過,同埋「一致」。
 L27	然後雙擊一次掃描_v66.bat。將相片同 selftest_last.log 傳畀 AI。
 L28	Telegram:先作廢舊 token,整個新嘅,永遠唔好傳畀 AI。
 L29a	喺 CMD 打:

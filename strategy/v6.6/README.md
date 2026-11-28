@@ -5,7 +5,7 @@
 > 截至 2026-11-23 收市(`data/SPY.csv`),SPY 722.29 低過 200 日線 730.47(11-19 起),系統本身都停手,而家等唔會錯過訊號。
 > SPY 一返上 200 日線就會再出訊號 —— 到時一樣要等下面幾樣完成。
 > 1. **你部電腦(步驟見 `電腦待辦清單.md`):**
->    - 雙擊 `電腦檢查_v66.bat` —— 自我測試(153 項,關卡 V-2)、對照測試(關卡 V-3)、試掃描一次過做,寫一份 `pc_report_….txt`,傳畀 AI;
+>    - 雙擊 `電腦檢查_v66.bat` —— 自我測試(163 項,關卡 V-2)、對照測試(關卡 V-3)、試掃描一次過做,寫一份 `pc_report_….txt`,傳畀 AI;
 >    - 再雙擊 `掃描_v66.bat` 一次(測試掃描 .bat 本身),將 v6.6 資料夾入面嘅 `selftest_last.log` 一齊傳畀 AI(CRO V-2);如果出咗交易清單,唔好落單;
 >    - AI / CRO 睇完報告確認之後,先喺 `owner_settings.json` 將 V2、V3 改做 `true`。
 > 2. **微牛成交單據(關卡 V-1):** 確認真實收費,同埋**先書面講明落單方法**(券商可唔可以全日限價單附加止蝕,見 `電腦待辦清單.md` D1),再跑 `lab.py --mode feecheck --tif open/day`(用實盤入場規則,CRO N-29;**N-30 未改好之前一律用 `--tif open`**)。全期或者樣本外淨 EV ≤ 0(S4)→ 呢個戶口規模下唔好用呢個系統。
@@ -67,7 +67,7 @@
    cd %USERPROFILE%\Desktop\v6.6
    python selftest.py
    ```
-   要見到「全部通過」(153 項)。AI / CRO 確認之後,喺 `owner_settings.json` 將 `"V2_代碼測試"` 改做 `true`。
+   要見到「全部通過」(163 項)。AI / CRO 確認之後,喺 `owner_settings.json` 將 `"V2_代碼測試"` 改做 `true`。
 4. **對照測試(關卡 V-3):**
    ```cmd
    copy "<你 V6.4.2 資料夾>\dual_engine_v6_4.py" .
@@ -282,7 +282,7 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 | `equivalence_check.py` | 掃描器規則 == 回測規則(每日每隻每條路徑) |
 | `ledger_check.py` | 記錄簿 resolve == 回測模擬器(逐筆) |
 | `golden_export.py` | 重新匯出 Pine 對照檔(2026-11-27:評分離門檻 > 0.05,換咗 4 行;舊檔仍然有效) |
-| `selftest_extra.py` | 2026-11-27 加嘅 10 項額外測試(突變測試捉漏咗嘅位),雲端跑;你部電腦唔使跑,下一版會併入 `selftest.py` |
+| `hk_exec_v66.py`、`robustness_v66.py`、`shadow_run.py` | 研究工具(唔計規則指紋):香港執行測試、穩健度測試、雲端影子記錄 |
 | `results/` | 2026-11-24 Webull 數據結果;`baseline.json` 係回歸指紋 |
 
 **研究結論**(詳見 `reports/quant/2026-11-24-v642-real-code-v66-lab.md`):
@@ -307,7 +307,7 @@ CRO 2026-11-24 有條件批准。要以下**全部**:
 | 第一次 / 更新後 | `電腦檢查_v66.bat`、`pc_check.py`(寫 `pc_report_….txt` 畀 AI)、`電腦待辦清單.md` |
 | 你嘅設定(唔計指紋) | `owner_settings.json` |
 | 規則指紋涵蓋 | `config_v66.py`、`rules_v642.py`、`indicators.py`、`signals_v66.py`、`sizing_v66.py`、`guardrails_v66.py`、`daily_scan_v66.py`、`ledger_v66.py`、`telegram_bot_v66.py`、`lab.py`(resolve 用佢計結果) |
-| 研究 | `selftest.py`、`selftest_extra.py`、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py`、`income_study.py` |
+| 研究 | `selftest.py`(163 項,2026-11-28 併入健康檢查嘅 10 項)、`parity_check.py`、`equivalence_check.py`、`ledger_check.py`、`golden_export.py`、`income_study.py` |
 
 `ledger/`(你嘅記錄)同 `data/`(歷史數據)唔會上載 GitHub。
 
