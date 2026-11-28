@@ -300,3 +300,9 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **Cloud shadow log** (`reports/quant/2026-11-27-shadow-log-setup.md`): built and tested. First record: 2026-11-25, bear.
     - Scheduled task `trig_01SyUEo4RbQgSLndoGEqjRxa` is **paused** at the Owner's choice until the Owner attaches the Webull connector.
   - **Owner rule, 2026-11-28:** no Wikipedia or other publicly editable sources (CLAUDE.md rule 5). The 2022-universe test moves to a primary source and waits on the Owner's approval.
+- **2026-11-28: committee review "keep / keep with changes / retire V6.6"** (`reports/committee/2026-11-28-v66-keep-review-minutes.md`). Inputs: the robustness report, the HK execution test (Tom-reviewed: price effect about 0; slot timing −1.06 to −1.57%/yr vs T-bills), the health check, the B-7 ruling and the income study.
+  - **Votes:** CIO RETIRE, Morris RETIRE, Math King RETIRE. CRO: KEEP WITH CHANGES, operational only (K-1 to K-7: no paper orders until the real fee V-1 is read by 2026-12-31; S4 → RETIRE). **The CRO vetoes no option** ("RETIRE now is also acceptable on risk grounds") and vetoes any rule change now and any real money before every gate.
+  - **Chair's recommendation: RETIRE** (Q-3 terms). The CRO's fee-check PAUSE is offered as the Owner's alternative; the CRO's measured-fee argument is recorded as dissent.
+  - **All agree:** no paper orders from now; revoke the leaked Telegram token whatever the outcome; no rule changes; no real money; the 2022-universe test is deferred; S4 → RETIRE automatically.
+  - **Not affected:** AVGO G-2 (the 3 Dec close) and the 6160 conditions.
+  - **Pending:** the Owner's decision. Nothing has changed yet.
