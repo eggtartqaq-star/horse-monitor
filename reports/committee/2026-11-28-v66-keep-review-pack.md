@@ -52,7 +52,7 @@
 
 | | **KEEP** (paper, as now) | **KEEP WITH CHANGES** | **RETIRE** |
 |---|---|---|---|
-| What it is | Paper continues: separate paper account, Telegram + TradingView messages, paper fills in the ledger per R-5 [D:251–254, D:270]. Rules unchanged. | Paper continues with named changes. Only one is named in the sources without being a rule change: MOC sells for day-10 and day-60 exits, if the broker accepts them [H:42]. Exit-at-next-open is a rule change and "not proposed" [H:44]. | Archive V6.6, end paper trading, hold the money in T-bills or broker cash interest. |
+| What it is | Paper continues: separate paper account, Telegram + TradingView messages, paper fills in the ledger per R-5 [D:251–254, D:270]. Rules unchanged. | Paper continues with named changes. *(CEO update, after Tom's review:)* MOC is withdrawn, because it conflicts with F-8 [H, revised]. Only operational changes avoid a new fingerprint. Slot counting (HK-2-slot) is a rule change, and the CRO declines it. | Archive V6.6, end paper trading, hold the money in T-bills or broker cash interest. |
 | Owner's time | While SPY is below its MA200: little, since the scan runs from Task Scheduler at 06:30 HKT Tue–Sat [RM:232]. In bull regimes: about 66–70 manual orders a year plus stops [I:254]; being at the US open (21:30/22:30 HKT) for every entry, with no order if not at the screen [I:77; D:285]; a same-day `ledger fill` [RM:147]; a 5-minute weekly review [RM:181–185]. One-off: the PC check for V-2 and V-3 [RM:7–10], the V-1 contract note [RM:82–83], and the Webull connector [S:28–32]. | As KEEP, plus each change. (MOC is withdrawn: it conflicts with F-8 [H, revised].) A rule change brings a new fingerprint, CRO review and new gates [H:44], and a new package and stamp for the Owner's PC [HC:64–67]. | One-off: archiving, turning off the PC schedule set up by `schedule_v66.bat` [RM:235], and choosing where the cash sits. After that, none for V6.6. |
 | Usage (AI) | Once re-enabled, the shadow log runs one fresh cloud session per run, Tue–Sat 07:10 HKT [S:15], plus review sessions. **No cost figure on file.** | As KEEP, plus a build, Tom's review, a CRO diff check and an audit per change (the pattern in [D:259–288]). **No cost figure on file.** | One archive session and the decision record. Then none. |
 | Money at risk | **None on paper.** Real money only after every switch condition (§4) and the Owner choosing (A). Then a HK$12,500 sleeve, with the −10% monthly breaker and a stop on new entries once NLV falls below HK$10,000 [I:39–43, I:290–294]. Backtest worst drawdown: −3.49% [R:48]. | Same as KEEP. | **None.** |
@@ -72,7 +72,7 @@
   5. Audit: **DONE** [RM:31].
   - The first forward review needs ≥ 30 closed E2 trading-path signals **and** ≥ 6 months of ledger. No cap comparison before 100 trades [D:71–72].
 - **KEEP WITH CHANGES.** Each change has to be named and routed:
-  - MOC: the broker's written answer [H:42].
+  - *(MOC withdrawn: it conflicts with F-8 [H, revised].)*
   - A rule change: new fingerprint, CRO review, new gates [H:44].
   - Another base: Tom's rerun and CRO review [I:294].
   - **B′:** needs V-1, V-2, V-3, the open B-items and a dated CRO enabling note [B7:33–42, B7:290–300]. The CRO's view: "spend no engineering on M-3, B-2 or B-6 until V-1 is in and A clears S4" [B7:337]. Under J-4, S4 is judged on A: "A B′ pass does not cure an A fail" [B7:227].
@@ -89,7 +89,7 @@
 | **V-1 real fee** (contract note → `lab.py --mode feecheck --tif open`) | OPEN | No minimum: about level with T-bills (+0.18%/yr), "still not enough to call it an add-on" [R:28]. US$0.35 minimum: S4, no trading at any cap at this account size [I:35; RM:204]. US$1: −3.92%/yr [R:57]. Read with `--tif open` because the broker cannot attach a stop [I:369]. "The S4 test is not re-tuned after the fact" [I:97]. |
 | **Forward results** (paper + shadow log) | None yet | Tests whether 2025 was luck [R:141]. Needs net EV per trade clearly above the ≈ HK$4–5 hurdle [I:328]. The since-2025 +0.55% turns negative under 6 of 6 E1 entry changes [R:104]. |
 | Interest on the reserve | Rate not provided | Most of the −1.03 pp would go; the trading is still about −0.2%/yr, "still no add-on" [R:142]. A C-7 (A) account cannot be the Futu account that holds 6160/3416 [I:366]. |
-| The broker accepts MOC orders placed in the HK evening | Not verified | Removes most of the −0.37 pp [H:42]. |
+| *(Withdrawn: MOC conflicts with F-8; the next-open price effect is about +0.08 pp/yr anyway [H, revised].)* | — | — |
 | A universe fixed in early 2022 (OEF holdings on SEC EDGAR, or the issuer's file) | Not run; needs the Owner's approval for network access | The bias "most likely **flatters**"; the true figure is more likely below −1.2% [R:34, R:130–133]. |
 | V-3 parity; Webull vs Yahoo cross-check | OPEN; not done | Tom: parity must pass "before any V6.6 number is trusted" [D:43]. [R:148; S:39]. |
 
@@ -124,11 +124,11 @@
 
 ## 8. Missing or stale inputs
 
-- **Not yet reviewed:** Tom's review of [H] is pending [H:2].
+- **Reviewed:** Tom's review of [H] is done, PASS WITH CORRECTIONS, and applied (CEO update).
 - **No Ai 管理層 audit on file** for [R] (as revised), [H], [B7] or [S]: there is no 27–28 Nov audit in `reports/committee/`. Owner-facing text built from them needs one (L-009).
 - **[HC] has no recorded independent reviewer.** It was run by the CEO [HC:3].
 - **For the record, authorship:** the chair ran [R], [H], [HC] and [I]. The independent checks are Tom on [R] and [I], and the CRO on [I] and [B7].
-- **Not obtained:** the V-1 fee [R:16]; Futu's cash rate [I:367]; whether MOC orders are accepted [H:42]; whether the standalone stop persists overnight [B7:163]; any AI usage cost for any option.
+- **Not obtained:** the V-1 fee [R:16]; Futu's cash rate [I:367]; whether the standalone stop persists overnight [B7:163]; any AI usage cost for any option.
 - **No forward data.** One shadow record (bear), paused. No paper-account results are on file.
 - **Not consulted:** the CIO (philosophy fit), Morris (portfolio fit) and Peterson (T-bill rate path; [I:233] notes that a falling rate lowers both the hurdle and the income).
 - **Stale text:**
