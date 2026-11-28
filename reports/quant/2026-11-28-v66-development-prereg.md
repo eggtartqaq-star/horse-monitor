@@ -78,3 +78,42 @@
 12. **One look at the 2022 list:** before any run, commit the list (OEF N-PORT accession number), extend `SPLITS` to every name from issuer or exchange records, and repeat Tom's check for unadjusted price steps. Then run every verdict in one batch and commit the outputs before writing the report. No exploratory run on the list.
 13. **P4 defined:** absolute drawdown of whole-account equity at daily closes, and calendar-month returns. Drawdown against the T-bill line is also reported. P4 is a risk check, not an overfitting guard.
 14. **H5 and addenda:** a pass on H5 is evidence about the baseline, not a development gain. It is a live rule only once the live universe is fixed as "S&P 100 per the latest OEF N-PORT, refreshed on a set annual date". No addendum may loosen any mark once a verdict run exists.
+
+### CRO John, 2026-11-28
+
+**SIGNED WITH AMENDMENTS.** I endorse Math King's 1–14 in full, including **withdrawing H1** (4) and the **P5 Holm gate** (6, 7). A stricter gate can only keep a false positive away from real money, and "all fail P5" is an acceptable answer. H1's only remaining mechanism, affordability of NVDA, AVGO, META and LLY, adds to the AI complex on a book that already holds AVGO. My amendments are risk amendments, binding before any run:
+
+1. **P4 is right as a ceiling, but it is not a test at this size.**
+   - −10% / −5% stands; the law is `max_drawdown: 0.20`, and −10% is half of it. Correct the label: −10% is the monthly *realized-loss* breaker (`config_v66.py:29`, C-10), not a peak-to-trough limit.
+   - It cannot bind here: the control's worst drawdown is −3.10% and its worst month −0.82% (HK-2 at the V-1 fee, `reports/quant/2026-11-28-v1-feecheck.md` §2). **Add P4b:** worst drawdown no more than 2.0 pp worse, and worst month no more than 1.0 pp worse, than the control printed beside it.
+   - P4 and P4b apply to every verdict run, the 2022 list included. Breaker trips are reported.
+2. **H1, if the CEO keeps it against MK-4.**
+   - R-3 is quoted in full, not summarised (L-009): "12 months of living money outside any risk asset; sleeve ≤ 10% of LNW (≥ HK$125,000 at 12.5k, else (B)); no planned withdrawals." So LNW ≥ HK$250,000 for HK$25,000 and ≥ HK$500,000 for HK$50,000, shown by a dated statement or a read-only pull, never by a declaration.
+   - C-7 (A) at that base: a separate cash or margin-disabled account, holding only the sleeve, with settled cash ≥ base ÷ 0.8, `account_hkd` = base, reconciled monthly.
+   - A pass licenses only the base that passed (R-2). Report the AI-complex share of position-days against the control (Tom F-4).
+3. **H2 is consistent with R-1 and C-7 (A) only if** interest is paid on the settled cash itself, in an account with its own account number, separate from the 6160/3416 Futu account, and cash or margin-disabled (C-6).
+   - The rate used is the account's documented rate on the currency held, net of tax (MK-2). Interest earned through a fund sweep is a cash equivalent: it is not settled cash and does not count towards R-1's 30%.
+   - Webull pays no cash interest (Owner, 26 Nov), so H2 implies another broker. V-1 covers Webull HK only, so that broker's own contract note is needed before its run.
+4. **H4: the extra risk.** Entries are cancelled at the open (F-3), and the F-8 sale is manual (stop cancelled, then a sale after the open). So the freed-slot buy fills *before* the sale. Every such night carries 3 positions until the sale fills, and stays at 3 if the sale fails.
+   - The run funds that buy from settled cash without the pending sale's proceeds, with R-1's reserve intact, and skips the buy otherwise. It reports the number of such nights, the peak exposure and the summed open risk.
+   - Before candidate status, Mario stresses a 3-position overnight gap against the −10% breaker and the 20% budget.
+   - As V6.7, the bot prints that entry as conditional, and a failed sale is an S2 reported the same day.
+5. **Real money:** no pass here changes it. The gates are in `reports/risk/2026-11-28-v1-ruling.md` §2.
+
+**Binding under KEEP** (paper only; quoted or pointed to, not summarised):
+- **K-1**, quoted in full: "Revoke and regenerate the Telegram token before the next scheduled run. Until then, the Windows task stays disabled." Paper resumes only after K-1, and after D-1 to D-4 (v1-ruling §3) reach the Owner.
+- **K-2 is discharged:** V-1 was read on 28 Nov (v1-ruling §1). K-3 and D-5 no longer apply (Owner override). README S4 still bars real money if a later fee or a measured cost triggers it.
+- **K-4 and K-5** stand in full: `reports/committee/2026-11-28-v66-keep-vote-cro.md` lines 19–20.
+- **K-6 is now live**, because V-1 passed: the 2022-universe run is a real-money gate (v1-ruling §2).
+- **K-7** is replaced for development by this registration. Live rules stay V6.6.9 / `2b7b62182068`, B′ stays OFF and MOC stays withdrawn. Any change needs a new fingerprint, Tom, my diff review and new gates.
+- **R-5, R-6, C-8, C-9** (with the DAY-stop practice D-1 to D-4), **C-10, F-8, N-11 and R-7** apply to paper in full.
+
+### CEO decision on the amendments, 2026-11-28
+
+**Accepted in full:** Math King's amendments 1–14 and the CRO's amendments, including P4b and the conditions on H1, H2 and H4 (the 3-position funding rule and Mario's 3-position gap stress).
+- **H1 is withdrawn.** V-1 shows no minimum fee, so its mechanism is gone.
+- **The verdict family is H3, H4 and H5 (m = 3).** H2 is reported as account arithmetic only.
+- **No verdict run happens until** the 2022 list is committed, with its accession number, its SPLITS extension and Tom's price-step check (amendment 12). The real-cost input per side is the V-1 regulatory fee plus Messi's written slippage estimate (amendment 3; CRO V1-b).
+- **Expected outcome, stated now (amendment 7):** given the data's power, all hypotheses will probably fail P5. That will be reported as it is, without a retry.
+
+**The marks are now fixed.** No addendum may loosen them once a verdict run exists.

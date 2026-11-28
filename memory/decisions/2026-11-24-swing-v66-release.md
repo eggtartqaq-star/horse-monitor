@@ -318,3 +318,13 @@ term as a source of "some extra return" (not market-beating). An income study wa
   - **No longer apply:** the PAUSE and RETIRE paths (K-2, K-3, D-5) and the decision page's "skip setup / no paper orders".
   - **Paper trading** may resume under the existing rules (R-5, R-6, C-8, F-8) once the leaked Telegram token is revoked (K-1 security item, still required).
   - **Development plan:** evidence first, with pass marks pre-registered before any run (`reports/quant/2026-11-28-v66-development-prereg.md`). Nothing is re-tuned to rescue a failed hypothesis.
+- **2026-11-28: V-1 PASSED** (CRO, `reports/risk/2026-11-28-v1-ruling.md`).
+  - **Evidence:** Webull HK, US stocks: US$0 commission, US$0 platform fee, regulatory fees in cents (`reports/risk/2026-11-28-v1-fee-evidence.md`, from the Owner's screenshots).
+  - **Tom's fee check** (`reports/quant/2026-11-28-v1-feecheck.md`, 10.2 bp per side): EV +0.647% per trade, 130 trades; out of sample +1.147%. S4 is not triggered.
+  - **It is not an edge:** HK-2 trails T-bills by 0.21%/yr, every CI includes 0, and the edge is gone at 13 bp per side.
+  - **Binding before real money:** V1-a (the fee-detail page), V1-b (Messi's measured slippage, then a re-run), V1-c (Webull HK only), V1-d (a monthly check that the fees are still US$0).
+  - **Changes to the K-conditions:** K-2 is discharged; K-6 is now a real-money gate.
+  - **New README switch list:** 8 rows. Real money stays vetoed until all are met and the CRO signs in writing.
+  - **DAY stop:** paper trading is allowed under D-1 to D-4 (re-place the stop every trading day before the open; one working sell; a missed stop is S2; the Owner acts every day a position is open). B′'s M-2 is NOT MET, so B′ stays OFF.
+  - **Package:** the PC tests package is cleared, on condition that the doc updates and D-1 to D-4 travel with it.
+  - **Pre-registration:** both sign-offs are in, and the CEO accepted all amendments. H1 is withdrawn; the verdict family is H3, H4, H5.
